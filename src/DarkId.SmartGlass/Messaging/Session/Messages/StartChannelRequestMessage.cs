@@ -29,6 +29,10 @@ namespace DarkId.SmartGlass.Messaging.Session.Messages
                 {
                     ServiceType.SystemText,
                     new byte[] { 0x7a, 0xf3, 0xe6, 0xa2, 0x48, 0x8b, 0x40, 0xcb, 0xa9, 0x31, 0x79, 0xc0, 0x4b, 0x7d, 0xa3, 0xa0 }
+                },
+                {
+                    ServiceType.None,
+                    new byte[16]
                 }
             };
 
@@ -55,15 +59,8 @@ namespace DarkId.SmartGlass.Messaging.Session.Messages
             writer.Write(ChannelRequestId);
             writer.Write(TitleId);
 
-            if (ServiceType != ServiceType.None)
-            {
-                var uuidBytes = ServiceUuids[ServiceType];
-                writer.Write(uuidBytes);
-            }
-            else
-            {
-                writer.Write(new byte[16]);
-            }
+            var uuidBytes = ServiceUuids[ServiceType];
+            writer.Write(uuidBytes);
 
             writer.Write(ActivityId);
         }
