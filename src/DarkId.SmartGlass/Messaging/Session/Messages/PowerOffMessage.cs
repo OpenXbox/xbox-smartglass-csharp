@@ -5,7 +5,7 @@ namespace DarkId.SmartGlass.Messaging.Session.Messages
     [SessionMessageType(SessionMessageType.PowerOff)]
     internal class PowerOffMessage : SessionMessageBase
     {
-        public string LiveID { get; set; }
+        public string LiveId { get; set; }
 
         public override void Deserialize(BEReader reader)
         {
@@ -14,7 +14,7 @@ namespace DarkId.SmartGlass.Messaging.Session.Messages
 
         public override void Serialize(BEWriter writer)
         {
-            writer.Write(LiveID);
+            writer.Write(LiveId);
         }
     }
 }
