@@ -7,8 +7,6 @@ namespace DarkId.SmartGlass.Messaging.Session.Messages
     internal class GameDvrRecordMessage : SessionMessageBase
     {
         public int StartTimeDelta { get; set; }
-
-        // TODO: Test this
         public int EndTimeDelta { get; set; }
 
         public GameDvrRecordMessage()

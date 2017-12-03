@@ -18,8 +18,8 @@ namespace DarkId.SmartGlass.Cli.Session
         [Command(typeof(TitleChannelCommand))]
         TitleChannel,
 
-        // [Command(typeof(RecordCommand))]
-        // Record,
+        [Command(typeof(RecordCommand))]
+        Record,
 
         [HelpCommand]
         Help

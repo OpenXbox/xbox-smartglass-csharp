@@ -9,5 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NClap" Version="2.0.0-beta3" />
+    <PackageReference Include="Tx.Network" Version="2.1.1" />
   </ItemGroup>
 </Project>

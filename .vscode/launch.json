@@ -17,6 +17,23 @@
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
+            "name": ".NET Core Launch (pcap)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/src/DarkId.SmartGlass.Cli/bin/Debug/netcoreapp2.0/xbsg.dll",
+            "args": [
+                "pcap",
+                "${workspaceRoot}/../../Desktop/testpcap.pcap",
+                "144127463621d5e459fec0c86c44f1d6bfd5a01f08f20195de609224386d1d0a419c09170406c58c6093ddbd5d5ba91be30f0eee8222189df52a63412ed0e7f9",
+                "63642"
+            ],
+            "cwd": "${workspaceRoot}/src/DarkId.SmartGlass.Cli",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",

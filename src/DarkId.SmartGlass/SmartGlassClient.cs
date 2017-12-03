@@ -135,13 +135,13 @@ namespace DarkId.SmartGlass
             });
         }
 
-        // public Task GameDvrRecord(int lastSeconds = 60)
-        // {
-        //     return _sessionMessageTransport.SendAsync(new GameDvrRecordMessage()
-        //     {
-        //         StartTimeDelta = -lastSeconds,
-        //     });
-        // }
+        public Task GameDvrRecord(int lastSeconds = 60)
+        {
+            return _sessionMessageTransport.SendAsync(new GameDvrRecordMessage()
+            {
+                StartTimeDelta = -lastSeconds,
+            });
+        }
 
         private async Task<ChannelMessageTransport> StartChannelAsync(ServiceType serviceType, uint titleId = 0)
         {

@@ -15,6 +15,11 @@ namespace DarkId.SmartGlass.Cli
         Discover,
 
         [Command(
+            typeof(PcapCommand),
+            Description = "Decrypt captured messages.")]
+        Pcap,
+
+        [Command(
             typeof(PingCommand),
             Description = "Ping and output details of an Xbox One console.")]
         Ping

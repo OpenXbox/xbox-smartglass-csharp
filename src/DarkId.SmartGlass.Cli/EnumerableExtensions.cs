@@ -22,29 +22,39 @@ namespace DarkId.SmartGlass.Cli
             });
         }
 
-        public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int len)
+        public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int length)
         {
-            if (len == 0)
-                throw new ArgumentNullException();
-
-            var enumer = source.GetEnumerator();
-            while (enumer.MoveNext())
+            if (length == 0)
             {
-                yield return Take(enumer.Current, enumer, len);
+                throw new ArgumentNullException();
+            }
+
+            var enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                yield return Take(enumerator.Current, enumerator, length);
             }
         }
 
-        private static IEnumerable<T> Take<T>(T head, IEnumerator<T> tail, int len)
+        private static IEnumerable<T> Take<T>(T head, IEnumerator<T> tail, int length)
         {
             while (true)
             {
                 yield return head;
-                if (--len == 0)
+
+                if (--length == 0)
+                {
                     break;
+                }
+
                 if (tail.MoveNext())
+                {
                     head = tail.Current;
+                }
                 else
+                {
                     break;
+                }
             }
         }
     }
