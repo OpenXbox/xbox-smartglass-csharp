@@ -2,6 +2,7 @@ using System;
 using DarkId.SmartGlass.Common;
 using DarkId.SmartGlass.Connection;
 using DarkId.SmartGlass.Messaging.Session;
+using DarkId.SmartGlass.Messaging.Session.Messages;
 
 namespace DarkId.SmartGlass.Analysis
 {
@@ -27,7 +28,7 @@ namespace DarkId.SmartGlass.Analysis
                 throw new Exception("Invalid message signature.");
             }
 
-            return new MessageInfo()
+            var info = new MessageInfo()
             {
                 RequestAcknowledge = message.Header.RequestAcknowledge,
                 Version = message.Header.Version,
@@ -35,6 +36,16 @@ namespace DarkId.SmartGlass.Analysis
                 MessageType = message.Header.SessionMessageType.ToString(),
                 Data = message.Fragment
             };
+
+            if (message.Header.SessionMessageType == SessionMessageType.Json)
+            {
+                var jsonMessage = new JsonMessage();
+                jsonMessage.Deserialize(new BEReader(message.Fragment));
+
+                info.Json = jsonMessage.Json;
+            }
+
+            return info;
         }
     }
 }

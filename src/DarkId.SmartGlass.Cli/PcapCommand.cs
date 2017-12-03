@@ -44,7 +44,16 @@ namespace DarkId.SmartGlass.Cli
                 Console.WriteLine($"Request Ack: {messageInfo.RequestAcknowledge}");
                 Console.WriteLine($"Version: {messageInfo.Version}");
                 Console.WriteLine($"ChannelId: {messageInfo.ChannelId}");
-                Console.WriteLine($"Data: {BitConverter.ToString(messageInfo.Data).Replace("-", "").ToLower()}");
+
+                if (!String.IsNullOrEmpty(messageInfo.Json))
+                {
+                    Console.WriteLine($"Json: {messageInfo.Json}");
+                }
+                else
+                {
+                    Console.WriteLine($"Binary: {BitConverter.ToString(messageInfo.Data).Replace("-", "").ToLower()}");
+                }
+
                 Console.WriteLine();
             }
 

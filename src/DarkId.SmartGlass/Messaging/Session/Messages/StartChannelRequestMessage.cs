@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DarkId.SmartGlass.Common;
 
 namespace DarkId.SmartGlass.Messaging.Session.Messages
