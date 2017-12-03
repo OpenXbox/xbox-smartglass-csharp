@@ -2,7 +2,7 @@ using NClap.Metadata;
 
 namespace DarkId.SmartGlass.Cli.Session
 {
-    enum SessionCommandType
+    internal enum SessionCommandType
     {
         [Command(
             typeof(ExitCommand),

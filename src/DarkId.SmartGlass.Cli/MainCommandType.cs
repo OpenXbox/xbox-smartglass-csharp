@@ -2,7 +2,7 @@ using NClap.Metadata;
 
 namespace DarkId.SmartGlass.Cli
 {
-    enum MainCommandType
+    internal enum MainCommandType
     {
         [Command(
             typeof(ConnectCommand),

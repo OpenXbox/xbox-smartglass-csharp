@@ -8,7 +8,7 @@ using Tx.Network;
 
 namespace DarkId.SmartGlass.Cli
 {
-    public class PcapCommand : SynchronousCommand
+    internal class PcapCommand : SynchronousCommand
     {
         [PositionalArgument(ArgumentFlags.Required, Position = 0)]
         public string PcapFile { get; set; }
@@ -31,8 +31,7 @@ namespace DarkId.SmartGlass.Cli
                     p.UdpDatagramHeader.DestinationPort == Port).
                 ToArray();
 
-            var cryptoBlob = SharedSecret.Split(2).Select(c =>
-                byte.Parse(new string(c.ToArray()), NumberStyles.HexNumber)).ToArray();
+            var cryptoBlob = SharedSecret.HexToBytes();
 
             var decryptor = new MessageAnalyzer(cryptoBlob);
 
@@ -51,7 +50,7 @@ namespace DarkId.SmartGlass.Cli
                 }
                 else
                 {
-                    Console.WriteLine($"Binary: {BitConverter.ToString(messageInfo.Data).Replace("-", "").ToLower()}");
+                    Console.WriteLine($"Binary: {messageInfo.Data.ToHex()}");
                 }
 
                 Console.WriteLine();

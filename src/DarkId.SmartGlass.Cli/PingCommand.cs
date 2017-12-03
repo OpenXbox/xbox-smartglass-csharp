@@ -6,7 +6,7 @@ using NClap.Metadata;
 
 namespace DarkId.SmartGlass.Cli
 {
-    public class PingCommand : Command
+    internal class PingCommand : Command
     {
         [PositionalArgument(ArgumentFlags.AtLeastOnce, Position = 0)]
         public string[] Hostnames { get; set; }
