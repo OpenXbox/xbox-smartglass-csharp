@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>xbsg</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DarkId.SmartGlass\DarkId.SmartGlass.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NClap" Version="2.0.0-beta3" />
+  </ItemGroup>
+</Project>
