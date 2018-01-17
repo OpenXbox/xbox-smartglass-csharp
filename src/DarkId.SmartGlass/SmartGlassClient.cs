@@ -192,6 +192,11 @@ namespace DarkId.SmartGlass
             return new TitleChannel(channel);
         }
 
+        public async Task PowerOffAsync()
+        {
+            await _sessionMessageTransport.SendAsync(new PowerOffMessage());
+        }
+
         public void Dispose()
         {
             // TODO: Close opened channels?
