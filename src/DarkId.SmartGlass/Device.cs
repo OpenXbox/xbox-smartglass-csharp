@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DarkId.SmartGlass.Common;
 using DarkId.SmartGlass.Messaging;
 using DarkId.SmartGlass.Messaging.Discovery;
+using DarkId.SmartGlass.Messaging.Power;
 using Org.BouncyCastle.X509;
 
 namespace DarkId.SmartGlass
@@ -52,6 +53,22 @@ namespace DarkId.SmartGlass
                         pingRetries);
 
                 return new Device(response);
+            }
+        }
+
+        public static async Task<Device> PowerOnAsync(string addressOrHostname, string liveId, int times = 5, int delay = 1000)
+        {
+            using (var messageTransport = new MessageTransport(addressOrHostname))
+            {
+                var requestMessage = new PowerOnMessage { LiveId = liveId };
+
+                for (var i = 0; i < times; i++)
+                {
+                    await messageTransport.SendAsync(requestMessage);
+                    await Task.Delay(delay);
+                }
+
+                return await PingAsync(addressOrHostname);
             }
         }
 
