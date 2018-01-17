@@ -21,6 +21,9 @@ namespace DarkId.SmartGlass.Cli.Session
         [Command(typeof(RecordCommand))]
         Record,
 
+        [Command(typeof(PowerOffCommand))]
+        PowerOff,
+
         [HelpCommand]
         Help
     }

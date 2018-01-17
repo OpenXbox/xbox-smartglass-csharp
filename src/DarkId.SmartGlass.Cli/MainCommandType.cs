@@ -22,6 +22,11 @@ namespace DarkId.SmartGlass.Cli
         [Command(
             typeof(PingCommand),
             Description = "Ping and output details of an Xbox One console.")]
-        Ping
+        Ping,
+
+        [Command(
+            typeof(PowerOnCommand),
+            Description = "Power on Xbox One console.")]
+        PowerOn
     }
 }
