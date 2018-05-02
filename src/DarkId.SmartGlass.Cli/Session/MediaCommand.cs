@@ -36,9 +36,9 @@ namespace DarkId.SmartGlass.Cli.Session
 
             try
             {
-                var inputChannel = await ConnectCommand.Client.GetMediaChannelAsync();
+                var mediaChannel = await ConnectCommand.Client.GetMediaChannelAsync();
 
-                await inputChannel.SendMediaCommandStateAsync(state);
+                await mediaChannel.SendMediaCommandStateAsync(state);
             }
             catch (Exception e)
             {
