@@ -9,6 +9,9 @@ namespace DarkId.SmartGlass.Cli.Session
             Description = "Disconnect from the console.")]
         Exit,
 
+        [Command(typeof(MediaCommand))]
+        Media,
+
         [Command(typeof(PressCommand))]
         Press,
 

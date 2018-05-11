@@ -76,10 +76,13 @@ namespace DarkId.SmartGlass
         private readonly SessionMessageTransport _sessionMessageTransport;
 
         private readonly DisposableAsyncLazy<InputChannel> _inputChannel;
+        private readonly DisposableAsyncLazy<MediaChannel> _mediaChannel;
 
         private uint _channelRequestId = 1;
 
         public event EventHandler<ConsoleStatusChangedEventArgs> ConsoleStatusChanged;
+
+        public ConsoleStatus CurrentConsoleStatus { get; private set; }
 
         private SmartGlassClient(
             Device device,
@@ -97,14 +100,14 @@ namespace DarkId.SmartGlass
             _sessionMessageTransport.MessageReceived += (s, e) =>
             {
                 var consoleStatusMessage = e.Message as ConsoleStatusMessage;
-                if (consoleStatusMessage != null)
-                {
+                if (consoleStatusMessage != null) {
+                    CurrentConsoleStatus = new ConsoleStatus() {
+                        Configuration = consoleStatusMessage.Configuration,
+                        ActiveTitles = consoleStatusMessage.ActiveTitles
+                    };
+
                     ConsoleStatusChanged?.Invoke(this, new ConsoleStatusChangedEventArgs(
-                        new ConsoleStatus()
-                        {
-                            Configuration = consoleStatusMessage.Configuration,
-                            ActiveTitles = consoleStatusMessage.ActiveTitles
-                        }
+                        CurrentConsoleStatus
                     ));
                 }
             };
@@ -114,6 +117,11 @@ namespace DarkId.SmartGlass
             _inputChannel = new DisposableAsyncLazy<InputChannel>(async () =>
             {
                 return new InputChannel(await StartChannelAsync(ServiceType.SystemInput));
+            });
+
+            _mediaChannel = new DisposableAsyncLazy<MediaChannel>(async () =>
+            {
+                return new MediaChannel(await StartChannelAsync(ServiceType.SystemMedia));
             });
         }
 
@@ -173,6 +181,11 @@ namespace DarkId.SmartGlass
             return _inputChannel.GetAsync();
         }
 
+        public Task<MediaChannel> GetMediaChannelAsync()
+        {
+            return _mediaChannel.GetAsync();
+        }
+
         public async Task<TitleChannel> StartTitleChannelAsync(uint titleId)
         {
             var channel = await StartChannelAsync(ServiceType.None, titleId);
@@ -202,6 +215,7 @@ namespace DarkId.SmartGlass
             // TODO: Close opened channels?
             // Assuming so for the time being, but don't know how to send stop messages yet
             _inputChannel.Dispose();
+            _mediaChannel.Dispose();
 
             _sessionMessageTransport.Dispose();
             _messageTransport.Dispose();
