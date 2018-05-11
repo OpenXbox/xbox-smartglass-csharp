@@ -15,6 +15,9 @@ namespace DarkId.SmartGlass.Messaging.Session
         Disconnect = 42,
         GameDvrRecord = 56,
         PowerOff = 57,
-        Gamepad = 3850
+
+        MediaCommand = 3841,
+        MediaState = 3843,
+        Gamepad = 3850,
     }
 }
