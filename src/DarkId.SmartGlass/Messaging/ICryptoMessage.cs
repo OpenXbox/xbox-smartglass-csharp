@@ -2,7 +2,7 @@ using DarkId.SmartGlass.Connection;
 
 namespace DarkId.SmartGlass.Messaging
 {
-    public interface ICryptoMessage
+    interface ICryptoMessage
     {
          CryptoContext Crypto { get; set; }
     }

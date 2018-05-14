@@ -12,19 +12,16 @@ namespace DarkId.SmartGlass.Messaging.Discovery
         public DeviceType DeviceType { get; set; }
         public string Name { get; set; }
         public Guid HardwareId { get; set; }
+        public uint LastError { get; set; }
         public X509Certificate Certificate { get; set; }
 
         protected override void DeserializePayload(BEReader reader)
         {
-            reader.ReadBytes(2);
-
-            Flags = (DeviceFlags)reader.ReadUInt16();
+            Flags = (DeviceFlags)reader.ReadUInt32();
             DeviceType = (DeviceType)reader.ReadUInt16();
             Name = reader.ReadString();
             HardwareId = Guid.Parse(reader.ReadString());
-
-            reader.ReadBytes(4);
-
+            LastError = reader.ReadUInt32();
             Certificate = CryptoExtensions.DeserializeCertificateAsn(reader.ReadBlob());
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using DarkId.SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session.Messages
+namespace DarkId.SmartGlass
 {
     internal class MediaMetadata : ISerializable
     {

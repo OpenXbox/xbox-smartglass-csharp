@@ -1,4 +1,5 @@
-﻿namespace DarkId.SmartGlass {
+﻿namespace DarkId.SmartGlass
+{
     public enum MediaPlaybackStatus : uint
     {
         Closed = 0x00,

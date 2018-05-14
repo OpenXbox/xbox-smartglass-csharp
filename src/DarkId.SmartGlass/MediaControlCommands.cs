@@ -1,7 +1,7 @@
-﻿namespace DarkId.SmartGlass
-{
-    using System;
+﻿using System;
 
+namespace DarkId.SmartGlass
+{
     [Flags]
     public enum MediaControlCommands : uint
     {

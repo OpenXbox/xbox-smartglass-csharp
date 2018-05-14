@@ -2,7 +2,7 @@ using System;
 
 namespace DarkId.SmartGlass
 {
-    public sealed class SmartGlassException : Exception
+    public class SmartGlassException : Exception
     {
         public SmartGlassException(string message) : base(message)
         {

@@ -35,7 +35,10 @@ namespace DarkId.SmartGlass
 
             add(obj, handler);
 
-            postAddAction();
+            if (postAddAction != null)
+            {
+                postAddAction();
+            }
 
             Task.Delay(timeout, timeoutCancellation.Token).ContinueWith(t =>
             {

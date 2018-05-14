@@ -5,7 +5,7 @@ using DarkId.SmartGlass.Common;
 
 namespace DarkId.SmartGlass.Messaging
 {
-    abstract class ProtectedMessageBase<THeader> : MessageBase<THeader>, ICryptoMessage
+    internal abstract class ProtectedMessageBase<THeader> : MessageBase<THeader>, ICryptoMessage
         where THeader : IProtectedMessageHeader, new()
     {
         public CryptoContext Crypto { get; set; }

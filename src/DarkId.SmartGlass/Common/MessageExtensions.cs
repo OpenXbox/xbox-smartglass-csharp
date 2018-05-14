@@ -7,8 +7,44 @@ namespace DarkId.SmartGlass.Common
 {
     internal static class MessageExtensions
     {
+        public static async Task<T> WaitForMessageAsync<T, TError, TBase>(
+            this IMessageTransport<TBase> transport, TimeSpan timeout, Action startAction = null, Func<T, bool> filter = null, Func<TError, bool> errorFilter = null)
+            where T : TBase
+            where TError : TBase, IConvertToException
+        {
+            return (T)(await TaskExtensions.EventTask<IMessageTransport<TBase>, MessageReceivedEventArgs<TBase>>(
+                transport,
+                startAction,
+                (o, e) => o.MessageReceived += e,
+                (o, e) => o.MessageReceived -= e,
+                (e) =>
+                {
+                    if (e.Message is TError)
+                    {
+                        var error = (TError)e.Message;
+                        if (errorFilter == null || !errorFilter(error))
+                        {
+                            throw error.ToException();
+                        }
+                    }
+
+                    if (e.Message is T)
+                    {
+                        if (filter != null)
+                        {
+                            return filter((T)e.Message);
+                        }
+
+                        return true;
+                    }
+
+                    return false;
+                },
+                timeout)).Message;
+        }
+
         public static async Task<T> WaitForMessageAsync<T, TBase>(
-            this IMessageTransport<TBase> transport, TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+            this IMessageTransport<TBase> transport, TimeSpan timeout, Action startAction = null, Func<T, bool> filter = null)
             where T : TBase
         {
             return (T)(await TaskExtensions.EventTask<IMessageTransport<TBase>, MessageReceivedEventArgs<TBase>>(
@@ -34,7 +70,7 @@ namespace DarkId.SmartGlass.Common
         }
 
         public static IEnumerable<T> ReadMessages<T>(
-            this IMessageTransport<T> transport, TimeSpan readDuration, Action startAction)
+            this IMessageTransport<T> transport, TimeSpan readDuration, Action startAction = null)
         {
             var lockObject = new object();
             var blockingCollection = new BlockingCollection<T>();
@@ -50,7 +86,10 @@ namespace DarkId.SmartGlass.Common
             lock (lockObject)
             {
                 transport.MessageReceived += handler;
-                startAction();
+                if (startAction != null)
+                {
+                    startAction();
+                }
             }
 
             Task.Delay(readDuration).ContinueWith(t =>

@@ -77,6 +77,7 @@ namespace DarkId.SmartGlass
 
         private readonly DisposableAsyncLazy<InputChannel> _inputChannel;
         private readonly DisposableAsyncLazy<MediaChannel> _mediaChannel;
+        private readonly DisposableAsyncLazy<BroadcastChannel> _broadcastChannel;
 
         private uint _channelRequestId = 1;
 
@@ -122,6 +123,13 @@ namespace DarkId.SmartGlass
             _mediaChannel = new DisposableAsyncLazy<MediaChannel>(async () =>
             {
                 return new MediaChannel(await StartChannelAsync(ServiceType.SystemMedia));
+            });
+
+            _broadcastChannel = new DisposableAsyncLazy<BroadcastChannel>(async () =>
+            {
+                var broadcastChannel = new BroadcastChannel(await StartChannelAsync(ServiceType.SystemBroadcast));
+                await broadcastChannel.WaitForEnabledAsync();
+                return broadcastChannel;
             });
         }
 
@@ -184,6 +192,11 @@ namespace DarkId.SmartGlass
         public Task<MediaChannel> GetMediaChannelAsync()
         {
             return _mediaChannel.GetAsync();
+        }
+
+        public Task<BroadcastChannel> GetBroadcastChannelAsync()
+        {
+            return _broadcastChannel.GetAsync();
         }
 
         public async Task<TitleChannel> StartTitleChannelAsync(uint titleId)

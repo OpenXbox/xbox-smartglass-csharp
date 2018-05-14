@@ -1,4 +1,5 @@
-﻿namespace DarkId.SmartGlass {
+﻿namespace DarkId.SmartGlass
+{
     public enum MediaSoundLevel : ushort
     {
         Muted = 0x00,

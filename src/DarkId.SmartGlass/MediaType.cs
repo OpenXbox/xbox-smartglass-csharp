@@ -1,4 +1,5 @@
-﻿namespace DarkId.SmartGlass {
+﻿namespace DarkId.SmartGlass
+{
     public enum MediaType : ushort
     {
         NoMedia = 0x00,
