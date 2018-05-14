@@ -1,4 +1,4 @@
-namespace DarkId.SmartGlass.Messaging.Session.Messages
+namespace DarkId.SmartGlass
 {
     enum ActiveSurfaceType
     {

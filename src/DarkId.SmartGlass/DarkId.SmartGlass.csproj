@@ -5,7 +5,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.1.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Messaging\Connection\PairedIdentityState.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Broadcast\" />
+    <Folder Include="Broadcast\Messages\" />
+    <Folder Include="Nano\" />
   </ItemGroup>
 </Project>

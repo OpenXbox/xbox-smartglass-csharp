@@ -16,9 +16,9 @@ namespace DarkId.SmartGlass
         {
             TitleId = reader.ReadUInt32();
 
-            // This is weird:
-            HasFocus = reader.ReadByte() == 128;
-            TitleLocation = (ActiveTitleLocation)reader.ReadByte();
+            ushort titleDisposition = reader.ReadUInt16();
+            HasFocus = (titleDisposition & 0x8000) == 0x8000;
+            TitleLocation = (ActiveTitleLocation)(titleDisposition & 0x7FFF);
 
             ProductId = new Guid(reader.ReadBytes(16));
             SandboxId = new Guid(reader.ReadBytes(16));

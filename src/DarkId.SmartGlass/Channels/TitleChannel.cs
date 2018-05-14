@@ -26,14 +26,14 @@ namespace DarkId.SmartGlass.Channels
                 auxiliaryStreamMessage.ConnectionInfo.ClientInitVector,
                 auxiliaryStreamMessage.ConnectionInfo.SignHash);
 
-            var transport = new AuxiliaryStreamClient(
+            var client = new AuxiliaryStreamClient(
                 auxiliaryStreamMessage.ConnectionInfo.Endpoints[0].Host,
                 int.Parse(auxiliaryStreamMessage.ConnectionInfo.Endpoints[0].Service),
                 cryptoContext);
 
-            await transport.ConnectAsync();
+            await client.ConnectAsync();
 
-            return transport;
+            return client;
         }
 
         public void Dispose()
