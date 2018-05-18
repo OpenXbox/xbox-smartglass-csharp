@@ -8,7 +8,7 @@
     <ProjectReference Include="..\DarkId.SmartGlass\DarkId.SmartGlass.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NClap" Version="2.0.0-beta3" />
+    <PackageReference Include="NClap" Version="2.3.4" />
     <PackageReference Include="Tx.Network" Version="2.1.1" />
   </ItemGroup>
 </Project>

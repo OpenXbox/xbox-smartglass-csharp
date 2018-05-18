@@ -23,7 +23,7 @@ namespace DarkId.SmartGlass.Cli
             {
                 using (Client = await SmartGlassClient.ConnectAsync(Hostname))
                 {
-                    var loop = new Loop<SessionCommandType>();
+                    var loop = new Loop(typeof(SessionCommandType));
                     loop.Execute();
 
                     Console.WriteLine($"Disconnected");
