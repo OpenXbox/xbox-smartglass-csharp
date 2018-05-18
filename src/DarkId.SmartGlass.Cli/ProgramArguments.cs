@@ -7,7 +7,7 @@ namespace DarkId.SmartGlass.Cli
         Style = ArgumentSetStyle.GetOpt,
         NameGenerationFlags = ArgumentNameGenerationFlags.GenerateHyphenatedLowerCaseLongNames |
                               ArgumentNameGenerationFlags.PreferLowerCaseForShortNames,
-        AdditionalHelp = "Discover and control Xbox One consoles.")]
+        Description = "Discover and control Xbox One consoles.")]
     internal class ProgramArguments : HelpArgumentsBase
     {
         [PositionalArgument(ArgumentFlags.Required, Position = 0)]

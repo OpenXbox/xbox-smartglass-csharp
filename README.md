@@ -1,5 +1,7 @@
 # DarkId.SmartGlass [![Build Status](https://travis-ci.org/joelday/DarkId.SmartGlass.svg?branch=master)](https://travis-ci.org/joelday/DarkId.SmartGlass)
 
-## Unofficial .NET Standard client library for the Xbox One SmartGlass protocol
+## Xbox One SmartGlass client library for .NET
 
-Project is early in development and has limited functionality.
+--------------------------------------------------------------------------------
+Special thanks to [Team OpenXbox](https://github.com/openxbox) for their
+contribution of documentation, tools and samples for the SmartGlass protocol.
