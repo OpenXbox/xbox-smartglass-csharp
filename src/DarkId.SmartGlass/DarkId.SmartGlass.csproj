@@ -8,12 +8,4 @@
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Messaging\Connection\PairedIdentityState.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Broadcast\" />
-    <Folder Include="Broadcast\Messages\" />
-    <Folder Include="Nano\" />
-  </ItemGroup>
 </Project>
