@@ -11,3 +11,8 @@ before_build:
 build:
   publish_nuget: true
   verbosity: minimal
+deploy:
+- provider: NuGet
+  api_key:
+    secure: cFO+i+qZ9aAspv6cEVNciASlRIGymhIgIOIaVNyWoX9tKN64fKDBbleywmngWFED
+  skip_symbols: false
