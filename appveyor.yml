@@ -1,9 +1,9 @@
-&2057501423 version: 1.0.{build}
+version: 1.0.{build}
 image: Visual Studio 2017 Preview
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: &123163073 '{version}'
+  version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
