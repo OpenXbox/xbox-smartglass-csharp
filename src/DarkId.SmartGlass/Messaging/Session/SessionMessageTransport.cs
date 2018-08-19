@@ -122,6 +122,10 @@ namespace DarkId.SmartGlass.Messaging.Session
             }
 
             var message = CreateFromMessageType(fragment.Header.SessionMessageType);
+            if (fragment.Header.IsFragment)
+            {
+                message = new Messaging.Session.Messages.FragmentMessage();
+            }
 
             logger.LogTrace($"Received {message.GetType().Name} message");
 
