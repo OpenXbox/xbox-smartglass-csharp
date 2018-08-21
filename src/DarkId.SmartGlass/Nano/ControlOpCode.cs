@@ -1,7 +1,7 @@
 ﻿using System;
 namespace DarkId.SmartGlass.Nano
 {
-    public enum ControlPayloadType
+    public enum ControlOpCode : ushort
     {
         SessionInit = 1,
         SessionCreate,

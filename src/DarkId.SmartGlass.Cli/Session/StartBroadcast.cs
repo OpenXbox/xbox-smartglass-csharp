@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NClap.Metadata;
 using System.Linq;
+using DarkId.SmartGlass.Nano;
 
 namespace DarkId.SmartGlass.Cli.Session
 {
@@ -16,7 +17,10 @@ namespace DarkId.SmartGlass.Cli.Session
 
                 // TODO: Wait for BroadcastMessages here...
 
-                await broadcastChannel.StartGamestreamAsync();
+                var result = await broadcastChannel.StartGamestreamAsync();
+                Console.WriteLine($"Connecting to TCP: {result.TcpPort}, UDP: {result.UdpPort}");
+                var c = new NanoClient("10.0.0.241", result.TcpPort, result.UdpPort, new Guid());
+                c.Initialize();
             }
             catch (Exception e)
             {

@@ -1,7 +1,7 @@
 ﻿using System;
 namespace DarkId.SmartGlass.Nano
 {
-    public enum ControllerEventType
+    public enum ControllerEventType : byte
     {
         Removed,
         Added
