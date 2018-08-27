@@ -35,7 +35,8 @@ namespace DarkId.SmartGlass.Nano.Channels
         public override void OnServerHandshake(AudioServerHandshake handshake)
         {
             AvailableFormats = handshake.Formats;
-            SendClientHandshake(AvailableFormats[0]);
+            ActiveFormat = AvailableFormats[0];
+            SendClientHandshake(ActiveFormat);
             HandshakeDone = true;
         }
 

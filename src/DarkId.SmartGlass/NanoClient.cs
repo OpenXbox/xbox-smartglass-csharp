@@ -28,7 +28,7 @@ namespace DarkId.SmartGlass
             _channelManager = new Nano.Channels.ChannelManager(this);
             ControlHandshakeDone = false;
             SessionId = sessionId;
-            ConnectionId = (ushort)new Random().Next(0xFFFF);
+            ConnectionId = (ushort)new Random().Next(5000);
 
             // For testing
             _consumer = new Nano.Consumer.FileConsumer("nanodump");
@@ -38,6 +38,15 @@ namespace DarkId.SmartGlass
         {
             Debug.WriteLine("Starting NanoClient...");
             SendControlHandshake();
+
+            Task.Run(() =>
+            {
+                while (!_transport.udpDataActive)
+                {
+                    SendUdpHandshake();
+                    Thread.Sleep(250);
+                }
+            });
 
             Thread.Sleep(2000);
             StartStream();
@@ -49,16 +58,9 @@ namespace DarkId.SmartGlass
             {
                 Console.WriteLine("Audio or Video handshake not done yet, cant start stream");
             }
+
             _channelManager.Video.StartStream();
             _channelManager.Audio.StartStream();
-            Task.Run(() =>
-            {
-                while (!_transport.udpDataActive)
-                {
-                    SendUdpHandshake();
-                    Thread.Sleep(3000);
-                }
-            });
         }
 
         internal void MessageReceived(object sender, MessageReceivedEventArgs<RtpPacket> message)

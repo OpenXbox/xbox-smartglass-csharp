@@ -64,6 +64,7 @@ namespace DarkId.SmartGlass.Nano.Channels
                 throw new Exception($"Channel {ChannelId} is not open, can't be closed!");
             }
             SendChannelClose(flags);
+            IsOpen = false;
         }
 
         private void SendChannelOpen(byte[] flags)
