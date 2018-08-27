@@ -60,11 +60,11 @@ namespace DarkId.SmartGlass
         {
             using (var messageTransport = new MessageTransport())
             {
-                var requestMessage = new PowerOnMessage { LiveId = liveId };
+                var poweronRequestMessage = new PowerOnMessage { LiveId = liveId };
 
                 for (var i = 0; i < times; i++)
                 {
-                    await messageTransport.SendAsync(requestMessage);
+                    await messageTransport.SendAsync(poweronRequestMessage);
                     await Task.Delay(delay);
                 }
 
