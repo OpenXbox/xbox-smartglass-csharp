@@ -113,7 +113,7 @@ namespace DarkId.SmartGlass.Nano.Channels
 
         public uint GenerateInitialFrameId()
         {
-            FrameId = (uint)new Random().Next(0, 0xFFFF);
+            FrameId = (uint)new Random().Next(0, 500);
             return FrameId;
         }
 
