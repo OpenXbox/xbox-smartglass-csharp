@@ -56,9 +56,9 @@ namespace DarkId.SmartGlass
             }
         }
 
-        public static async Task<Device> PowerOnAsync(string addressOrHostname, string liveId, int times = 5, int delay = 1000)
+        public static async Task<Device> PowerOnAsync(string liveId, int times = 5, int delay = 1000)
         {
-            using (var messageTransport = new MessageTransport(addressOrHostname))
+            using (var messageTransport = new MessageTransport())
             {
                 var requestMessage = new PowerOnMessage { LiveId = liveId };
 
@@ -68,7 +68,14 @@ namespace DarkId.SmartGlass
                     await Task.Delay(delay);
                 }
 
-                return await PingAsync(addressOrHostname);
+                var presenceRequestMessage = new PresenceRequestMessage();
+
+                var response = await TaskExtensions.WithRetries(() =>
+                    messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
+                    () => messageTransport.SendAsync(presenceRequestMessage).Wait()),
+                        pingRetries);
+
+                return new Device(response);
             }
         }
 
