@@ -118,11 +118,9 @@ namespace DarkId.SmartGlass.Nano
             var writer = new BEWriter();
             message.Serialize(writer);
             byte[] serialized = writer.ToArray();
-            byte[] lengthPrefix = BitConverter.GetBytes((uint)serialized.Length);
-
             
-            var finalWriter = new BEWriter();
-            finalWriter.Write(lengthPrefix);
+            var finalWriter = new LEWriter();
+            finalWriter.Write((uint)serialized.Length);
             finalWriter.Write(serialized);
 
             byte[] prefixedSerialized = finalWriter.ToArray();
