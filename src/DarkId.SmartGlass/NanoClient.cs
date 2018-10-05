@@ -120,7 +120,7 @@ namespace DarkId.SmartGlass
 
         internal async void SendOnStreamingSocket(RtpPacket packet)
         {
-            packet.Header.ConnectionId = ConnectionId;
+            packet.Header.ConnectionId = RemoteConnectionId;
             await _transport.SendAsync(packet);
         }
 
