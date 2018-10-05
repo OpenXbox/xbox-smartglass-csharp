@@ -64,7 +64,7 @@ namespace DarkId.SmartGlass.Channels
                 () => _transport.SendAsync(startMessage));
 
             var initializingMessageTask = MessageExtensions.WaitForMessageAsync
-                <GamestreamStateInitializingMessage, BroadcastErrorMessage, BroadcastBaseMessage>(_transport, TimeSpan.FromSeconds(3));
+                <GamestreamStateInitializingMessage, BroadcastErrorMessage, BroadcastBaseMessage>(_transport, TimeSpan.FromSeconds(10));
 
             await Task.WhenAll(initializingMessageTask, startedMessageTask);
 
