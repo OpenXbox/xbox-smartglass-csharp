@@ -1,7 +1,7 @@
 ﻿using System;
 namespace DarkId.SmartGlass.Nano
 {
-    public enum RtpPayloadType
+    public enum RtpPayloadType : byte
     {
         Streamer = 0x23,
         Control = 0x60,

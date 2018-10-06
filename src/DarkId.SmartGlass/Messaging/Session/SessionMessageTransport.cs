@@ -5,6 +5,7 @@ using DarkId.SmartGlass.Common;
 using DarkId.SmartGlass.Messaging.Session.Messages;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace DarkId.SmartGlass.Messaging.Session
 {
@@ -39,6 +40,8 @@ namespace DarkId.SmartGlass.Messaging.Session
         private readonly MessageTransport _transport;
         private readonly uint _participantId;
 
+        private readonly FragmentMessageManager _fragment_manager;
+
         private uint _sequenceNumber;
 
         private uint _serverSequenceNumber;
@@ -56,6 +59,8 @@ namespace DarkId.SmartGlass.Messaging.Session
             _participantId = sessionInfo.ParticipantId;
 
             _transport.MessageReceived += TransportMessageReceived;
+
+            _fragment_manager = new FragmentMessageManager();
         }
 
         private void TransportMessageReceived(object sender, MessageReceivedEventArgs<IMessage> e)
@@ -96,6 +101,16 @@ namespace DarkId.SmartGlass.Messaging.Session
 
             _serverSequenceNumber = fragmentMessage.Header.SequenceNumber;
 
+            if (fragmentMessage.Header.IsFragment)
+            {
+                message = _fragment_manager.AssembleFragment(message, fragmentMessage.Header.SequenceNumber);
+                if (message == null)
+                {
+                    Debug.WriteLine($"FragmentMessage {message.Header.SessionMessageType} not ready yet");
+                    return;
+                }
+            }
+
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs<SessionMessageBase>(message));
         }
 
@@ -122,6 +137,10 @@ namespace DarkId.SmartGlass.Messaging.Session
             }
 
             var message = CreateFromMessageType(fragment.Header.SessionMessageType);
+            if (fragment.Header.IsFragment)
+            {
+                message = new FragmentMessage();
+            }
 
             logger.LogTrace($"Received {message.GetType().Name} message");
 

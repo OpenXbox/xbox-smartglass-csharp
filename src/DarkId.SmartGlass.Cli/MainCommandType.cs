@@ -10,6 +10,11 @@ namespace DarkId.SmartGlass.Cli
         Connect,
 
         [Command(
+            typeof(BroadcastCommand),
+            Description = "Connect and start a broadcast session.")]
+        Broadcast,
+
+        [Command(
             typeof(DiscoverCommand),
             Description = "Discover and list Xbox One consoles on the local network.")]
         Discover,

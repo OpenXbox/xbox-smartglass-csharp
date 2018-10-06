@@ -1,7 +1,7 @@
 ﻿using System;
 namespace DarkId.SmartGlass.Nano
 {
-    public enum AudioCodec
+    public enum AudioCodec : uint
     {
         Opus,
         AAC,

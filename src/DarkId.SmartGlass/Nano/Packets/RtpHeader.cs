@@ -1,7 +1,7 @@
 ﻿using System;
 using DarkId.SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Nano
+namespace DarkId.SmartGlass.Nano.Packets
 {
     internal class RtpHeader : ISerializable
     {
@@ -10,13 +10,26 @@ namespace DarkId.SmartGlass.Nano
         public bool Extension { get; set; }
         public int CsrcCount { get; set; }
         public bool Marker { get; set; }
-        public int PayloadType { get; set; }
+        public RtpPayloadType PayloadType { get; set; }
 
         public ushort SequenceNumber { get; set; }
         public uint Timestamp { get; set; }
         public ushort ConnectionId { get; set; }
         public ushort ChannelId { get; set; }
 
+        public RtpHeader()
+        {
+            Version = 2;
+            Padding = false;
+            Extension = false;
+            CsrcCount = 0;
+            Marker = false;
+            PayloadType = (RtpPayloadType)0;
+            SequenceNumber = 0;
+            Timestamp = 0;
+            ConnectionId = 0;
+            ChannelId = 0;
+        }
         public void Deserialize(BEReader reader)
         {
             var flags = reader.ReadUInt16();
@@ -26,7 +39,7 @@ namespace DarkId.SmartGlass.Nano
             Extension = (flags & 0x1000) != 0;
             CsrcCount = (flags & 0xF00) >> 8;
             Marker = (flags & 0x80) != 0;
-            PayloadType = flags & 0x7F;
+            PayloadType = (RtpPayloadType)((flags) & 0x7F);
 
             SequenceNumber = reader.ReadUInt16();
             Timestamp = reader.ReadUInt32();
@@ -43,7 +56,7 @@ namespace DarkId.SmartGlass.Nano
             flags |= (Extension ? 1 : 0) << 12;
             flags |= (CsrcCount & 0xF) << 8;
             flags |= (Marker ? 1 : 0) << 7;
-            flags |= PayloadType & 0x7F;
+            flags |= (byte)PayloadType & 0x7F;
 
             writer.Write((ushort)flags);
             writer.Write(SequenceNumber);
