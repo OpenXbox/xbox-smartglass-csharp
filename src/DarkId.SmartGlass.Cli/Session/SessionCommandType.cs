@@ -12,9 +12,6 @@ namespace DarkId.SmartGlass.Cli.Session
         [Command(typeof(MediaCommand))]
         Media,
 
-        [Command(typeof(StartBroadcast))]
-        Broadcast,
-
         [Command(typeof(PressCommand))]
         Press,
 

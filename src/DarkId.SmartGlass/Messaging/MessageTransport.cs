@@ -11,6 +11,7 @@ namespace DarkId.SmartGlass.Messaging
 {
     internal class MessageTransport : IDisposable, IMessageTransport<IMessage>
     {
+        private static IPAddress MULTICAST_ADDR = IPAddress.Parse("239.255.255.250");
         private static IMessage CreateFromMessageType(MessageType messageType)
         {
             var type = MessageTypeAttribute.GetTypeForMessageType(messageType);
@@ -111,6 +112,7 @@ namespace DarkId.SmartGlass.Messaging
             if (_addressOrHostname == null)
             {
                 await _client.SendAsync(serialized, serialized.Length, new IPEndPoint(IPAddress.Broadcast, 5050));
+                await _client.SendAsync(serialized, serialized.Length, new IPEndPoint(MULTICAST_ADDR, 5050));
             }
             else
             {

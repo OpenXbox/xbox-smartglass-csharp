@@ -1,7 +1,7 @@
 ﻿using System;
 namespace DarkId.SmartGlass.Nano
 {
-    public enum ChannelControlType
+    public enum ChannelControlType : uint
     {
         Create = 2,
         Open,

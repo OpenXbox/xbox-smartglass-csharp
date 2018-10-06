@@ -2,13 +2,13 @@
 namespace DarkId.SmartGlass.Nano
 {
     [Flags]
-    public enum VideoControlFlags
+    public enum VideoControlFlags : uint
     {
-        RequestKeyframe = 0x04,
-        StartStream = 0x08,
-        StopStream = 0x10,
-        QueueDepth = 0x20,
-        LostFrames = 0x40,
-        LastDisplayedFrame = 0x80
+        LastDisplayedFrame = 0x1,
+        LostFrames = 0x2,
+        QueueDepth = 0x4,
+        StopStream = 0x8,
+        StartStream = 0x10,
+        RequestKeyframe = 0x20
     }
 }

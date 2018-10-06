@@ -2,10 +2,10 @@
 namespace DarkId.SmartGlass.Nano
 {
     [Flags]
-    public enum AudioControlFlags
+    public enum AudioControlFlags : uint
     {
-        Reinitialize = 0x02,
-        StartStream = 0x08,
-        StopStream = 0x10
+        StopStream = 0x8,
+        StartStream = 0x10,
+        Reinitialize = 0x20
     }
 }
