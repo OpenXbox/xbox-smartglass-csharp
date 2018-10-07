@@ -5,7 +5,7 @@ using DarkId.SmartGlass.Nano;
 
 namespace DarkId.SmartGlass.Nano.Packets
 {
-    internal class VideoFormat : ISerializableLE
+    public class VideoFormat : ISerializableLE
     {
         public uint FPS { get; private set; }
         public uint Width { get; private set; }
@@ -35,7 +35,7 @@ namespace DarkId.SmartGlass.Nano.Packets
             BlueMask = blueMask;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             FPS = br.ReadUInt32();
             Width = br.ReadUInt32();
@@ -51,7 +51,7 @@ namespace DarkId.SmartGlass.Nano.Packets
             }
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write(FPS);
             bw.Write(Width);

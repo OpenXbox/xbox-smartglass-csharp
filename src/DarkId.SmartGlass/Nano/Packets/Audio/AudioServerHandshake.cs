@@ -36,7 +36,7 @@ namespace DarkId.SmartGlass.Nano.Packets
             bw.Write(ProtocolVersion);
             bw.Write(ReferenceTimestamp);
             bw.Write((uint)Formats.Length);
-            foreach (AudioFormat f in Formats)
+            foreach (ISerializableLE f in Formats)
             {
                 f.Serialize(bw);
             }

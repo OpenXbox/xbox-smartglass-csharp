@@ -25,13 +25,13 @@ namespace DarkId.SmartGlass.Nano.Packets
         public void Deserialize(LEReader br)
         {
             InitialFrameId = br.ReadUInt32();
-            RequestedFormat.Deserialize(br);
+            ((ISerializableLE)RequestedFormat).Deserialize(br);
         }
 
         public void Serialize(LEWriter bw)
         {
             bw.Write(InitialFrameId);
-            RequestedFormat.Serialize(bw);
+            ((ISerializableLE)RequestedFormat).Serialize(bw);
         }
     }
 }

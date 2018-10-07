@@ -6,7 +6,7 @@ using DarkId.SmartGlass.Nano;
 namespace DarkId.SmartGlass.Nano.Packets
 {
     [VideoPayloadType(VideoPayloadType.Data)]
-    internal class VideoData : ISerializableLE
+    public class VideoData : ISerializableLE
     {
         public uint Flags { get; private set; }
         public uint FrameId { get; private set; }
@@ -33,7 +33,7 @@ namespace DarkId.SmartGlass.Nano.Packets
             Data = data;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             Flags = br.ReadUInt32();
             FrameId = br.ReadUInt32();
@@ -44,7 +44,7 @@ namespace DarkId.SmartGlass.Nano.Packets
             Data = br.ReadBlobUInt32();
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write(Flags);
             bw.Write(FrameId);

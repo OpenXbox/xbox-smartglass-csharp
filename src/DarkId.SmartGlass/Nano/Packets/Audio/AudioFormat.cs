@@ -5,7 +5,7 @@ using DarkId.SmartGlass.Nano;
 
 namespace DarkId.SmartGlass.Nano.Packets
 {
-    internal class AudioFormat : ISerializableLE
+    public class AudioFormat : ISerializableLE
     {
         public uint Channels { get; private set; }
         public uint SampleRate { get; private set; }
@@ -27,7 +27,7 @@ namespace DarkId.SmartGlass.Nano.Packets
             SampleType = sampleType;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             Channels = br.ReadUInt32();
             SampleRate = br.ReadUInt32();
@@ -39,7 +39,7 @@ namespace DarkId.SmartGlass.Nano.Packets
             }
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write(Channels);
             bw.Write(SampleRate);

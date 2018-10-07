@@ -21,7 +21,7 @@ namespace DarkId.SmartGlass
         public bool ControlHandshakeDone { get; internal set; }
 
         public NanoClient(string address, int tcpPort, int udpPort,
-                          Guid sessionId)
+                          Guid sessionId, Nano.Consumer.IConsumer consumer = null)
         {
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
             _transport.MessageReceived += MessageReceived;
@@ -31,9 +31,11 @@ namespace DarkId.SmartGlass
             ConnectionId = (ushort)new Random().Next(5000);
 
             // For testing
-            _consumer = new Nano.Consumer.FileConsumer("nanodump");
+            // TODO: Remove file consumer as a built-in default.
+            _consumer = consumer ?? new Nano.Consumer.FileConsumer("nanodump");
         }
 
+        // TODO: Need to improve the robustness of this (async await on both handshakes, create client with an async static method?)
         public void Initialize()
         {
             Debug.WriteLine("Starting NanoClient...");
@@ -67,7 +69,12 @@ namespace DarkId.SmartGlass
         {
             var packet = message.Message;
             RtpPayloadType ptype = packet.Header.PayloadType;
-            Debug.WriteLine($"Received {ptype}");
+
+            if (ptype != RtpPayloadType.Streamer)
+            {
+                Debug.WriteLine($"Received {ptype}");
+            }
+
             switch (ptype)
             {
                 case RtpPayloadType.Control:
