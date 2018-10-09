@@ -57,6 +57,7 @@
     <Compile Include="AudioEngineManager.cs" />
     <Compile Include="PcmAudioBufferDataConsumer.cs" />
     <Compile Include="IAVFoundationAudioDataConsumer.cs" />
+    <Compile Include="VideoEngineManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DarkId.SmartGlass\DarkId.SmartGlass.csproj">

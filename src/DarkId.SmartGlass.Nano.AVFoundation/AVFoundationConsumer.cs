@@ -9,6 +9,7 @@ namespace DarkId.SmartGlass.Nano.AVFoundation
     public class AVFoundationConsumer : IConsumer, IDisposable
     {
         AudioEngineManager _audioEngineManager;
+        VideoEngineManager _videoEngineManager;
 
         public void ConsumeAudioData(AudioData data)
         {
@@ -29,12 +30,19 @@ namespace DarkId.SmartGlass.Nano.AVFoundation
 
         public void ConsumeVideoData(VideoData data)
         {
-            // throw new NotImplementedException();
+            _videoEngineManager.ConsumeVideoData(data);
         }
 
         public void ConsumeVideoFormat(VideoFormat format)
         {
-            // throw new NotImplementedException();
+            try
+            {
+                _videoEngineManager = new VideoEngineManager(format);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
         }
 
         public void Dispose()
@@ -42,6 +50,10 @@ namespace DarkId.SmartGlass.Nano.AVFoundation
             if (_audioEngineManager != null)
             {
                 _audioEngineManager.Dispose();
+            }
+            if (_videoEngineManager != null)
+            {
+                _videoEngineManager.Dispose();
             }
         }
     }
