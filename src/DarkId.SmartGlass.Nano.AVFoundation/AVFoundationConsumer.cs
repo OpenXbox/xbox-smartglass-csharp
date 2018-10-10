@@ -8,8 +8,14 @@ namespace DarkId.SmartGlass.Nano.AVFoundation
 {
     public class AVFoundationConsumer : IConsumer, IDisposable
     {
+        VideoAssembler _videoAssembler;
         AudioEngineManager _audioEngineManager;
         VideoEngineManager _videoEngineManager;
+
+        public AVFoundationConsumer()
+        {
+            _videoAssembler = new VideoAssembler();
+        }
 
         public void ConsumeAudioData(AudioData data)
         {
@@ -30,7 +36,11 @@ namespace DarkId.SmartGlass.Nano.AVFoundation
 
         public void ConsumeVideoData(VideoData data)
         {
-            _videoEngineManager.ConsumeVideoData(data);
+            byte[] frameData = _videoAssembler.AssembleVideoFrame(data);
+            if (frameData != null)
+            {
+                _videoEngineManager.ConsumeVideoData(data.Timestamp, frameData);
+            }
         }
 
         public void ConsumeVideoFormat(VideoFormat format)

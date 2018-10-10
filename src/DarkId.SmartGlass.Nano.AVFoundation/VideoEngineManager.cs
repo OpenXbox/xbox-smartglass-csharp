@@ -60,12 +60,11 @@ namespace DarkId.SmartGlass.Nano.AVFoundation
             return 0;
         }
 
-        public int ConsumeVideoData(VideoData data)
+        public int ConsumeVideoData(long timestamp, byte[] frameData)
         {
             // Source: https://mobisoftinfotech.com/resources/mguide/h264-encode-decode-using-videotoolbox/
 
-            int frameSize = data.Data.Length;
-            byte[] frameData = data.Data;
+            int frameSize = frameData.Length;
 
             // I know how my H.264 data source's NALUs looks like so I know start code index is always 0.
             // if you don't know where it starts, you can use a for loop similar to how I find the 2nd and 3rd start codes
