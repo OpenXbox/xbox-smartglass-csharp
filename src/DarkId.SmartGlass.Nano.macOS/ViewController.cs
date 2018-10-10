@@ -28,6 +28,11 @@ namespace DarkId.SmartGlass.Nano.macOS
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
+        public override void ViewDidAppear()
+        {
+            base.ViewDidAppear();
+        }
+
         public async Task CreateClient()
         {
             Debug.WriteLine($"Connecting to console...");
