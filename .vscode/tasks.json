@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/src/DarkId.SmartGlass.Cli/DarkId.SmartGlass.Cli.csproj"
+                "${workspaceRoot}/DarkId.SmartGlass.Cli/DarkId.SmartGlass.Cli.csproj"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
