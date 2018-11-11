@@ -1,17 +1,19 @@
 {
-   // Use IntelliSense to find out which attributes exist for C# debugging
-   // Use hover for the description of the existing attributes
-   // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-   "version": "0.2.0",
-   "configurations": [
-        {
+    // Use IntelliSense to find out which attributes exist for C# debugging
+    // Use hover for the description of the existing attributes
+    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+    "version": "0.2.0",
+    "configurations": [{
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/DarkId.SmartGlass.Cli/bin/Debug/netcoreapp2.0/xbsg.dll",
-            "args": ["connect", "192.168.2.26"],
-            "cwd": "${workspaceRoot}/src/DarkId.SmartGlass.Cli",
+            "preLaunchTask": "Build Cli",
+            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp2.0/xbsg.dll",
+            "args": [
+                "connect",
+                "10.0.0.241"
+            ],
+            "cwd": "${workspaceRoot}/SmartGlass.Cli",
             "console": "integratedTerminal",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
@@ -20,15 +22,15 @@
             "name": ".NET Core Launch (pcap)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/DarkId.SmartGlass.Cli/bin/Debug/netcoreapp2.0/xbsg.dll",
+            "preLaunchTask": "Build Cli",
+            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp2.0/xbsg.dll",
             "args": [
                 "pcap",
                 "${workspaceRoot}/../../Desktop/testpcap.pcap",
                 "144127463621d5e459fec0c86c44f1d6bfd5a01f08f20195de609224386d1d0a419c09170406c58c6093ddbd5d5ba91be30f0eee8222189df52a63412ed0e7f9",
                 "56179"
             ],
-            "cwd": "${workspaceRoot}/src/DarkId.SmartGlass.Cli",
+            "cwd": "${workspaceRoot}/SmartGlass.Cli",
             "console": "integratedTerminal",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
