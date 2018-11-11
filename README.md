@@ -1,4 +1,4 @@
-# DarkId.SmartGlass [![Build Status](https://travis-ci.org/joelday/DarkId.SmartGlass.svg?branch=master)](https://travis-ci.org/joelday/DarkId.SmartGlass)
+# SmartGlass [![Build Status](https://travis-ci.org/joelday/SmartGlass.svg?branch=master)](https://travis-ci.org/joelday/SmartGlass)
 
 ## Xbox One SmartGlass client library for .NET
 
