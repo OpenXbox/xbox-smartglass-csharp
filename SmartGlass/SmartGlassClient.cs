@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Messaging;
-using DarkId.SmartGlass.Messaging.Connection;
-using DarkId.SmartGlass.Messaging.Session;
-using DarkId.SmartGlass.Messaging.Session.Messages;
-using DarkId.SmartGlass.Connection;
-using DarkId.SmartGlass.Channels;
+using SmartGlass.Common;
+using SmartGlass.Messaging;
+using SmartGlass.Messaging.Connection;
+using SmartGlass.Messaging.Session;
+using SmartGlass.Messaging.Session.Messages;
+using SmartGlass.Connection;
+using SmartGlass.Channels;
 
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
     public class SmartGlassClient : IDisposable
     {

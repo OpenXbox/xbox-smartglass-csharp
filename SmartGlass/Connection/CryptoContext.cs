@@ -11,7 +11,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 
-namespace DarkId.SmartGlass.Connection
+namespace SmartGlass.Connection
 {
     public class CryptoContext
     {

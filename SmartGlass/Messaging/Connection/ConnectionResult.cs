@@ -1,4 +1,4 @@
-namespace DarkId.SmartGlass.Messaging.Connection
+namespace SmartGlass.Messaging.Connection
 {
     enum ConnectionResult : ushort
     {

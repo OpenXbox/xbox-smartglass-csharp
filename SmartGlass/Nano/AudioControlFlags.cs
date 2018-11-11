@@ -1,5 +1,5 @@
 ﻿using System;
-namespace DarkId.SmartGlass.Nano
+namespace SmartGlass.Nano
 {
     [Flags]
     public enum AudioControlFlags : uint

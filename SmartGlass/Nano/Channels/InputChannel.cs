@@ -1,8 +1,8 @@
 using System;
-using DarkId.SmartGlass.Nano;
-using DarkId.SmartGlass.Nano.Packets;
+using SmartGlass.Nano;
+using SmartGlass.Nano.Packets;
 
-namespace DarkId.SmartGlass.Nano.Channels
+namespace SmartGlass.Nano.Channels
 {
     internal class InputChannel : InputChannelBase
     {

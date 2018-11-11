@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DarkId.SmartGlass.Channels.Broadcast
+namespace SmartGlass.Channels.Broadcast
 {
     enum GamestreamStateMessageType
     {

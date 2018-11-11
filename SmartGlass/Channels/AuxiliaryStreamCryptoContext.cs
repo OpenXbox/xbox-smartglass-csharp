@@ -1,11 +1,11 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 
-namespace DarkId.SmartGlass.Channels
+namespace SmartGlass.Channels
 {
     internal class AuxiliaryStreamCryptoContext
     {

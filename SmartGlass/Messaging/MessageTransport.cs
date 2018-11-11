@@ -4,10 +4,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Connection;
+using SmartGlass.Common;
+using SmartGlass.Connection;
 
-namespace DarkId.SmartGlass.Messaging
+namespace SmartGlass.Messaging
 {
     internal class MessageTransport : IDisposable, IMessageTransport<IMessage>
     {

@@ -2,11 +2,11 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
-using DarkId.SmartGlass.Analysis;
+using SmartGlass.Analysis;
 using NClap.Metadata;
 using Tx.Network;
 
-namespace DarkId.SmartGlass.Cli
+namespace SmartGlass.Cli
 {
     internal class PcapCommand : SynchronousCommand
     {

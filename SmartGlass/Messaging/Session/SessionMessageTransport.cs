@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Messaging.Session.Messages;
+using SmartGlass.Common;
+using SmartGlass.Messaging.Session.Messages;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace DarkId.SmartGlass.Messaging.Session
+namespace SmartGlass.Messaging.Session
 {
     internal class SessionMessageTransport : IDisposable, IMessageTransport<SessionMessageBase>
     {

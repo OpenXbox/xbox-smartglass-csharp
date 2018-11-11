@@ -1,9 +1,9 @@
 ﻿using System;
-using DarkId.SmartGlass.Messaging.Session;
+using SmartGlass.Messaging.Session;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DarkId.SmartGlass.Channels.Broadcast.Messages
+namespace SmartGlass.Channels.Broadcast.Messages
 {
     [GamestreamStateMessageType(GamestreamStateMessageType.Started)]
     class GamestreamStateStartedMessage : GamestreamStateBaseMessage

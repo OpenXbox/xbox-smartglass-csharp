@@ -1,5 +1,5 @@
 ﻿using System;
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
     public enum PairedIdentityState : ushort
     {

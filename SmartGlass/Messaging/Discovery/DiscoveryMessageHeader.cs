@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Discovery
+namespace SmartGlass.Messaging.Discovery
 {
     internal class DiscoveryMessageHeader : IMessageHeader
     {

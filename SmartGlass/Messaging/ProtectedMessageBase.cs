@@ -1,9 +1,9 @@
 using System.IO;
 using System.Linq;
-using DarkId.SmartGlass.Connection;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Connection;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging
+namespace SmartGlass.Messaging
 {
     internal abstract class ProtectedMessageBase<THeader> : MessageBase<THeader>, ICryptoMessage
         where THeader : IProtectedMessageHeader, new()

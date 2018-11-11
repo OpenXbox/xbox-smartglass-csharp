@@ -2,10 +2,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Nano.Packets;
+using SmartGlass.Common;
+using SmartGlass.Nano.Packets;
 
-namespace DarkId.SmartGlass.Nano.Channels
+namespace SmartGlass.Nano.Channels
 {
     internal abstract class StreamingChannelBase
     {

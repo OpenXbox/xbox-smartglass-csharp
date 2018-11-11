@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NClap.Metadata;
 
-namespace DarkId.SmartGlass.Cli
+namespace SmartGlass.Cli
 {
     internal class DiscoverCommand : Command
     {

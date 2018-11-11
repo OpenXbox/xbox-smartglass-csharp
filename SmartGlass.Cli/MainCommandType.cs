@@ -1,6 +1,6 @@
 using NClap.Metadata;
 
-namespace DarkId.SmartGlass.Cli
+namespace SmartGlass.Cli
 {
     internal enum MainCommandType
     {

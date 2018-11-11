@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging
+namespace SmartGlass.Messaging
 {
     interface IMessageHeader : ISerializable
     {

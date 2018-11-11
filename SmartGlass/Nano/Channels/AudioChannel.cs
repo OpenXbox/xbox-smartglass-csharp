@@ -1,9 +1,9 @@
 using System;
 using System.Diagnostics;
-using DarkId.SmartGlass.Nano;
-using DarkId.SmartGlass.Nano.Packets;
+using SmartGlass.Nano;
+using SmartGlass.Nano.Packets;
 
-namespace DarkId.SmartGlass.Nano.Channels
+namespace SmartGlass.Nano.Channels
 {
     internal class AudioChannel : AudioChannelBase
     {

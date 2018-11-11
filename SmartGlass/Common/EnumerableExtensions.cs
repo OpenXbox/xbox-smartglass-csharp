@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     internal static class EnumerableExtensions
     {

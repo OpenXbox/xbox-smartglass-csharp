@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Cli.Session;
+using SmartGlass.Cli.Session;
 using NClap.Metadata;
 using NClap.Repl;
 
-namespace DarkId.SmartGlass.Cli
+namespace SmartGlass.Cli
 {
     internal class ConnectCommand : Command
     {

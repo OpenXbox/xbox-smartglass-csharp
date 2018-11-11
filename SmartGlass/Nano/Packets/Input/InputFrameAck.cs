@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Nano;
+using SmartGlass.Common;
+using SmartGlass.Nano;
 
-namespace DarkId.SmartGlass.Nano.Packets
+namespace SmartGlass.Nano.Packets
 {
     [InputPayloadType(InputPayloadType.FrameAck)]
     internal class InputFrameAck : ISerializableLE

@@ -6,7 +6,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DarkId.SmartGlass\DarkId.SmartGlass.csproj" />
+    <ProjectReference Include="..\SmartGlass\SmartGlass.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NClap" Version="2.3.4" />

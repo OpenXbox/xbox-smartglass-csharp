@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 
-namespace DarkId.SmartGlass.Cli
+namespace SmartGlass.Cli
 {
     internal static class BinaryExtensions
     {

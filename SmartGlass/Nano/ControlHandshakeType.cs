@@ -1,5 +1,5 @@
 ﻿using System;
-namespace DarkId.SmartGlass.Nano
+namespace SmartGlass.Nano
 {
     public enum ControlHandshakeType : byte
     {

@@ -1,7 +1,7 @@
 using System;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Connection
+namespace SmartGlass.Messaging.Connection
 {
     [MessageType(MessageType.ConnectRequest)]
     internal class ConnectRequestMessage : ProtectedMessageBase<ConnectionMessageHeader>

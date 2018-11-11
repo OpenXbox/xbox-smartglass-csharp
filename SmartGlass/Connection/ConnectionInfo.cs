@@ -1,4 +1,4 @@
-namespace DarkId.SmartGlass.Connection
+namespace SmartGlass.Connection
 {
     internal class ConnectionInfo
     {

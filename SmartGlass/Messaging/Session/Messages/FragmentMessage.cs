@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session.Messages
+namespace SmartGlass.Messaging.Session.Messages
 {
     // Determined by IsFragment-flag in SessionFragmentMessageHeader
     // Data content depends on SessionMessageType 

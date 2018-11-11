@@ -1,9 +1,9 @@
 using System;
 using System.Net;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 using Newtonsoft.Json;
 
-namespace DarkId.SmartGlass.Messaging
+namespace SmartGlass.Messaging
 {
     abstract class MessageBase<THeader> : IMessage<THeader>
         where THeader : IMessageHeader, new()

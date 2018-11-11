@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkId.SmartGlass.Cli", "DarkId.SmartGlass.Cli\DarkId.SmartGlass.Cli.csproj", "{0513353D-F436-4E1C-A6AB-043D01CB39A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Cli", "SmartGlass.Cli\SmartGlass.Cli.csproj", "{0513353D-F436-4E1C-A6AB-043D01CB39A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DarkId.SmartGlass", "DarkId.SmartGlass\DarkId.SmartGlass.csproj", "{B100F975-94C9-487A-BDDE-FF9A858E1756}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass", "SmartGlass\SmartGlass.csproj", "{B100F975-94C9-487A-BDDE-FF9A858E1756}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

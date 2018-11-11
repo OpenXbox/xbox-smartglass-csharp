@@ -1,10 +1,10 @@
 using System;
-using DarkId.SmartGlass.Channels.Broadcast.Messages;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Channels.Broadcast.Messages;
+using SmartGlass.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace DarkId.SmartGlass.Channels.Broadcast
+namespace SmartGlass.Channels.Broadcast
 {
     class BroadcastMessageJsonConverter : JsonConverter
     {

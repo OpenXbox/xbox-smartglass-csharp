@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session.Messages
+namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.MediaState)]
     internal class MediaStateMessage : SessionMessageBase

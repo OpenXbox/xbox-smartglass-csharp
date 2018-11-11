@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
 
     public class MediaState

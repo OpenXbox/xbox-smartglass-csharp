@@ -1,6 +1,6 @@
 using System;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     public interface IConvertToException
     {

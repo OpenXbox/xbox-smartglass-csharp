@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     internal class DisposableAsyncLazy<T> : AsyncLazy<T>, IDisposable
         where T : IDisposable

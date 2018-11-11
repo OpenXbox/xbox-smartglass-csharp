@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Messaging.Session.Messages;
+using SmartGlass.Messaging.Session.Messages;
 
-namespace DarkId.SmartGlass.Channels
+namespace SmartGlass.Channels
 {
     public class MediaChannel : IDisposable
     {

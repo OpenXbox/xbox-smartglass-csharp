@@ -1,4 +1,4 @@
-namespace DarkId.SmartGlass.Analysis
+namespace SmartGlass.Analysis
 {
     public class MessageInfo
     {

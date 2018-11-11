@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 using Microsoft.Extensions.Logging;
 
-namespace DarkId.SmartGlass.Channels
+namespace SmartGlass.Channels
 {
     // TODO: Connection state events.
 

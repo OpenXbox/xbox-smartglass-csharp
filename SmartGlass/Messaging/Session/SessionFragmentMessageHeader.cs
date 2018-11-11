@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session
+namespace SmartGlass.Messaging.Session
 {
     internal class SessionFragmentMessageHeader : SessionMessageHeader, IMessageHeader
     {

@@ -1,6 +1,6 @@
-﻿using DarkId.SmartGlass.Common;
+﻿using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Power
+namespace SmartGlass.Messaging.Power
 {
     [MessageType(MessageType.PowerOn)]
     internal class PowerOnMessage : MessageBase<PowerOnMessageHeader>

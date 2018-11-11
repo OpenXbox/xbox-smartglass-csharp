@@ -1,6 +1,6 @@
 using System;
 
-namespace DarkId.SmartGlass.Channels
+namespace SmartGlass.Channels
 {
     public class AuxiliaryStreamDataReceivedEventArgs : EventArgs
     {

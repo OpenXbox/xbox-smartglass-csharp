@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using DarkId.SmartGlass.Messaging.Session.Messages;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Messaging.Session;
-using DarkId.SmartGlass.Channels.Broadcast;
-using DarkId.SmartGlass.Channels.Broadcast.Messages;
+using SmartGlass.Messaging.Session.Messages;
+using SmartGlass.Common;
+using SmartGlass.Messaging.Session;
+using SmartGlass.Channels.Broadcast;
+using SmartGlass.Channels.Broadcast.Messages;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
-namespace DarkId.SmartGlass.Channels
+namespace SmartGlass.Channels
 {
     public class BroadcastChannel : IDisposable
     {

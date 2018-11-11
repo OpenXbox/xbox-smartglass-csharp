@@ -1,13 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Messaging.Session;
-using DarkId.SmartGlass.Messaging.Session.Messages;
+using SmartGlass.Common;
+using SmartGlass.Messaging.Session;
+using SmartGlass.Messaging.Session.Messages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DarkId.SmartGlass.Channels
+namespace SmartGlass.Channels
 {
     class JsonMessageTransport<TMessage> : IDisposable, IMessageTransport<TMessage>
     {

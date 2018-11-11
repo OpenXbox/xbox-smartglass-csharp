@@ -1,9 +1,9 @@
 using System;
-using DarkId.SmartGlass.Connection;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Connection;
+using SmartGlass.Common;
 using Org.BouncyCastle.X509;
 
-namespace DarkId.SmartGlass.Messaging.Discovery
+namespace SmartGlass.Messaging.Discovery
 {
     [MessageType(MessageType.PresenceResponse)]
     internal class PresenceResponseMessage : MessageBase<DiscoveryMessageHeader>

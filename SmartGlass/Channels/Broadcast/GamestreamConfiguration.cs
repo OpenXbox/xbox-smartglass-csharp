@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DarkId.SmartGlass.Channels.Broadcast
+namespace SmartGlass.Channels.Broadcast
 {
     class GamestreamConfiguration
     {

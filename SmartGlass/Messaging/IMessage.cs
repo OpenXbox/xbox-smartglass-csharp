@@ -1,8 +1,8 @@
 using System;
 using System.Net;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging
+namespace SmartGlass.Messaging
 {
     interface IMessage<THeader> : IMessage where THeader : IMessageHeader
     {

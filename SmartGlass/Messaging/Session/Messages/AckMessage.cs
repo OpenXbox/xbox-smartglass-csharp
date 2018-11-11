@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session.Messages
+namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Ack)]
     internal class AckMessage : SessionMessageBase

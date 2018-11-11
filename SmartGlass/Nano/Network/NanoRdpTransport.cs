@@ -5,10 +5,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Nano;
+using SmartGlass.Common;
+using SmartGlass.Nano;
 
-namespace DarkId.SmartGlass.Nano
+namespace SmartGlass.Nano
 {
     internal class NanoRdpTransport : IDisposable, IMessageTransport<RtpPacket>
     {

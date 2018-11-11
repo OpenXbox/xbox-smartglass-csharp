@@ -1,10 +1,10 @@
 using System;
 using System.IO;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Nano;
-using DarkId.SmartGlass.Nano.Packets;
+using SmartGlass.Common;
+using SmartGlass.Nano;
+using SmartGlass.Nano.Packets;
 
-namespace DarkId.SmartGlass.Nano
+namespace SmartGlass.Nano
 {
     internal class RtpPacket : ISerializable
     {

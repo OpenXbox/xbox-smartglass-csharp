@@ -1,4 +1,4 @@
-namespace DarkId.SmartGlass.Messaging.Session
+namespace SmartGlass.Messaging.Session
 {
     internal class SessionInfo
     {

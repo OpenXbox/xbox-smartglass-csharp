@@ -1,6 +1,6 @@
 using System;
 
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
     public class SmartGlassException : Exception
     {

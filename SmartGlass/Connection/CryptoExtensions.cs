@@ -4,7 +4,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.X509;
 
-namespace DarkId.SmartGlass.Connection
+namespace SmartGlass.Connection
 {
     internal static class CryptoExtensions
     {

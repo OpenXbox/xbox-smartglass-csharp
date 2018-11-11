@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Connection
+namespace SmartGlass.Messaging.Connection
 {
     internal class ConnectionMessageHeader : IProtectedMessageHeader
     {

@@ -1,10 +1,10 @@
 ﻿using System;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Messaging.Session;
+using SmartGlass.Common;
+using SmartGlass.Messaging.Session;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DarkId.SmartGlass.Channels.Broadcast.Messages
+namespace SmartGlass.Channels.Broadcast.Messages
 {
     [BroadcastMessageType(BroadcastMessageType.GamestreamError)]
     class BroadcastErrorMessage : BroadcastBaseMessage, IConvertToException

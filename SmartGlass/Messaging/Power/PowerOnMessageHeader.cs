@@ -1,6 +1,6 @@
-﻿using DarkId.SmartGlass.Common;
+﻿using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Power
+namespace SmartGlass.Messaging.Power
 {
     internal class PowerOnMessageHeader : IMessageHeader
     {

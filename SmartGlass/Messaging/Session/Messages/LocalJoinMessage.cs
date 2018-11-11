@@ -1,7 +1,7 @@
 using System;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session.Messages
+namespace SmartGlass.Messaging.Session.Messages
 {
     // TODO: Allow client to specify values.
     [SessionMessageType(SessionMessageType.LocalJoin)]

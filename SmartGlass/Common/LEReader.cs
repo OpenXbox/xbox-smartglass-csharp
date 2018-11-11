@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     internal class LEReader : BinaryReader
     {

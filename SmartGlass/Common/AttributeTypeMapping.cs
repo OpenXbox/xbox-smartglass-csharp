@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     internal class AttributeTypeMapping<T, TKey> where T : Attribute
     {

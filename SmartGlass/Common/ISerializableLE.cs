@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     interface ISerializableLE
     {

@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Nano;
+using SmartGlass.Common;
+using SmartGlass.Nano;
 
-namespace DarkId.SmartGlass.Nano.Packets
+namespace SmartGlass.Nano.Packets
 {
     [VideoPayloadType(VideoPayloadType.ClientHandshake)]
     internal class VideoClientHandshake : ISerializableLE

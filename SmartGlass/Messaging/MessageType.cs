@@ -1,4 +1,4 @@
-namespace DarkId.SmartGlass.Messaging
+namespace SmartGlass.Messaging
 {
     enum MessageType : ushort
     {

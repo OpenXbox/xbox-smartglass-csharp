@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     internal static class MessageExtensions
     {

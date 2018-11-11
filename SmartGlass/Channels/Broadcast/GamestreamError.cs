@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DarkId.SmartGlass.Channels.Broadcast.Messages
+namespace SmartGlass.Channels.Broadcast.Messages
 {
     public enum GamestreamError
     {

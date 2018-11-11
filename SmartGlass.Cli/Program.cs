@@ -1,6 +1,6 @@
 ﻿using NClap;
 
-namespace DarkId.SmartGlass.Cli
+namespace SmartGlass.Cli
 {
     internal class Program
     {

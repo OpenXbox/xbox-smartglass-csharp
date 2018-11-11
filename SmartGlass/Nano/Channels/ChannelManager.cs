@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DarkId.SmartGlass.Nano;
+using SmartGlass.Nano;
 
-namespace DarkId.SmartGlass.Nano.Channels
+namespace SmartGlass.Nano.Channels
 {
     internal class ChannelManager
     {

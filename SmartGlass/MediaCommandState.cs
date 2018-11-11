@@ -1,4 +1,4 @@
-﻿namespace DarkId.SmartGlass
+﻿namespace SmartGlass
 {
     public struct MediaCommandState
     {

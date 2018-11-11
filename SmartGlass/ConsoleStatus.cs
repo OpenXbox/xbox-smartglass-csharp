@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
     public class ConsoleStatus
     {

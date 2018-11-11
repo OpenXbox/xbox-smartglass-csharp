@@ -5,10 +5,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Channels;
+using SmartGlass.Channels;
 using NClap.Metadata;
 
-namespace DarkId.SmartGlass.Cli.Session
+namespace SmartGlass.Cli.Session
 {
     internal class TitleChannelCommand : Command
     {

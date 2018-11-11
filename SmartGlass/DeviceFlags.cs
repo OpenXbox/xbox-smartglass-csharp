@@ -1,6 +1,6 @@
 using System;
 
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
     [Flags]
     public enum DeviceFlags

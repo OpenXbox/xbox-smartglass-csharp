@@ -1,6 +1,6 @@
 using NClap.Metadata;
 
-namespace DarkId.SmartGlass.Cli.Session
+namespace SmartGlass.Cli.Session
 {
     internal enum SessionCommandType
     {

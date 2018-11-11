@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using DarkId.SmartGlass.Nano.Packets;
+using SmartGlass.Nano.Packets;
 
-namespace DarkId.SmartGlass.Nano.Consumer
+namespace SmartGlass.Nano.Consumer
 {
     public class FileConsumer : IConsumer, IDisposable
     {

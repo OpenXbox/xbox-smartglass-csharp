@@ -2,10 +2,10 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Nano;
+using SmartGlass.Common;
+using SmartGlass.Nano;
 
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
     public class NanoClient : IDisposable
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     internal class MessageReceivedEventArgs<TMessage> : EventArgs
     {

@@ -1,8 +1,8 @@
 using System;
 using System.Net.Sockets;
-using DarkId.SmartGlass.Channels;
+using SmartGlass.Channels;
 
-namespace DarkId.SmartGlass.Channels.Broadcast
+namespace SmartGlass.Channels.Broadcast
 {
     // TODO: Error events.
     public class GamestreamSession

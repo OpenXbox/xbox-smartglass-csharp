@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Discovery
+namespace SmartGlass.Messaging.Discovery
 {
     [MessageType(MessageType.PresenceRequest)]
     internal class PresenceRequestMessage : MessageBase<DiscoveryMessageHeader>

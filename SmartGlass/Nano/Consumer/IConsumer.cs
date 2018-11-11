@@ -1,7 +1,7 @@
 using System;
-using DarkId.SmartGlass.Nano.Packets;
+using SmartGlass.Nano.Packets;
 
-namespace DarkId.SmartGlass.Nano.Consumer
+namespace SmartGlass.Nano.Consumer
 {
     internal interface IConsumer
     {

@@ -1,10 +1,10 @@
 using System;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Connection;
-using DarkId.SmartGlass.Messaging.Session;
-using DarkId.SmartGlass.Messaging.Session.Messages;
+using SmartGlass.Common;
+using SmartGlass.Connection;
+using SmartGlass.Messaging.Session;
+using SmartGlass.Messaging.Session.Messages;
 
-namespace DarkId.SmartGlass.Analysis
+namespace SmartGlass.Analysis
 {
     public class MessageAnalyzer
     {

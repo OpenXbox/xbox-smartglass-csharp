@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session.Messages
+namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.PowerOff)]
     internal class PowerOffMessage : SessionMessageBase

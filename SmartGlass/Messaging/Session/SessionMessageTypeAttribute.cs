@@ -1,7 +1,7 @@
 using System;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Messaging.Session
+namespace SmartGlass.Messaging.Session
 {
     [AttributeUsage(
         AttributeTargets.Class,

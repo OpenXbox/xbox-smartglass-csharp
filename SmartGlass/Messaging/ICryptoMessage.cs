@@ -1,6 +1,6 @@
-using DarkId.SmartGlass.Connection;
+using SmartGlass.Connection;
 
-namespace DarkId.SmartGlass.Messaging
+namespace SmartGlass.Messaging
 {
     interface ICryptoMessage
     {

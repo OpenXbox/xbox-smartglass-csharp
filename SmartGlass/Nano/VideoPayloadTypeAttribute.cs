@@ -1,7 +1,7 @@
 using System;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Nano
+namespace SmartGlass.Nano
 {
     [AttributeUsage(
         AttributeTargets.Class,

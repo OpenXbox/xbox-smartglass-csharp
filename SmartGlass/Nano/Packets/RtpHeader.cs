@@ -1,7 +1,7 @@
 ﻿using System;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Common;
 
-namespace DarkId.SmartGlass.Nano.Packets
+namespace SmartGlass.Nano.Packets
 {
     internal class RtpHeader : ISerializable
     {

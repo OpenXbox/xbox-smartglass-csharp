@@ -1,7 +1,7 @@
 using System;
-using DarkId.SmartGlass.Nano.Packets;
+using SmartGlass.Nano.Packets;
 
-namespace DarkId.SmartGlass.Nano.Channels
+namespace SmartGlass.Nano.Channels
 {
     internal interface IStreamingChannel
     {

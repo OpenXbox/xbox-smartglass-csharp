@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Text;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Nano;
+using SmartGlass.Common;
+using SmartGlass.Nano;
 
-namespace DarkId.SmartGlass.Nano.Packets
+namespace SmartGlass.Nano.Packets
 {
     [ChannelControlType(ChannelControlType.Create)]
     internal class ChannelCreate : ISerializableLE

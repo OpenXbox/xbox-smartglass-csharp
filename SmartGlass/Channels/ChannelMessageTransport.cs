@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Messaging.Session;
-using DarkId.SmartGlass.Messaging.Session.Messages;
+using SmartGlass.Common;
+using SmartGlass.Messaging.Session;
+using SmartGlass.Messaging.Session.Messages;
 
-namespace DarkId.SmartGlass.Channels
+namespace SmartGlass.Channels
 {
     internal class ChannelMessageTransport : IDisposable, IMessageTransport<SessionMessageBase>
     {

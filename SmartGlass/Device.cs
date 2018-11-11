@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DarkId.SmartGlass.Common;
-using DarkId.SmartGlass.Messaging;
-using DarkId.SmartGlass.Messaging.Discovery;
-using DarkId.SmartGlass.Messaging.Power;
+using SmartGlass.Common;
+using SmartGlass.Messaging;
+using SmartGlass.Messaging.Discovery;
+using SmartGlass.Messaging.Power;
 using Org.BouncyCastle.X509;
 
-namespace DarkId.SmartGlass
+namespace SmartGlass
 {
     public class Device
     {

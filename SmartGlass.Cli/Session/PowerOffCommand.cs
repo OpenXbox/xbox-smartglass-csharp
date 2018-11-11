@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NClap.Metadata;
 
-namespace DarkId.SmartGlass.Cli.Session
+namespace SmartGlass.Cli.Session
 {
     internal class PowerOffCommand : Command
     {

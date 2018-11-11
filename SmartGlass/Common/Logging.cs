@@ -2,7 +2,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace DarkId.SmartGlass.Common
+namespace SmartGlass.Common
 {
     public class Logging
     {

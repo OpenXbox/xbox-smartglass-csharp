@@ -1,9 +1,9 @@
 using System.Linq;
-using DarkId.SmartGlass.Connection;
-using DarkId.SmartGlass.Common;
+using SmartGlass.Connection;
+using SmartGlass.Common;
 using Newtonsoft.Json;
 
-namespace DarkId.SmartGlass.Messaging.Session
+namespace SmartGlass.Messaging.Session
 {
     [MessageType(MessageType.SessionMessage)]
     internal class SessionFragmentMessage : MessageBase<SessionFragmentMessageHeader>, ICryptoMessage
