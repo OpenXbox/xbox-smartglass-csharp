@@ -22,7 +22,7 @@ namespace SmartGlass.Cli.Session
 
             try
             {
-                var inputChannel = await ConnectCommand.Client.GetInputChannelAsync();
+                var inputChannel = ConnectCommand.Client.InputChannel;
 
                 await inputChannel.SendGamepadStateAsync(state);
                 await Task.Delay(100);
