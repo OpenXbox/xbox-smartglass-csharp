@@ -53,10 +53,7 @@ namespace SmartGlass.Nano
             _cancellationTokenSourceControl = _controlProtoClient.ConsumeReceived(receiveResult =>
             {
                 BEReader reader = new BEReader(receiveResult);
-
-                var packet = new RtpPacket(0);
-                packet.Deserialize(reader);
-
+                RtpPacket packet = RtpPacket.CreateFromBuffer(reader);
                 _receiveQueue.TryAdd(packet);
             });
 
@@ -67,10 +64,7 @@ namespace SmartGlass.Nano
                     udpDataActive = true;
 
                 BEReader reader = new BEReader(receiveResult.Buffer);
-
-                var packet = new RtpPacket(0);
-                packet.Deserialize(reader);
-
+                RtpPacket packet = RtpPacket.CreateFromBuffer(reader);
                 _receiveQueue.TryAdd(packet);
             });
 
@@ -118,7 +112,7 @@ namespace SmartGlass.Nano
             var writer = new BEWriter();
             message.Serialize(writer);
             byte[] serialized = writer.ToArray();
-            
+
             var finalWriter = new LEWriter();
             finalWriter.Write((uint)serialized.Length);
             finalWriter.Write(serialized);

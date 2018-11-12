@@ -22,19 +22,27 @@ namespace SmartGlass.Nano
             return (ISerializableLE)Activator.CreateInstance(type);
         }
 
-        public RtpPacket(RtpPayloadType payloadType)
+        public static RtpPacket CreateFromBuffer(BEReader br)
+        {
+            var packet = new RtpPacket();
+            packet.Deserialize(br);
+            return packet;
+        }
+
+        public RtpPacket()
         {
             Header = new RtpHeader();
-            Header.PayloadType = payloadType;
         }
-        
+
         public RtpPacket(RtpHeader header)
         {
             Header = header;
         }
 
-        public void SetPayload(ISerializableLE payload)
+        public RtpPacket(RtpPayloadType payloadType, ISerializableLE payload)
         {
+            Header = new RtpHeader();
+            Header.PayloadType = payloadType;
             Payload = payload;
         }
 

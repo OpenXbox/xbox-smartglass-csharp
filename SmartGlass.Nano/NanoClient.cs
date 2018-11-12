@@ -102,18 +102,14 @@ namespace SmartGlass.Nano
         {
             var payload = new Nano.Packets.ControlHandshake(ControlHandshakeType.SYN,
                                                             ConnectionId);
-            var packet = new RtpPacket(RtpPayloadType.Control);
-            packet.SetPayload(payload);
-
+            var packet = new RtpPacket(RtpPayloadType.Control, payload);
             SendOnControlSocket(packet);
         }
 
         internal void SendUdpHandshake()
         {
             var payload = new Nano.Packets.UdpHandshake(ControlHandshakeType.ACK);
-            var packet = new RtpPacket(RtpPayloadType.UDPHandshake);
-            packet.SetPayload(payload);
-
+            var packet = new RtpPacket(RtpPayloadType.UDPHandshake, payload);
             SendOnStreamingSocket(packet);
         }
 
