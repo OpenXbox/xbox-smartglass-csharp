@@ -20,8 +20,7 @@ namespace SmartGlass.Nano
 
         public bool ControlHandshakeDone { get; internal set; }
 
-        public NanoClient(string address, int tcpPort, int udpPort,
-                          Guid sessionId, Consumer.IConsumer consumer = null)
+        public NanoClient(string address, int tcpPort, int udpPort, Guid sessionId)
         {
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
             _transport.MessageReceived += MessageReceived;
