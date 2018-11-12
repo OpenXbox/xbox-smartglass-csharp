@@ -89,7 +89,7 @@ namespace SmartGlass.Messaging.Session
 
             if (message.Header.RequestAcknowledge)
             {
-                SendMessageAckAsync(fragmentMessage.Header.SequenceNumber)
+                SendMessageAckAsync(new uint[]{fragmentMessage.Header.SequenceNumber})
                     .GetAwaiter().GetResult();
             }
 
@@ -116,15 +116,23 @@ namespace SmartGlass.Messaging.Session
         }
 
         // TODO: When to use reject?
-        private Task SendMessageAckAsync(uint sequenceNumber)
+        private Task SendMessageAckAsync(uint[] processed = null, uint[] rejected = null,
+                                                                  bool requestAck = false)
         {
-            logger.LogTrace($"Acking #{sequenceNumber}");
+            if (processed != null)
+            {
+                logger.LogTrace($"Acking #{String.Join(",", processed)}");
+            }
 
             var ackMessage = new AckMessage();
-            ackMessage.LowWatermark = sequenceNumber - 1;
-            ackMessage.ProcessedList = new HashSet<uint>() { sequenceNumber };
-            ackMessage.RejectedList = new HashSet<uint>();
-
+            ackMessage.Header.RequestAcknowledge = requestAck;
+            ackMessage.LowWatermark = _serverSequenceNumber;
+            ackMessage.ProcessedList = new HashSet<uint>(processed == null ?
+                                                            new uint[0] :
+                                                            processed);
+            ackMessage.RejectedList = new HashSet<uint>(rejected == null ?
+                                                            new uint[0] :
+                                                            rejected);
             return SendAsync(ackMessage);
         }
 
