@@ -10,14 +10,11 @@ namespace SmartGlass.Cli.Session
         [PositionalArgument(ArgumentFlags.AtLeastOnce, Position = 0)]
         public uint TitleId { get; set; }
 
-        [NamedArgument(ArgumentFlags.Optional)]
-        public string Params { get; set; }
-
         public override async Task<CommandResult> ExecuteAsync(CancellationToken cancel)
         {
             try
             {
-                await ConnectCommand.Client.LaunchTitleAsync(TitleId, Params);
+                await ConnectCommand.Client.LaunchTitleByTitleIdAsync(TitleId);
             }
             catch (Exception e)
             {

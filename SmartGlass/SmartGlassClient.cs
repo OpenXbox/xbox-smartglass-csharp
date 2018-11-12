@@ -140,21 +140,22 @@ namespace SmartGlass
         }
 
         public Task LaunchTitleAsync(
-            uint titleId,
-            string launchParams,
+            string uri,
             ActiveTitleLocation location = ActiveTitleLocation.Default)
         {
-            // TODO: Validate that Uri escape logic is correct. (Don't know of any valid existing title params.)
-
             return _sessionMessageTransport.SendAsync(new TitleLaunchMessage()
             {
-                Uri = string.Format(
-                    "ms-xbl-{0:X8}://default",
-                    titleId,
-                    string.IsNullOrWhiteSpace(launchParams) ?
-                        string.Empty : "/" + Uri.EscapeDataString(launchParams)),
+                Uri = uri,
                 Location = location
             });
+        }
+
+        public Task LaunchTitleByTitleIdAsync(
+            uint titleId,
+            ActiveTitleLocation location = ActiveTitleLocation.Default)
+        {
+            string uri = string.Format("ms-xbl-{0:X8}://default", titleId);
+            return LaunchTitleAsync(uri, location);
         }
 
         public Task GameDvrRecord(int lastSeconds = 60)
