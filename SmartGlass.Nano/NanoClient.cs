@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using SmartGlass.Common;
-using SmartGlass.Nano;
 
-namespace SmartGlass
+namespace SmartGlass.Nano
 {
     public class NanoClient : IDisposable
     {
