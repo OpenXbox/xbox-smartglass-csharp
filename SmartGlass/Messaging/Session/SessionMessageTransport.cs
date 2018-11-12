@@ -6,6 +6,7 @@ using SmartGlass.Messaging.Session.Messages;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Threading;
 
 namespace SmartGlass.Messaging.Session
 {
@@ -35,13 +36,16 @@ namespace SmartGlass.Messaging.Session
             return (SessionMessageBase)Activator.CreateInstance(type);
         }
 
+        private readonly int _heartbeatTimeoutSeconds;
         private readonly object _lockObject = new object();
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         private readonly MessageTransport _transport;
         private readonly uint _participantId;
 
         private readonly FragmentMessageManager _fragment_manager;
 
+        private DateTime _lastReceived;
         private uint _sequenceNumber;
 
         private uint _serverSequenceNumber;
@@ -49,18 +53,46 @@ namespace SmartGlass.Messaging.Session
         private bool _isDisposed;
 
         public event EventHandler<MessageReceivedEventArgs<SessionMessageBase>> MessageReceived;
+        public event EventHandler<EventArgs> ProtocolTimeoutOccured;
 
         public SessionMessageTransport(
             MessageTransport transport,
-            SessionInfo sessionInfo)
+            SessionInfo sessionInfo,
+            int heartbeatTimeoutSeconds = 3)
         {
             _transport = transport;
 
             _participantId = sessionInfo.ParticipantId;
 
+            _heartbeatTimeoutSeconds = heartbeatTimeoutSeconds;
+
             _transport.MessageReceived += TransportMessageReceived;
 
             _fragment_manager = new FragmentMessageManager();
+            _lastReceived = DateTime.Now;
+
+            _cancellationTokenSource = new CancellationTokenSource();
+        }
+
+        public void StartHeartbeat()
+        {
+            Task.Run(() =>
+            {
+                while (!_cancellationTokenSource.IsCancellationRequested)
+                {
+                    try
+                    {
+                        SendHeartbeatAsync().GetAwaiter().GetResult();
+                    }
+                    catch (TimeoutException)
+                    {
+                        ProtocolTimeoutOccured?.Invoke(this, new EventArgs());
+                        break;
+                    }
+                    Task.Delay(TimeSpan.FromSeconds(_heartbeatTimeoutSeconds))
+                        .GetAwaiter().GetResult();
+                }
+            }, _cancellationTokenSource.Token);
         }
 
         private void TransportMessageReceived(object sender, MessageReceivedEventArgs<IMessage> e)
@@ -89,7 +121,7 @@ namespace SmartGlass.Messaging.Session
 
             if (message.Header.RequestAcknowledge)
             {
-                SendMessageAckAsync(fragmentMessage.Header.SequenceNumber)
+                SendMessageAckAsync(new uint[]{fragmentMessage.Header.SequenceNumber})
                     .GetAwaiter().GetResult();
             }
 
@@ -100,6 +132,7 @@ namespace SmartGlass.Messaging.Session
                 return;
             }
 
+            _lastReceived = DateTime.Now;
             _serverSequenceNumber = fragmentMessage.Header.SequenceNumber;
 
             if (fragmentMessage.Header.IsFragment)
@@ -116,16 +149,29 @@ namespace SmartGlass.Messaging.Session
         }
 
         // TODO: When to use reject?
-        private Task SendMessageAckAsync(uint sequenceNumber)
+        private Task SendMessageAckAsync(uint[] processed = null, uint[] rejected = null,
+                                                                  bool requestAck = false)
         {
-            logger.LogTrace($"Acking #{sequenceNumber}");
+            if (processed != null)
+            {
+                logger.LogTrace($"Acking #{String.Join(",", processed)}");
+            }
 
             var ackMessage = new AckMessage();
-            ackMessage.LowWatermark = sequenceNumber - 1;
-            ackMessage.ProcessedList = new HashSet<uint>() { sequenceNumber };
-            ackMessage.RejectedList = new HashSet<uint>();
-
+            ackMessage.Header.RequestAcknowledge = requestAck;
+            ackMessage.LowWatermark = _serverSequenceNumber;
+            ackMessage.ProcessedList = new HashSet<uint>(processed == null ?
+                                                            new uint[0] :
+                                                            processed);
+            ackMessage.RejectedList = new HashSet<uint>(rejected == null ?
+                                                            new uint[0] :
+                                                            rejected);
             return SendAsync(ackMessage);
+        }
+
+        private Task SendHeartbeatAsync()
+        {
+            return SendMessageAckAsync(requestAck: true);
         }
 
         private SessionMessageBase DeserializeMessage(SessionFragmentMessage fragment)
@@ -241,6 +287,7 @@ namespace SmartGlass.Messaging.Session
                 // TODO: Trace
             }
 
+            _cancellationTokenSource.Cancel();
             _transport.MessageReceived -= TransportMessageReceived;
         }
     }
