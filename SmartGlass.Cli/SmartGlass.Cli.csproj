@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartGlass\SmartGlass.csproj" />
+    <ProjectReference Include="..\SmartGlass.Nano\SmartGlass.Nano.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NClap" Version="2.3.4" />
