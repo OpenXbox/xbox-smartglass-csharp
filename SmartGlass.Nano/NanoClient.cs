@@ -116,12 +116,12 @@ namespace SmartGlass.Nano
         internal async void SendOnStreamingSocket(RtpPacket packet)
         {
             packet.Header.ConnectionId = RemoteConnectionId;
-            await _transport.SendAsync(packet);
+            await _transport.SendAsyncStreaming(packet);
         }
 
         internal async void SendOnControlSocket(RtpPacket packet)
         {
-            await _transport.SendAsync(packet);
+            await _transport.SendAsyncControl(packet);
         }
 
         public void Dispose()

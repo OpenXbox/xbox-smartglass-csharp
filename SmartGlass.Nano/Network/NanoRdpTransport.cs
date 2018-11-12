@@ -86,19 +86,12 @@ namespace SmartGlass.Nano
             });
         }
 
+#pragma warning disable 1998
         public async Task SendAsync(RtpPacket message)
         {
-            if (message.Header.ConnectionId == 0)
-            {
-                // Send via TCP
-                await SendAsyncControl(message);
-            }
-            else
-            {
-                // Send via UDP
-                await SendAsyncStreaming(message);
-            }
+            throw new InvalidOperationException("Please use SendAsyncStreaming/Control");
         }
+#pragma warning restore 1998
 
         public async Task SendAsyncStreaming(RtpPacket message)
         {
