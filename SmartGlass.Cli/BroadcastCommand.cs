@@ -30,7 +30,7 @@ namespace SmartGlass.Cli
                     var result = await broadcastChannel.StartGamestreamAsync();
                     Console.WriteLine($"Connecting to Nano, TCP: {result.TcpPort}, UDP: {result.UdpPort}");
                     var nano = new NanoClient(Hostname, result.TcpPort, result.UdpPort, new Guid());
-                    nano.Initialize();
+                    await nano.Initialize();
 
                     var loop = new Loop(typeof(SessionCommandType));
                     loop.Execute();

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 
@@ -38,6 +39,10 @@ namespace SmartGlass.Nano.Channels
             ActiveFormat = AvailableFormats[0];
             SendClientHandshake(ActiveFormat);
             HandshakeDone = true;
+
+            // TODO: Kinda tight coupling here.
+            // TODO: Need to make sure our threading model is stable
+            _client._consumer.ConsumeAudioFormat(ActiveFormat);
         }
 
         public override void OnControl(AudioControl control)
