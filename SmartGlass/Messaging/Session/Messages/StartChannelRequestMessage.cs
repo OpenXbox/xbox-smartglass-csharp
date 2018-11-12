@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SmartGlass.Common;
 
@@ -49,8 +50,7 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public override void Deserialize(BEReader reader)
         {
-            ChannelRequestId = reader.ReadUInt32();
-            TitleId = reader.ReadUInt32();
+            throw new NotImplementedException();
         }
 
         public override void Serialize(BEWriter writer)
