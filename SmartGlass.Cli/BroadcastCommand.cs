@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SmartGlass.Nano;
 using SmartGlass.Cli.Session;
 using NClap.Metadata;
 using NClap.Repl;
