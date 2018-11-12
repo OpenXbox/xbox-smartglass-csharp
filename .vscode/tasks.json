@@ -21,6 +21,17 @@
                 "${workspaceRoot}/SmartGlass.Cli/SmartGlass.Cli.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build Nano",
+            "type": "shell",
+            "group": "build",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceRoot}/SmartGlass.Nano/SmartGlass.Nano.csproj"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
