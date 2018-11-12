@@ -10,7 +10,7 @@ namespace SmartGlass.Nano
     {
         private readonly NanoRdpTransport _transport;
         private readonly Nano.Channels.ChannelManager _channelManager;
-        
+
         internal Nano.Consumer.IConsumer _consumer { get; set; }
 
         public Guid SessionId { get; internal set; }

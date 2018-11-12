@@ -50,7 +50,7 @@ namespace SmartGlass.Nano.Packets
             bw.Write(FPS);
             bw.Write(ReferenceTimestamp);
             bw.Write((uint)Formats.Length);
-            foreach (VideoFormat f in Formats)
+            foreach (ISerializableLE f in Formats)
             {
                 f.Serialize(bw);
             }
