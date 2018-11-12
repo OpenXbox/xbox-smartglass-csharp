@@ -5,12 +5,12 @@ namespace SmartGlass.Nano.Consumer
 {
     public interface IAudioFormatConsumer
     {
-        void ConsumeAudioFormat(AudioFormat format);
+        void ConsumeAudioFormat(object sender, AudioFormatEventArgs args);
     }
 
     public interface IAudioDataConsumer
     {
-        void ConsumeAudioData(AudioData data);
+        void ConsumeAudioData(object sender, AudioDataEventArgs args);
     }
 
     public interface IAudioConsumer : IAudioFormatConsumer, IAudioDataConsumer
@@ -20,12 +20,12 @@ namespace SmartGlass.Nano.Consumer
 
     public interface IVideoFormatConsumer
     {
-        void ConsumeVideoFormat(VideoFormat format);
+        void ConsumeVideoFormat(object sender, VideoFormatEventArgs args);
     }
 
     public interface IVideoDataConsumer
     {
-        void ConsumeVideoData(VideoData data);
+        void ConsumeVideoData(object sender, VideoDataEventArgs args);
     }
 
     public interface IVideoConsumer : IVideoFormatConsumer, IVideoDataConsumer
@@ -33,7 +33,22 @@ namespace SmartGlass.Nano.Consumer
 
     }
 
-    public interface IConsumer : IAudioConsumer, IVideoConsumer
+    public interface IInputConfigConsumer
+    {
+        void ConsumeInputConfig(object sender, InputConfigEventArgs args);
+    }
+
+    public interface IInputFrameConsumer
+    {
+        void ConsumeInputFrame(object sender, InputFrameEventArgs args);
+    }
+
+    public interface IInputConsumer : IInputConfigConsumer, IInputFrameConsumer
+    {
+
+    }
+
+    public interface IConsumer : IAudioConsumer, IVideoConsumer, IInputConsumer
     {
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
+using SmartGlass.Nano.Consumer;
 
 namespace SmartGlass.Nano.Channels
 {
@@ -10,6 +11,8 @@ namespace SmartGlass.Nano.Channels
         public bool HandshakeDone { get; internal set; }
         public Packets.VideoFormat[] AvailableFormats { get; internal set; }
         public Packets.VideoFormat ActiveFormat { get; internal set; }
+        public event EventHandler<VideoFormatEventArgs> FeedVideoFormat;
+        public event EventHandler<VideoDataEventArgs> FeedVideoData;
 
         public VideoChannel(NanoClient client)
             : base(client, NanoChannelId.Video)
@@ -19,7 +22,7 @@ namespace SmartGlass.Nano.Channels
 
         public void StartStream()
         {
-            SendControl(VideoControlFlags.RequestKeyframe | VideoControlFlags.StartStream);
+            SendControl(VideoControlFlags.RequestKeyframe | VideoControlFlags.StartStream);
         }
 
         public void StopStream()
@@ -38,6 +41,9 @@ namespace SmartGlass.Nano.Channels
             ActiveFormat = AvailableFormats[0];
             SendClientHandshake(ActiveFormat);
             HandshakeDone = true;
+
+            FeedVideoFormat?.Invoke(this,
+                new VideoFormatEventArgs(ActiveFormat));
         }
 
         public override void OnControl(VideoControl control)
@@ -47,7 +53,8 @@ namespace SmartGlass.Nano.Channels
 
         public override void OnData(VideoData data)
         {
-            _client._consumer.ConsumeVideoData(data);
+            FeedVideoData?.Invoke(this,
+                new VideoDataEventArgs(data));
         }
 
         private void SendClientHandshake(VideoFormat format)
@@ -65,7 +72,7 @@ namespace SmartGlass.Nano.Channels
         {
             var payload = new Streamer((uint)VideoPayloadType.Control)
             {
-                Data = new VideoControl(flags)   
+                Data = new VideoControl(flags)
             };
 
             SendStreamerOnControlSocket(payload);

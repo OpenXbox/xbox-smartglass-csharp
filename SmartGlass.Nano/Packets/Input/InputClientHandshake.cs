@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [InputPayloadType(InputPayloadType.ClientHandshake)]
-    internal class InputClientHandshake : ISerializableLE
+    public class InputClientHandshake : ISerializableLE
     {
         public uint MaxTouches { get; private set; }
         public ulong ReferenceTimestamp { get; private set; }
@@ -14,20 +14,20 @@ namespace SmartGlass.Nano.Packets
         public InputClientHandshake()
         {
         }
-        
+
         public InputClientHandshake(uint maxTouches, ulong refTimestamp)
         {
             MaxTouches = maxTouches;
             ReferenceTimestamp = refTimestamp;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             MaxTouches = br.ReadUInt32();
             ReferenceTimestamp = br.ReadUInt64();
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write(MaxTouches);
             bw.Write(ReferenceTimestamp);

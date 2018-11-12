@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,9 +10,9 @@ namespace SmartGlass.Nano
     public class NanoClient : IDisposable
     {
         private readonly NanoRdpTransport _transport;
-        private readonly Nano.Channels.ChannelManager _channelManager;
+        private readonly Channels.ChannelManager _channelManager;
 
-        internal Nano.Consumer.IConsumer _consumer { get; set; }
+        internal List<Consumer.IConsumer> _consumers { get; set; }
 
         public Guid SessionId { get; internal set; }
         public ushort ConnectionId { get; private set; }
@@ -20,18 +21,37 @@ namespace SmartGlass.Nano
         public bool ControlHandshakeDone { get; internal set; }
 
         public NanoClient(string address, int tcpPort, int udpPort,
-                          Guid sessionId, Nano.Consumer.IConsumer consumer = null)
+                          Guid sessionId, Consumer.IConsumer consumer = null)
         {
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
             _transport.MessageReceived += MessageReceived;
-            _channelManager = new Nano.Channels.ChannelManager(this);
+            _channelManager = new Channels.ChannelManager(this);
             ControlHandshakeDone = false;
             SessionId = sessionId;
             ConnectionId = (ushort)new Random().Next(5000);
+        }
 
-            // For testing
-            // TODO: Remove file consumer as a built-in default.
-            _consumer = consumer ?? new Nano.Consumer.FileConsumer("nanodump");
+        public void AddConsumer(Consumer.IConsumer consumer)
+        {
+            _channelManager.Audio.FeedAudioFormat += consumer.ConsumeAudioFormat;
+            _channelManager.Audio.FeedAudioData += consumer.ConsumeAudioData;
+            _channelManager.Video.FeedVideoFormat += consumer.ConsumeVideoFormat;
+            _channelManager.Video.FeedVideoData += consumer.ConsumeVideoData;
+
+            _channelManager.InputFeedback.FeedInputConfig += consumer.ConsumeInputConfig;
+            _channelManager.InputFeedback.FeedInputFrame += consumer.ConsumeInputFrame;
+            _consumers.Add(consumer);
+        }
+
+        public bool RemoveConsumer(Consumer.IConsumer consumer)
+        {
+            _channelManager.Audio.FeedAudioFormat -= consumer.ConsumeAudioFormat;
+            _channelManager.Audio.FeedAudioData -= consumer.ConsumeAudioData;
+            _channelManager.Video.FeedVideoFormat -= consumer.ConsumeVideoFormat;
+            _channelManager.Video.FeedVideoData -= consumer.ConsumeVideoData;
+            _channelManager.InputFeedback.FeedInputConfig -= consumer.ConsumeInputConfig;
+            _channelManager.InputFeedback.FeedInputFrame -= consumer.ConsumeInputFrame;
+            return _consumers.Remove(consumer);
         }
 
         // TODO: Need to improve the robustness of this (async await on both handshakes, create client with an async static method?)
@@ -88,11 +108,11 @@ namespace SmartGlass.Nano
                     OnControlHandshake(packet);
                     break;
                 case RtpPayloadType.ChannelControl:
-                    var controlMsg = packet.Payload as Nano.Packets.ChannelControl;
+                    var controlMsg = packet.Payload as Packets.ChannelControl;
                     _channelManager.HandleChannelControl(controlMsg, packet.Header.ChannelId);
                     break;
                 case RtpPayloadType.Streamer:
-                    var streamer = packet.Payload as Nano.Packets.Streamer;
+                    var streamer = packet.Payload as Packets.Streamer;
                     _channelManager.HandleStreamer(streamer, packet.Header.ChannelId);
                     break;
                 case RtpPayloadType.UDPHandshake:
@@ -104,7 +124,7 @@ namespace SmartGlass.Nano
 
         internal void OnControlHandshake(RtpPacket packet)
         {
-            var handshake = packet.Payload as Nano.Packets.ControlHandshake;
+            var handshake = packet.Payload as Packets.ControlHandshake;
             if (handshake.Type != ControlHandshakeType.ACK)
             {
                 throw new NotSupportedException($"Invalid Control HandshakeType received {handshake.Type}");
@@ -115,7 +135,7 @@ namespace SmartGlass.Nano
 
         internal void SendControlHandshake()
         {
-            var payload = new Nano.Packets.ControlHandshake(ControlHandshakeType.SYN,
+            var payload = new Packets.ControlHandshake(ControlHandshakeType.SYN,
                                                             ConnectionId);
             var packet = new RtpPacket(RtpPayloadType.Control, payload);
             SendOnControlSocket(packet);
@@ -123,7 +143,7 @@ namespace SmartGlass.Nano
 
         internal void SendUdpHandshake()
         {
-            var payload = new Nano.Packets.UdpHandshake(ControlHandshakeType.ACK);
+            var payload = new Packets.UdpHandshake(ControlHandshakeType.ACK);
             var packet = new RtpPacket(RtpPayloadType.UDPHandshake, payload);
             SendOnStreamingSocket(packet);
         }
