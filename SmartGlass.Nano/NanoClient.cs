@@ -26,6 +26,7 @@ namespace SmartGlass.Nano
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
             _transport.MessageReceived += MessageReceived;
             _channelManager = new Channels.ChannelManager(this);
+            _consumers = new List<Consumer.IConsumer>();
             ControlHandshakeDone = false;
             SessionId = sessionId;
             ConnectionId = (ushort)new Random().Next(5000);
