@@ -115,7 +115,7 @@ namespace SmartGlass
                 }
             };
 
-            _sessionMessageTransport.SendAsync(new LocalJoinMessage());
+            _sessionMessageTransport.SendAsync(new LocalJoinMessage()).GetAwaiter().GetResult();
             OpenChannels().GetAwaiter().GetResult();
             _sessionMessageTransport.StartHeartbeat();
         }
