@@ -75,11 +75,13 @@ namespace SmartGlass
         private readonly MessageTransport _messageTransport;
         private readonly SessionMessageTransport _sessionMessageTransport;
 
-        private readonly DisposableAsyncLazy<InputChannel> _inputChannel;
-        private readonly DisposableAsyncLazy<MediaChannel> _mediaChannel;
-        private readonly DisposableAsyncLazy<BroadcastChannel> _broadcastChannel;
-
         private uint _channelRequestId = 1;
+
+        public InputChannel InputChannel { get; private set; }
+        public InputTVRemoteChannel InputTvRemoteChannel { get; private set; }
+        public MediaChannel MediaChannel { get; private set; }
+        public TextChannel TextChannel { get; private set; }
+        public BroadcastChannel BroadcastChannel { get; private set; }
 
         public event EventHandler<ConsoleStatusChangedEventArgs> ConsoleStatusChanged;
 
@@ -114,23 +116,26 @@ namespace SmartGlass
             };
 
             _sessionMessageTransport.SendAsync(new LocalJoinMessage());
+            OpenChannels().GetAwaiter().GetResult();
+        }
 
-            _inputChannel = new DisposableAsyncLazy<InputChannel>(async () =>
-            {
-                return new InputChannel(await StartChannelAsync(ServiceType.SystemInput));
-            });
-
-            _mediaChannel = new DisposableAsyncLazy<MediaChannel>(async () =>
-            {
-                return new MediaChannel(await StartChannelAsync(ServiceType.SystemMedia));
-            });
-
-            _broadcastChannel = new DisposableAsyncLazy<BroadcastChannel>(async () =>
-            {
-                var broadcastChannel = new BroadcastChannel(await StartChannelAsync(ServiceType.SystemBroadcast));
-                await broadcastChannel.WaitForEnabledAsync();
-                return broadcastChannel;
-            });
+        private async Task OpenChannels()
+        {
+            InputChannel = new InputChannel(
+                await StartChannelAsync(ServiceType.SystemInput));
+            /*
+             *  InputTvRemoteChannel fails when connecting non-authenticated
+             *  (Either a bug or feature from Microsoft!)
+             *  Simply disabling it for now - it serves no use anyways atm
+            InputTvRemoteChannel = new InputTVRemoteChannel(
+                await StartChannelAsync(ServiceType.SystemInputTVRemote));
+            */
+            MediaChannel = new MediaChannel(
+                await StartChannelAsync(ServiceType.SystemMedia));
+            TextChannel = new TextChannel(
+                await StartChannelAsync(ServiceType.SystemText));
+            BroadcastChannel = new BroadcastChannel(
+                await StartChannelAsync(ServiceType.SystemBroadcast));
         }
 
         public Task LaunchTitleAsync(
@@ -161,22 +166,38 @@ namespace SmartGlass
 
         private async Task<ChannelMessageTransport> StartChannelAsync(ServiceType serviceType, uint titleId = 0)
         {
+            bool timedOut = false;
+            StartChannelResponseMessage response = null;
+
             var requestId = _channelRequestId++;
 
-            // TODO: Formalize timeouts for response based messages.
-            var response = await _sessionMessageTransport.WaitForMessageAsync<StartChannelResponseMessage>(
-                TimeSpan.FromSeconds(1),
-                () => _sessionMessageTransport.SendAsync(new StartChannelRequestMessage()
-                {
-                    ChannelRequestId = requestId,
-                    ServiceType = serviceType,
-                    TitleId = titleId
-                }).GetAwaiter().GetResult(),
-                m => m.ChannelRequestId == requestId);
-
-            if (response.Result != 0)
+            var channelRequestMessage = new StartChannelRequestMessage()
             {
-                throw new SmartGlassException("Failed to open channel.", response.Result);
+                ChannelRequestId = requestId,
+                ServiceType = serviceType,
+                TitleId = titleId
+            };
+
+            // TODO: Formalize timeouts for response based messages.
+            try
+            {
+                response = await _sessionMessageTransport.WaitForMessageAsync<StartChannelResponseMessage>(
+                    TimeSpan.FromSeconds(1),
+                    async () => await _sessionMessageTransport.SendAsync(channelRequestMessage),
+                    m => m.ChannelRequestId == requestId);
+            }
+            catch (TimeoutException)
+            {
+                timedOut = true;
+            }
+
+            if (timedOut || response.Result != 0)
+            {
+                string errorMsg = String.Format("{0} occured when opening ServiceChannel {1}.",
+                    timedOut ? "Timeout" : "Rejection",
+                    serviceType);
+
+                throw new SmartGlassException(errorMsg, response.Result);
             }
 
             return new ChannelMessageTransport(response.ChannelId, _sessionMessageTransport);
@@ -184,20 +205,6 @@ namespace SmartGlass
 
         // TODO: Show pairing state
         // TODO: Should the channel object be responsible for reestablishment when reconnection support is added?
-        public Task<InputChannel> GetInputChannelAsync()
-        {
-            return _inputChannel.GetAsync();
-        }
-
-        public Task<MediaChannel> GetMediaChannelAsync()
-        {
-            return _mediaChannel.GetAsync();
-        }
-
-        public Task<BroadcastChannel> GetBroadcastChannelAsync()
-        {
-            return _broadcastChannel.GetAsync();
-        }
 
         public async Task<TitleChannel> StartTitleChannelAsync(uint titleId)
         {
@@ -227,8 +234,12 @@ namespace SmartGlass
         {
             // TODO: Close opened channels?
             // Assuming so for the time being, but don't know how to send stop messages yet
-            _inputChannel.Dispose();
-            _mediaChannel.Dispose();
+            InputChannel.Dispose();
+            // InputTvRemoteChannel.Dispose();
+
+            TextChannel.Dispose();
+            MediaChannel.Dispose();
+            BroadcastChannel.Dispose();
 
             _sessionMessageTransport.Dispose();
             _messageTransport.Dispose();

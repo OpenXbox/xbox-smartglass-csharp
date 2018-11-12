@@ -36,7 +36,7 @@ namespace SmartGlass.Cli.Session
 
             try
             {
-                var mediaChannel = await ConnectCommand.Client.GetMediaChannelAsync();
+                var mediaChannel = ConnectCommand.Client.MediaChannel;
 
                 await mediaChannel.SendMediaCommandStateAsync(state);
             }
