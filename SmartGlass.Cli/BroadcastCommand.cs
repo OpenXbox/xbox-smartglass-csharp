@@ -24,7 +24,7 @@ namespace SmartGlass.Cli
             {
                 using (Client = await SmartGlassClient.ConnectAsync(Hostname))
                 {
-                    var broadcastChannel = await Client.GetBroadcastChannelAsync();
+                    var broadcastChannel = Client.BroadcastChannel;
                     // TODO: Wait for BroadcastMessages here...
 
                     var result = await broadcastChannel.StartGamestreamAsync();
