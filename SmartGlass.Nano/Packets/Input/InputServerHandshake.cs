@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [InputPayloadType(InputPayloadType.ServerHandshake)]
-    internal class InputServerHandshake : ISerializableLE
+    public class InputServerHandshake : ISerializableLE
     {
         public uint ProtocolVersion { get; private set; }
         public uint DesktopWidth { get; private set; }
@@ -17,7 +17,7 @@ namespace SmartGlass.Nano.Packets
         public InputServerHandshake()
         {
         }
-        
+
         public InputServerHandshake(uint protocolVersion, uint desktopWidth, uint desktopHeight,
                                     uint maxTouches, uint initialFrameId)
         {
@@ -28,7 +28,7 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = initialFrameId;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             ProtocolVersion = br.ReadUInt32();
             DesktopWidth = br.ReadUInt32();
@@ -37,7 +37,7 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = br.ReadUInt32();
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write(ProtocolVersion);
             bw.Write(DesktopWidth);

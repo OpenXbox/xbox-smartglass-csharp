@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
+using SmartGlass.Nano.Consumer;
 
 namespace SmartGlass.Nano.Channels
 {
@@ -11,6 +12,8 @@ namespace SmartGlass.Nano.Channels
         public bool HandshakeDone { get; internal set; }
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
         public Packets.AudioFormat ActiveFormat { get; internal set; }
+        public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
+        public event EventHandler<AudioDataEventArgs> FeedAudioData;
 
         public AudioChannel(NanoClient client)
             : base(client, NanoChannelId.Audio)
@@ -40,9 +43,8 @@ namespace SmartGlass.Nano.Channels
             SendClientHandshake(ActiveFormat);
             HandshakeDone = true;
 
-            // TODO: Kinda tight coupling here.
-            // TODO: Need to make sure our threading model is stable
-            _client._consumer.ConsumeAudioFormat(ActiveFormat);
+            FeedAudioFormat?.Invoke(this,
+                new AudioFormatEventArgs(ActiveFormat));
         }
 
         public override void OnControl(AudioControl control)
@@ -52,7 +54,8 @@ namespace SmartGlass.Nano.Channels
 
         public override void OnData(AudioData data)
         {
-            _client._consumer.ConsumeAudioData(data);
+            FeedAudioData?.Invoke(this,
+                new AudioDataEventArgs(data));
         }
 
         private void SendClientHandshake(AudioFormat format)

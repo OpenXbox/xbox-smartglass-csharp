@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    internal class InputButtons : ISerializableLE
+    public class InputButtons : ISerializableLE
     {
         public byte DPadUp { get; set; }
         public byte DPadDown { get; set; }
@@ -44,7 +44,7 @@ namespace SmartGlass.Nano.Packets
             Y = 0;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             DPadUp = br.ReadByte();
             DPadDown = br.ReadByte();
@@ -64,7 +64,7 @@ namespace SmartGlass.Nano.Packets
             Y = br.ReadByte();
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write(DPadUp);
             bw.Write(DPadDown);
