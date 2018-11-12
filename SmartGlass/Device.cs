@@ -33,7 +33,7 @@ namespace SmartGlass
                     var requestMessage = new PresenceRequestMessage();
 
                     return messageTransport.ReadMessages(discoveryListenTime,
-                        () => messageTransport.SendAsync(requestMessage).Wait())
+                        () => messageTransport.SendAsync(requestMessage).GetAwaiter().GetResult())
                         .OfType<PresenceResponseMessage>()
                         .DistinctBy(m => m.HardwareId)
                         .Select(m => new Device(m)).ToArray().AsEnumerable();
@@ -49,7 +49,7 @@ namespace SmartGlass
 
                 var response = await TaskExtensions.WithRetries(() =>
                     messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
-                    () => messageTransport.SendAsync(requestMessage).Wait()),
+                    () => messageTransport.SendAsync(requestMessage).GetAwaiter().GetResult()),
                         pingRetries);
 
                 return new Device(response);
@@ -72,7 +72,7 @@ namespace SmartGlass
 
                 var response = await TaskExtensions.WithRetries(() =>
                     messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
-                    () => messageTransport.SendAsync(presenceRequestMessage).Wait()),
+                    () => messageTransport.SendAsync(presenceRequestMessage).GetAwaiter().GetResult()),
                         pingRetries);
 
                 return new Device(response);

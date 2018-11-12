@@ -89,7 +89,8 @@ namespace SmartGlass.Messaging.Session
 
             if (message.Header.RequestAcknowledge)
             {
-                SendMessageAckAsync(fragmentMessage.Header.SequenceNumber).Wait();
+                SendMessageAckAsync(fragmentMessage.Header.SequenceNumber)
+                    .GetAwaiter().GetResult();
             }
 
             if (fragmentMessage.Header.SequenceNumber <= _serverSequenceNumber)
@@ -232,7 +233,8 @@ namespace SmartGlass.Messaging.Session
 
             try
             {
-                SendAsync(new DisconnectMessage()).Wait();
+                SendAsync(new DisconnectMessage())
+                    .GetAwaiter().GetResult();
             }
             catch
             {

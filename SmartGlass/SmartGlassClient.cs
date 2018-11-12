@@ -62,7 +62,7 @@ namespace SmartGlass
                 var response = await TaskExtensions.WithRetries(() =>
                     transport.WaitForMessageAsync<ConnectResponseMessage>(
                         connectTimeout,
-                        () => connectFunc().Wait()),
+                        () => connectFunc().GetAwaiter().GetResult()),
                     connectRetries);
 
                 return new SmartGlassClient(
@@ -171,7 +171,7 @@ namespace SmartGlass
                     ChannelRequestId = requestId,
                     ServiceType = serviceType,
                     TitleId = titleId
-                }).Wait(),
+                }).GetAwaiter().GetResult(),
                 m => m.ChannelRequestId == requestId);
 
             if (response.Result != 0)
