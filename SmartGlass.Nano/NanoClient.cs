@@ -20,7 +20,7 @@ namespace SmartGlass.Nano
         public bool ControlHandshakeDone { get; internal set; }
 
         public NanoClient(string address, int tcpPort, int udpPort,
-                          Guid sessionId)
+                          Guid sessionId, Nano.Consumer.IConsumer consumer = null)
         {
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
             _transport.MessageReceived += MessageReceived;
@@ -30,15 +30,34 @@ namespace SmartGlass.Nano
             ConnectionId = (ushort)new Random().Next(5000);
 
             // For testing
-            _consumer = new Nano.Consumer.FileConsumer("nanodump");
+            // TODO: Remove file consumer as a built-in default.
+            _consumer = consumer ?? new Nano.Consumer.FileConsumer("nanodump");
         }
 
-        public void Initialize()
+        // TODO: Need to improve the robustness of this (async await on both handshakes, create client with an async static method?)
+        public async Task Initialize()
         {
-            Debug.WriteLine("Starting NanoClient...");
             SendControlHandshake();
 
-            Task.Run(() =>
+            await Task.Run(() =>
+            {
+                while (!ControlHandshakeDone ||
+                       !_channelManager.Video.HandshakeDone ||
+                       !_channelManager.Audio.HandshakeDone)
+                {
+                    Thread.Sleep(250);
+                }
+            });
+        }
+
+        public async Task StartStream()
+        {
+            if (!_channelManager.Video.HandshakeDone || !_channelManager.Audio.HandshakeDone)
+            {
+                Console.WriteLine("Audio or Video handshake not done yet, cant start stream");
+            }
+
+            var udpHandshakeTask = Task.Run(() =>
             {
                 while (!_transport.udpDataActive)
                 {
@@ -47,26 +66,22 @@ namespace SmartGlass.Nano
                 }
             });
 
-            Thread.Sleep(2000);
-            StartStream();
-        }
-
-        public void StartStream()
-        {
-            if (!_channelManager.Video.HandshakeDone || !_channelManager.Audio.HandshakeDone)
-            {
-                Console.WriteLine("Audio or Video handshake not done yet, cant start stream");
-            }
-
             _channelManager.Video.StartStream();
             _channelManager.Audio.StartStream();
+
+            await udpHandshakeTask;
         }
 
         internal void MessageReceived(object sender, MessageReceivedEventArgs<RtpPacket> message)
         {
             var packet = message.Message;
             RtpPayloadType ptype = packet.Header.PayloadType;
-            Debug.WriteLine($"Received {ptype}");
+
+            if (ptype != RtpPayloadType.Streamer)
+            {
+                Debug.WriteLine($"Received {ptype}");
+            }
+
             switch (ptype)
             {
                 case RtpPayloadType.Control:
