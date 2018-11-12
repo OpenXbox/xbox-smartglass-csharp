@@ -117,6 +117,7 @@ namespace SmartGlass
 
             _sessionMessageTransport.SendAsync(new LocalJoinMessage());
             OpenChannels().GetAwaiter().GetResult();
+            _sessionMessageTransport.StartHeartbeat();
         }
 
         private async Task OpenChannels()
