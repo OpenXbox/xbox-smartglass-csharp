@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [VideoPayloadType(VideoPayloadType.Control)]
-    internal class VideoControl : ISerializableLE
+    public class VideoControl : ISerializableLE
     {
         public VideoControlFlags Flags { get; private set; }
         public uint LastDisplayedFrameId { get; private set; }
@@ -32,7 +32,7 @@ namespace SmartGlass.Nano.Packets
             LastLostFrame = lastLostFrame;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             Flags = (VideoControlFlags)br.ReadUInt32();
 
@@ -52,7 +52,7 @@ namespace SmartGlass.Nano.Packets
             }
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write((uint)Flags);
             if (Flags.HasFlag(VideoControlFlags.LastDisplayedFrame))

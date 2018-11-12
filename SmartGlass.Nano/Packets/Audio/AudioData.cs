@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [AudioPayloadType(AudioPayloadType.Data)]
-    internal class AudioData : ISerializableLE
+    public class AudioData : ISerializableLE
     {
         public uint Flags { get; private set; }
         public uint FrameId { get; private set; }
@@ -26,7 +26,7 @@ namespace SmartGlass.Nano.Packets
             Data = data;
         }
 
-        public void Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(LEReader br)
         {
             Flags = br.ReadUInt32();
             FrameId = br.ReadUInt32();
@@ -34,7 +34,7 @@ namespace SmartGlass.Nano.Packets
             Data = br.ReadBlobUInt32();
         }
 
-        public void Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(LEWriter bw)
         {
             bw.Write(Flags);
             bw.Write(FrameId);

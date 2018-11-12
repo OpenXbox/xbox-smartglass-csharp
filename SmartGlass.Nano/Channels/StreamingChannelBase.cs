@@ -10,7 +10,7 @@ namespace SmartGlass.Nano.Channels
     internal abstract class StreamingChannelBase
     {
         internal readonly NanoClient _client;
-        public NanoChannelId ChannelId { get; private set; }
+        public NanoChannelId ChannelId { get; private set; }
         public ushort ChannelNumber { get; private set; }
         public bool IsOpen { get; private set; }
         public ushort SequenceNumber { get; set; }
@@ -73,9 +73,7 @@ namespace SmartGlass.Nano.Channels
                 type: ChannelControlType.Open,
                 data: new Nano.Packets.ChannelOpen(flags)
             );
-            var packet = new RtpPacket(RtpPayloadType.ChannelControl);
-            packet.SetPayload(payload);
-
+            var packet = new RtpPacket(RtpPayloadType.ChannelControl, payload);
             SendOnControlSocket(packet);
         }
 
@@ -85,9 +83,7 @@ namespace SmartGlass.Nano.Channels
                 type: ChannelControlType.Close,
                 data: new Nano.Packets.ChannelClose(flags)
             );
-            var packet = new RtpPacket(RtpPayloadType.ChannelControl);
-            packet.SetPayload(payload);
-
+            var packet = new RtpPacket(RtpPayloadType.ChannelControl, payload);
             SendOnControlSocket(packet);
         }
 
@@ -120,8 +116,7 @@ namespace SmartGlass.Nano.Channels
 
         public void SendStreamerOnStreamingSocket(Streamer payload)
         {
-            var packet = new RtpPacket(RtpPayloadType.Streamer);
-            packet.SetPayload(payload);
+            var packet = new RtpPacket(RtpPayloadType.Streamer, payload);
 
             packet.Header.SequenceNumber = NextSequenceNumber;
             ((Packets.Streamer)packet.Payload).Flags = 0;
@@ -131,8 +126,7 @@ namespace SmartGlass.Nano.Channels
 
         public void SendStreamerOnControlSocket(Streamer payload)
         {
-            var packet = new RtpPacket(RtpPayloadType.Streamer);
-            packet.SetPayload(payload);
+            var packet = new RtpPacket(RtpPayloadType.Streamer, payload);
 
             ((Packets.Streamer)packet.Payload).PreviousSequenceNumber = SequenceNumber;
             ((Packets.Streamer)packet.Payload).SequenceNumber = NextSequenceNumber;

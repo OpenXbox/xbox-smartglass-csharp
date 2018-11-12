@@ -53,10 +53,7 @@ namespace SmartGlass.Nano
             _cancellationTokenSourceControl = _controlProtoClient.ConsumeReceived(receiveResult =>
             {
                 BEReader reader = new BEReader(receiveResult);
-
-                var packet = new RtpPacket(0);
-                packet.Deserialize(reader);
-
+                RtpPacket packet = RtpPacket.CreateFromBuffer(reader);
                 _receiveQueue.TryAdd(packet);
             });
 
@@ -67,10 +64,7 @@ namespace SmartGlass.Nano
                     udpDataActive = true;
 
                 BEReader reader = new BEReader(receiveResult.Buffer);
-
-                var packet = new RtpPacket(0);
-                packet.Deserialize(reader);
-
+                RtpPacket packet = RtpPacket.CreateFromBuffer(reader);
                 _receiveQueue.TryAdd(packet);
             });
 
@@ -83,26 +77,21 @@ namespace SmartGlass.Nano
                         var message = _receiveQueue.Take();
                         MessageReceived?.Invoke(this, new MessageReceivedEventArgs<RtpPacket>(message));
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Console.WriteLine(e.ToString());
+                        Console.WriteLine("Calling Nano MessageReceived failed!");
                     }
                 }
             });
         }
 
+#pragma warning disable 1998
         public async Task SendAsync(RtpPacket message)
         {
-            if (message.Header.ConnectionId == 0)
-            {
-                // Send via TCP
-                await SendAsyncControl(message);
-            }
-            else
-            {
-                // Send via UDP
-                await SendAsyncStreaming(message);
-            }
+            throw new InvalidOperationException("Please use SendAsyncStreaming/Control");
         }
+#pragma warning restore 1998
 
         public async Task SendAsyncStreaming(RtpPacket message)
         {
@@ -118,7 +107,7 @@ namespace SmartGlass.Nano
             var writer = new BEWriter();
             message.Serialize(writer);
             byte[] serialized = writer.ToArray();
-            
+
             var finalWriter = new LEWriter();
             finalWriter.Write((uint)serialized.Length);
             finalWriter.Write(serialized);

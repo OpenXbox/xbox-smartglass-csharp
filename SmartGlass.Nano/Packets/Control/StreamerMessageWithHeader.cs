@@ -23,6 +23,7 @@ namespace SmartGlass.Nano.Packets
 
         public StreamerMessageWithHeader()
         {
+            Header = new ControlHeader();
         }
         
         public StreamerMessageWithHeader(ControlHeader header, ISerializableLE payload)
