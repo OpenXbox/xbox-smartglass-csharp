@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using SmartGlass.Common;
+using SmartGlass.Json;
 using SmartGlass.Messaging.Session;
 using SmartGlass.Messaging.Session.Messages;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,7 @@ namespace SmartGlass.Channels
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
+            _serializerSettings.Converters.Add(new GuidConverter());
             _serializerSettings.Converters.Add(converter);
 
             _baseTransport = baseTransport;

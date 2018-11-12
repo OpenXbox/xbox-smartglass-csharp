@@ -4,7 +4,8 @@ namespace SmartGlass.Channels.Broadcast
 {
     enum GamestreamStateMessageType
     {
-        Initializing = 1,
+        Invalid,
+        Initializing,
         Started,
         Stopped,
         Paused
