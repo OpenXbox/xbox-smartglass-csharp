@@ -22,12 +22,25 @@ namespace SmartGlass.Nano.Channels
 
         public void StartStream()
         {
-            SendControl(VideoControlFlags.RequestKeyframe | VideoControlFlags.StartStream);
+            var controlData = new VideoControl(
+                VideoControlFlags.StartStream | VideoControlFlags.RequestKeyframe);
+            SendControl(controlData);
         }
 
         public void StopStream()
         {
-            SendControl(VideoControlFlags.StopStream);
+            var controlData = new VideoControl(VideoControlFlags.StopStream);
+            SendControl(controlData);
+        }
+
+        public void ReportLostFrames(uint firstFrame, uint lastFrame)
+        {
+            var controlData = new VideoControl(
+                flags: VideoControlFlags.RequestKeyframe | VideoControlFlags.LostFrames,
+                firstLostFrame: firstFrame,
+                lastLostFrame: lastFrame
+            );
+            SendControl(controlData);
         }
 
         public override void OnClientHandshake(VideoClientHandshake handshake)
@@ -68,11 +81,11 @@ namespace SmartGlass.Nano.Channels
             SendStreamerOnControlSocket(payload);
         }
 
-        private void SendControl(VideoControlFlags flags)
+        private void SendControl(VideoControl controlData)
         {
             var payload = new Streamer((uint)VideoPayloadType.Control)
             {
-                Data = new VideoControl(flags)
+                Data = controlData
             };
 
             SendStreamerOnControlSocket(payload);
