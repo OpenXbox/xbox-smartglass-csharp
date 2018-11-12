@@ -89,9 +89,10 @@ namespace SmartGlass.Messaging
                         var message = _receiveQueue.Take();
                         MessageReceived?.Invoke(this, new MessageReceivedEventArgs<IMessage>(message));
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        // TODO: Add tracing.
+                        Console.WriteLine(e.ToString());
+                        Console.WriteLine("Calling MessageReceived failed!");
                     }
                 }
             });
