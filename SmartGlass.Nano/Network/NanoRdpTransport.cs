@@ -77,8 +77,10 @@ namespace SmartGlass.Nano
                         var message = _receiveQueue.Take();
                         MessageReceived?.Invoke(this, new MessageReceivedEventArgs<RtpPacket>(message));
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Console.WriteLine(e.ToString());
+                        Console.WriteLine("Calling Nano MessageReceived failed!");
                     }
                 }
             });
