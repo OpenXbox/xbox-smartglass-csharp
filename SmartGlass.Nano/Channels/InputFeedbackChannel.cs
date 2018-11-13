@@ -9,8 +9,8 @@ namespace SmartGlass.Nano.Channels
     {
         public bool HandshakeDone { get; internal set; }
 
-        public event EventHandler<InputConfigEventArgs> FeedInputConfig;
-        public event EventHandler<InputFrameEventArgs> FeedInputFrame;
+        public event EventHandler<InputConfigEventArgs> FeedInputFeedbackConfig;
+        public event EventHandler<InputFrameEventArgs> FeedInputFeedbackFrame;
 
         public InputFeedbackChannel(NanoClient client)
             : base(client, NanoChannelId.InputFeedback)
@@ -28,7 +28,7 @@ namespace SmartGlass.Nano.Channels
 
         public override void OnFrame(InputFrame frame)
         {
-            FeedInputFrame?.Invoke(this, new InputFrameEventArgs(frame));
+            FeedInputFeedbackFrame?.Invoke(this, new InputFrameEventArgs(frame));
         }
 
         public override void OnFrameAck(InputFrameAck ack)

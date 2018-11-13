@@ -92,12 +92,12 @@ namespace SmartGlass.Nano.Consumer
             _videoFile.Dispose();
         }
 
-        public void ConsumeInputConfig(object sender, InputConfigEventArgs args)
+        public void ConsumeInputFeedbackConfig(object sender, InputConfigEventArgs args)
         {
             throw new NotImplementedException();
         }
 
-        public void ConsumeInputFrame(object sender, InputFrameEventArgs args)
+        public void ConsumeInputFeedbackFrame(object sender, InputFrameEventArgs args)
         {
             throw new NotImplementedException();
         }
