@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
@@ -37,39 +38,54 @@ namespace SmartGlass.Common
         public static CancellationTokenSource ConsumeReceived(this TcpClient client, Action<byte[]> consume)
         {
             var tokenSource = new CancellationTokenSource();
-            client.ConsumeReceived(consume, tokenSource.Token);
+            client.ConsumeReceivedPrefixed(consume, tokenSource.Token);
             return tokenSource;
         }
 
-        public static void ConsumeReceived(
+        public static void ConsumeReceivedPrefixed(
             this TcpClient client, Action<byte[]> consume, CancellationToken token)
         {
             Task.Run(() =>
             {
                 while (!token.IsCancellationRequested && client.Client != null)
                 {
-                    byte[] prefixBytes = new byte[sizeof(uint)];
-                    NetworkStream stream = client.GetStream();
-                    Task<int> bytesReadTask = stream.ReadAsync(prefixBytes, 0, sizeof(uint));
-
-                    Task.WaitAny(bytesReadTask);
-
-                    if (bytesReadTask.IsFaulted)
+                    using (NetworkStream ns = client.GetStream())
                     {
-                        continue;
-                    }
+                        byte[] prefixBytes = new byte[sizeof(uint)];
+                        Task<int> bytesReadTask = ns.ReadAsync(prefixBytes, 0, sizeof(uint));
+                        Task.WaitAny(bytesReadTask);
+                        if (bytesReadTask.IsFaulted)
+                        {
+                            Debug.WriteLine("ConsumeReceivedPrefixed: ReadAsync failed! (size prefix)");
+                            continue;
+                        }
 
-                    uint size = BitConverter.ToUInt32(prefixBytes, 0);
-                    byte[] packet = new byte[size];
+                        uint size = BitConverter.ToUInt32(prefixBytes, 0);
 
-                    Task<int> receiveTask = stream.ReadAsync(packet, 0, packet.Length);
-
-                    Task.WaitAny(receiveTask);
-
-                    if (!receiveTask.IsFaulted)
-                    {
+                        byte[] packet = new byte[size];
+                        Task<int> receiveTask = ns.ReadAsync(packet, 0, packet.Length);
+                        Task.WaitAny(receiveTask);
+                        if (receiveTask.IsFaulted)
+                        {
+                            Debug.WriteLine("ConsumeReceivedPrefixed: ReadAsync failed! (packet)");
+                            continue;
+                        }
                         consume(packet);
                     }
+                }
+            });
+        }
+
+        public static Task SendAsyncPrefixed(
+            this TcpClient client, byte[] packet)
+        {
+            return Task.Run(() =>
+            {
+                using (NetworkStream ns = client.GetStream())
+                {
+                    byte[] lengthPrefix = BitConverter.GetBytes(packet.Length);
+                    ns.Write(lengthPrefix, 0, lengthPrefix.Length);
+                    ns.Write(packet, 0, packet.Length);
                 }
             });
         }

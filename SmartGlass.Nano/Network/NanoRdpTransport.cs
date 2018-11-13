@@ -93,27 +93,22 @@ namespace SmartGlass.Nano
         }
 #pragma warning restore 1998
 
-        public async Task SendAsyncStreaming(RtpPacket message)
+        public Task SendAsyncStreaming(RtpPacket message)
         {
             var writer = new BEWriter();
             message.Serialize(writer);
             var serialized = writer.ToArray();
 
-            await _streamingProtoClient.SendAsync(serialized, serialized.Length);
+            return _streamingProtoClient.SendAsync(serialized, serialized.Length);
         }
 
-        public async Task SendAsyncControl(RtpPacket message)
+        public Task SendAsyncControl(RtpPacket message)
         {
             var writer = new BEWriter();
             message.Serialize(writer);
             byte[] serialized = writer.ToArray();
 
-            var finalWriter = new LEWriter();
-            finalWriter.Write((uint)serialized.Length);
-            finalWriter.Write(serialized);
-
-            byte[] prefixedSerialized = finalWriter.ToArray();
-            await _controlProtoClient.GetStream().WriteAsync(prefixedSerialized, 0, prefixedSerialized.Length);
+            return _controlProtoClient.SendAsyncPrefixed(serialized);
         }
 
         public Task<RtpPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
