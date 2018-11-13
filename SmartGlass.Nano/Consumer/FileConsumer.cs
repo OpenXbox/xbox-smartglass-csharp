@@ -45,11 +45,11 @@ namespace SmartGlass.Nano.Consumer
 
             if (_dumpSingleFrames)
             {
-                FileStream fs = new FileStream(
-                    $"{_fileName}.video.{frame.FrameId}.{frame.TimeStamp}.raw",
-                    FileMode.CreateNew);
-                fs.Write(frame.RawData, 0, frame.RawData.Length);
-                fs.Flush(); fs.Close();
+                string frameFilename = $"{_fileName}.video.{frame.FrameId}.{frame.TimeStamp}.raw";
+                using (FileStream fs = new FileStream(frameFilename, FileMode.CreateNew))
+                {
+                    fs.Write(frame.RawData, 0, frame.RawData.Length);
+                }
             }
             else
             {
@@ -73,11 +73,11 @@ namespace SmartGlass.Nano.Consumer
 
             if (_dumpSingleFrames)
             {
-                FileStream fs = new FileStream(
-                    $"{_fileName}.audio.{audioFrameCount}.{frame.TimeStamp}.raw",
-                    FileMode.CreateNew);
-                fs.Write(frame.RawData, 0, frame.RawData.Length);
-                fs.Flush(); fs.Close();
+                string frameFilename = $"{_fileName}.audio.{audioFrameCount}.{frame.TimeStamp}.raw";
+                using (FileStream fs = new FileStream(frameFilename, FileMode.CreateNew))
+                {
+                    fs.Write(frame.RawData, 0, frame.RawData.Length);
+                }
                 audioFrameCount++;
             }
             else
