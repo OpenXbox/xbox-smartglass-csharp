@@ -13,6 +13,7 @@ namespace SmartGlass.Nano
         private readonly Channels.ChannelManager _channelManager;
 
         internal List<Consumer.IConsumer> _consumers { get; set; }
+        internal Provider.IProvider _provider { get; set; }
 
         public Guid SessionId { get; internal set; }
         public ushort ConnectionId { get; private set; }
@@ -26,6 +27,7 @@ namespace SmartGlass.Nano
             _transport.MessageReceived += MessageReceived;
             _channelManager = new Channels.ChannelManager(this);
             _consumers = new List<Consumer.IConsumer>();
+            _provider = null;
             ControlHandshakeDone = false;
             SessionId = sessionId;
             ConnectionId = (ushort)new Random().Next(5000);
@@ -38,8 +40,8 @@ namespace SmartGlass.Nano
             _channelManager.Video.FeedVideoFormat += consumer.ConsumeVideoFormat;
             _channelManager.Video.FeedVideoData += consumer.ConsumeVideoData;
 
-            _channelManager.InputFeedback.FeedInputConfig += consumer.ConsumeInputConfig;
-            _channelManager.InputFeedback.FeedInputFrame += consumer.ConsumeInputFrame;
+            _channelManager.InputFeedback.FeedInputFeedbackConfig += consumer.ConsumeInputFeedbackConfig;
+            _channelManager.InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
             _consumers.Add(consumer);
         }
 
@@ -49,9 +51,43 @@ namespace SmartGlass.Nano
             _channelManager.Audio.FeedAudioData -= consumer.ConsumeAudioData;
             _channelManager.Video.FeedVideoFormat -= consumer.ConsumeVideoFormat;
             _channelManager.Video.FeedVideoData -= consumer.ConsumeVideoData;
-            _channelManager.InputFeedback.FeedInputConfig -= consumer.ConsumeInputConfig;
-            _channelManager.InputFeedback.FeedInputFrame -= consumer.ConsumeInputFrame;
+
+            _channelManager.InputFeedback.FeedInputFeedbackConfig -= consumer.ConsumeInputFeedbackConfig;
+            _channelManager.InputFeedback.FeedInputFeedbackFrame -= consumer.ConsumeInputFeedbackFrame;
             return _consumers.Remove(consumer);
+        }
+
+        public bool AddProvider(Provider.IProvider provider)
+        {
+            if (_provider != null)
+            {
+                Debug.WriteLine("Already got a provider!");
+                return false;
+            }
+            _provider = provider;
+
+            _provider.FeedInputConfig += _channelManager.Input.OnInputConfigReceived;
+            _provider.FeedInputFrame += _channelManager.Input.OnInputFrameReceived;
+            _provider.FeedChatAudioFormat += _channelManager.ChatAudio.OnChatAudioConfigReceived;
+            _provider.FeedChatAudioData += _channelManager.ChatAudio.OnChatAudioDataReceived;
+            return true;
+        }
+
+        public bool RemoveProvider()
+        {
+            if (_provider == null)
+            {
+                Debug.WriteLine("Got no provider to remove!");
+                return false;
+            }
+
+            _provider.FeedInputConfig -= _channelManager.Input.OnInputConfigReceived;
+            _provider.FeedInputFrame -= _channelManager.Input.OnInputFrameReceived;
+            _provider.FeedChatAudioFormat -= _channelManager.ChatAudio.OnChatAudioConfigReceived;
+            _provider.FeedChatAudioData -= _channelManager.ChatAudio.OnChatAudioDataReceived;
+
+            _provider = null;
+            return true;
         }
 
         // TODO: Need to improve the robustness of this (async await on both handshakes, create client with an async static method?)

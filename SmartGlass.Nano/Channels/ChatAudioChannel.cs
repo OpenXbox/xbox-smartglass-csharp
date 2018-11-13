@@ -16,6 +16,14 @@ namespace SmartGlass.Nano.Channels
             HandshakeDone = false;
         }
 
+        public void OnChatAudioConfigReceived(object sender, AudioFormatEventArgs args)
+        {
+        }
+
+        public void OnChatAudioDataReceived(object sender, AudioDataEventArgs args)
+        {
+        }
+
         public override void OnClientHandshake(AudioClientHandshake handshake)
         {
         }

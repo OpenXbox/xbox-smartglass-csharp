@@ -17,7 +17,7 @@ namespace SmartGlass.Nano.Channels
 
         public void OnStreamer(Streamer streamer)
         {
-            switch((InputPayloadType)streamer.PacketType)
+            switch ((InputPayloadType)streamer.PacketType)
             {
                 case InputPayloadType.ClientHandshake:
                     streamer.DeserializeData(new InputClientHandshake());
