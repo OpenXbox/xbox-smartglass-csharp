@@ -1,7 +1,7 @@
 using System;
 using SmartGlass.Nano.Packets;
 
-namespace SmartGlass.Nano.Consumer
+namespace SmartGlass.Nano
 {
     public class VideoFormatEventArgs : EventArgs
     {
@@ -41,8 +41,12 @@ namespace SmartGlass.Nano.Consumer
 
     public class InputConfigEventArgs : EventArgs
     {
-        public InputConfigEventArgs()
+        public ControllerEventType EventType { get; private set; }
+        public int ControllerIndex { get; private set; }
+        public InputConfigEventArgs(ControllerEventType type, int controllerIndex)
         {
+            EventType = type;
+            ControllerIndex = ControllerIndex;
         }
     }
 

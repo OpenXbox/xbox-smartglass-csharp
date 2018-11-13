@@ -33,22 +33,24 @@ namespace SmartGlass.Nano.Consumer
 
     }
 
-    public interface IInputConfigConsumer
+    public interface IInputFeedbackConfigConsumer
     {
-        void ConsumeInputConfig(object sender, InputConfigEventArgs args);
+        void ConsumeInputFeedbackConfig(object sender, InputConfigEventArgs args);
     }
 
-    public interface IInputFrameConsumer
+    public interface IInputFeedbackFrameConsumer
     {
-        void ConsumeInputFrame(object sender, InputFrameEventArgs args);
+        void ConsumeInputFeedbackFrame(object sender, InputFrameEventArgs args);
     }
 
-    public interface IInputConsumer : IInputConfigConsumer, IInputFrameConsumer
+    public interface IInputFeedbackConsumer
+        : IInputFeedbackConfigConsumer, IInputFeedbackFrameConsumer
     {
 
     }
 
-    public interface IConsumer : IAudioConsumer, IVideoConsumer, IInputConsumer
+    public interface IConsumer
+        : IAudioConsumer, IVideoConsumer, IInputFeedbackConsumer
     {
     }
 }
