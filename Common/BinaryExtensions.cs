@@ -45,7 +45,19 @@ namespace SmartGlass.Common
             return reader.ReadBytes((int)length);
         }
 
-        public static uint[] ReadUInt32PrefixedArray(this BinaryReader reader)
+        public static void WriteUInt16PrefixedBlob(this BinaryWriter writer, byte[] data)
+        {
+            writer.Write((ushort)data.Length);
+            writer.Write(data);
+        }
+
+        public static void WriteUInt32PrefixedBlob(this BinaryWriter writer, byte[] data)
+        {
+            writer.Write((uint)data.Length);
+            writer.Write(data);
+        }
+
+        public static uint[] ReadUInt32PrefixedUInt32Array(this BinaryReader reader)
         {
             var count = reader.ReadUInt32();
             var values = new uint[count];
@@ -88,6 +100,32 @@ namespace SmartGlass.Common
             }
 
             return items.ToArray();
+        }
+
+        public static void WriteUInt16PrefixedArray(
+            this BinaryWriter writer, IEnumerable<ISerializableLE> data)
+        {
+            int count = data.Count();
+            writer.Write((ushort)count);
+
+            for (var i = 0; i < count; i++)
+            {
+                var item = data.ElementAt(i);
+                item.Serialize(writer);
+            }
+        }
+
+        public static void WriteUInt32PrefixedArray(
+            this BinaryWriter writer, IEnumerable<ISerializableLE> data)
+        {
+            int count = data.Count();
+            writer.Write((uint)count);
+
+            for (var i = 0; i < count; i++)
+            {
+                var item = data.ElementAt(i);
+                item.Serialize(writer);
+            }
         }
 
         public static void WriteUInt32Prefixed(
