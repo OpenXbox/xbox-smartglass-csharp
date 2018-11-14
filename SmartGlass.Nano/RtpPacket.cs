@@ -58,7 +58,7 @@ namespace SmartGlass.Nano
 
         public void Serialize(BEWriter bw)
         {
-            BinaryWriter payloadWriter = BinaryWriter.Null;
+            BinaryWriter payloadWriter = new BinaryWriter(new MemoryStream());
             Payload.Serialize(payloadWriter);
             byte[] padding = Padding.CreatePaddingData(
                 PaddingType.ANSI_X923,

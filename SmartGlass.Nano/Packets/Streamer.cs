@@ -45,7 +45,7 @@ namespace SmartGlass.Nano.Packets
 
         public void Serialize(BinaryWriter bw)
         {
-            var payloadWriter = BinaryWriter.Null;
+            var payloadWriter = new BinaryWriter(new MemoryStream());
             Data.Serialize(payloadWriter);
             var payload = payloadWriter.ToBytes();
             PacketSize = (uint)payload.Length;

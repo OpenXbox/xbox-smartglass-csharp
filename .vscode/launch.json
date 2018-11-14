@@ -8,7 +8,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Cli",
-            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp2.0/xbsg.dll",
+            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp2.0/Smartglass.Cli.dll",
             "args": [
                 "connect",
                 "10.0.0.241"
@@ -23,7 +23,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build Cli",
-            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp2.0/xbsg.dll",
+            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp2.0/Smartglass.Cli.dll",
             "args": [
                 "pcap",
                 "${workspaceRoot}/../../Desktop/testpcap.pcap",
