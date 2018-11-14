@@ -5,7 +5,7 @@ using System.IO;
 
 namespace SmartGlass.Common
 {
-    internal static class BinaryExtensions
+    public static class BinaryExtensions
     {
         public static byte[] ToBytes(this BinaryReader reader)
         {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SmartGlass.Common
 {
-    internal class AsyncLazy<T>
+    public class AsyncLazy<T>
     {
         private readonly object _lockObject = new object();
         protected object LockObject => _lockObject;

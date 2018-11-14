@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SmartGlass.Common
 {
-    internal static class EnumerableExtensions
+    public static class EnumerableExtensions
     {
         public static IEnumerable<T> DistinctBy<T, U>(this IEnumerable<T> enumerable, Func<T, U> keySelector)
         {
@@ -33,7 +33,7 @@ namespace SmartGlass.Common
         {
             if (size == 0)
             {
-                return new T[] {};
+                return new T[] { };
             }
 
             return OfRange(0, size - 1).Select(i => item).ToArray();

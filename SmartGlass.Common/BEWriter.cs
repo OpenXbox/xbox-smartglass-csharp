@@ -8,7 +8,7 @@ using System.Text;
 namespace SmartGlass.Common
 {
     // TODO: Optimize byte order reversal.
-    internal class BEWriter
+    public class BEWriter
     {
         private readonly BinaryWriter _writer;
 

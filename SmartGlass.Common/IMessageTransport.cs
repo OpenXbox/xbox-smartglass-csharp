@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SmartGlass.Common
 {
-    interface IMessageTransport<TMessage>
+    public interface IMessageTransport<TMessage>
     {
         event EventHandler<MessageReceivedEventArgs<TMessage>> MessageReceived;
 

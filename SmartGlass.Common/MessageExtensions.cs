@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SmartGlass.Common
 {
-    internal static class MessageExtensions
+    public static class MessageExtensions
     {
         public static async Task<T> WaitForMessageAsync<T, TError, TBase>(
             this IMessageTransport<TBase> transport, TimeSpan timeout, Action startAction = null, Func<T, bool> filter = null, Func<TError, bool> errorFilter = null)

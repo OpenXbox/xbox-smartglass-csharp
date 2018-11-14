@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SmartGlass.Common
 {
-    internal class BEReader
+    public class BEReader
     {
         private readonly BinaryReader _reader;
 
