@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace SmartGlass.Common
 {
-    internal class AttributeTypeMapping<T, TKey> where T : Attribute
+    public class AttributeTypeMapping<T, TKey> where T : Attribute
     {
         private readonly object _lock = new object();
 

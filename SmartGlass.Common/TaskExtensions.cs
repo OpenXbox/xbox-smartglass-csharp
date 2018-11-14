@@ -6,7 +6,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass
 {
-    internal static class TaskExtensions
+    public static class TaskExtensions
     {
         public static Task<TEventArgs> EventTask<T, TEventArgs>(
             T obj,
