@@ -32,8 +32,7 @@ namespace SmartGlass.Nano.Packets
         public void Serialize(BinaryWriter bw)
         {
             byte[] name = Encoding.GetEncoding("utf-8").GetBytes(Name);
-            bw.Write((ushort)name.Length);
-            bw.Write(name);
+            bw.WriteUInt16PrefixedBlob(name);
             bw.Write(Flags);
         }
     }

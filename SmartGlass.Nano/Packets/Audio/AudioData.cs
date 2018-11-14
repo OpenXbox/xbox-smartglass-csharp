@@ -39,8 +39,7 @@ namespace SmartGlass.Nano.Packets
             bw.Write(Flags);
             bw.Write(FrameId);
             bw.Write(Timestamp);
-            bw.Write((uint)Data.Length);
-            bw.Write(Data);
+            bw.WriteUInt32PrefixedBlob(Data);
         }
     }
 }

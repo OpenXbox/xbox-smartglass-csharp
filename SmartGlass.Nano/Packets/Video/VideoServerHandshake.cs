@@ -49,11 +49,7 @@ namespace SmartGlass.Nano.Packets
             bw.Write(Height);
             bw.Write(FPS);
             bw.Write(ReferenceTimestamp);
-            bw.Write((uint)Formats.Length);
-            foreach (ISerializableLE f in Formats)
-            {
-                f.Serialize(bw);
-            }
+            bw.WriteUInt32PrefixedArray(Formats);
         }
     }
 }
