@@ -22,13 +22,13 @@ namespace SmartGlass.Nano.Packets
             ControllerIndex = controllerIndex;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             Type = (ControllerEventType)br.ReadByte();
             ControllerIndex = br.ReadByte();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write((byte)Type);
             bw.Write(ControllerIndex);

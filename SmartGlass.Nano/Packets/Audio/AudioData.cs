@@ -16,7 +16,7 @@ namespace SmartGlass.Nano.Packets
         public AudioData()
         {
         }
-        
+
         public AudioData(uint flags, uint frameId,
                          long timestamp, byte[] data)
         {
@@ -26,21 +26,20 @@ namespace SmartGlass.Nano.Packets
             Data = data;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             Flags = br.ReadUInt32();
             FrameId = br.ReadUInt32();
             Timestamp = br.ReadInt64();
-            Data = br.ReadBlobUInt32();
+            Data = br.ReadUInt32PrefixedBlob();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(Flags);
             bw.Write(FrameId);
             bw.Write(Timestamp);
-            bw.Write((uint)Data.Length);
-            bw.Write(Data);
+            bw.WriteUInt32PrefixedBlob(Data);
         }
     }
 }

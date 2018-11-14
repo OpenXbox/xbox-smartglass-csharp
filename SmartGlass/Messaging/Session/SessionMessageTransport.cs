@@ -121,7 +121,7 @@ namespace SmartGlass.Messaging.Session
 
             if (message.Header.RequestAcknowledge)
             {
-                SendMessageAckAsync(new uint[]{fragmentMessage.Header.SequenceNumber})
+                SendMessageAckAsync(new uint[] { fragmentMessage.Header.SequenceNumber })
                     .GetAwaiter().GetResult();
             }
 
@@ -217,7 +217,7 @@ namespace SmartGlass.Messaging.Session
 
             var writer = new BEWriter();
             message.Serialize(writer);
-            fragment.Fragment = writer.ToArray();
+            fragment.Fragment = writer.ToBytes();
 
             return _transport.SendAsync(fragment);
         }

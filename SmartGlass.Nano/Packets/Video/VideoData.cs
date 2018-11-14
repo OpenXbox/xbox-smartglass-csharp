@@ -19,7 +19,7 @@ namespace SmartGlass.Nano.Packets
         public VideoData()
         {
         }
-        
+
         public VideoData(uint flags, uint frameId, long timestamp,
                          uint totalSize, uint packetCount,
                          uint offset, byte[] data)
@@ -33,7 +33,7 @@ namespace SmartGlass.Nano.Packets
             Data = data;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             Flags = br.ReadUInt32();
             FrameId = br.ReadUInt32();
@@ -41,10 +41,10 @@ namespace SmartGlass.Nano.Packets
             TotalSize = br.ReadUInt32();
             PacketCount = br.ReadUInt32();
             Offset = br.ReadUInt32();
-            Data = br.ReadBlobUInt32();
+            Data = br.ReadUInt32PrefixedBlob();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(Flags);
             bw.Write(FrameId);

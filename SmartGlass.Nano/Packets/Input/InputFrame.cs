@@ -30,7 +30,7 @@ namespace SmartGlass.Nano.Packets
             Extension = extension;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             FrameId = br.ReadUInt32();
             Timestamp = br.ReadUInt64();
@@ -41,7 +41,7 @@ namespace SmartGlass.Nano.Packets
             ((ISerializableLE)Extension).Deserialize(br);
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(FrameId);
             bw.Write(Timestamp);

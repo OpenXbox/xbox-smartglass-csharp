@@ -49,29 +49,27 @@ namespace SmartGlass.Common
             {
                 while (!token.IsCancellationRequested && client.Client != null)
                 {
-                    using (NetworkStream ns = client.GetStream())
+                    NetworkStream ns = client.GetStream();
+                    byte[] prefixBytes = new byte[sizeof(uint)];
+                    Task<int> bytesReadTask = ns.ReadAsync(prefixBytes, 0, sizeof(uint));
+                    Task.WaitAny(bytesReadTask);
+                    if (bytesReadTask.IsFaulted)
                     {
-                        byte[] prefixBytes = new byte[sizeof(uint)];
-                        Task<int> bytesReadTask = ns.ReadAsync(prefixBytes, 0, sizeof(uint));
-                        Task.WaitAny(bytesReadTask);
-                        if (bytesReadTask.IsFaulted)
-                        {
-                            Debug.WriteLine("ConsumeReceivedPrefixed: ReadAsync failed! (size prefix)");
-                            continue;
-                        }
-
-                        uint size = BitConverter.ToUInt32(prefixBytes, 0);
-
-                        byte[] packet = new byte[size];
-                        Task<int> receiveTask = ns.ReadAsync(packet, 0, packet.Length);
-                        Task.WaitAny(receiveTask);
-                        if (receiveTask.IsFaulted)
-                        {
-                            Debug.WriteLine("ConsumeReceivedPrefixed: ReadAsync failed! (packet)");
-                            continue;
-                        }
-                        consume(packet);
+                        Debug.WriteLine("ConsumeReceivedPrefixed: ReadAsync failed! (size prefix)");
+                        continue;
                     }
+
+                    uint size = BitConverter.ToUInt32(prefixBytes, 0);
+
+                    byte[] packet = new byte[size];
+                    Task<int> receiveTask = ns.ReadAsync(packet, 0, packet.Length);
+                    Task.WaitAny(receiveTask);
+                    if (receiveTask.IsFaulted)
+                    {
+                        Debug.WriteLine("ConsumeReceivedPrefixed: ReadAsync failed! (packet)");
+                        continue;
+                    }
+                    consume(packet);
                 }
             });
         }
@@ -81,12 +79,15 @@ namespace SmartGlass.Common
         {
             return Task.Run(() =>
             {
-                using (NetworkStream ns = client.GetStream())
-                {
-                    byte[] lengthPrefix = BitConverter.GetBytes(packet.Length);
-                    ns.Write(lengthPrefix, 0, lengthPrefix.Length);
-                    ns.Write(packet, 0, packet.Length);
-                }
+                NetworkStream ns = client.GetStream();
+                byte[] lengthPrefix = BitConverter.GetBytes(packet.Length);
+
+                BinaryWriter writer = new BinaryWriter(new MemoryStream());
+                writer.Write(lengthPrefix);
+                writer.Write(packet);
+                byte[] prefixedData = writer.ToBytes();
+
+                ns.Write(prefixedData, 0, prefixedData.Length);
             });
         }
     }

@@ -78,7 +78,7 @@ namespace SmartGlass.Channels
 
             var length = reader.ReadUInt16();
 
-            var encryptedPayloadLength = length + BinaryExtensions.CalculatePaddingSize(length, 16);
+            var encryptedPayloadLength = length + Padding.CalculatePaddingSize(length, 16);
 
             var encryptedPayloadBytes = new byte[encryptedPayloadLength];
             var encryptedPayloadPosition = 0;
@@ -97,7 +97,7 @@ namespace SmartGlass.Channels
             bodyWriter.Write(length);
             bodyWriter.Write(encryptedPayloadBytes);
 
-            var messageSignature = _cryptoContext.CalculateMessageSignature(bodyWriter.ToArray());
+            var messageSignature = _cryptoContext.CalculateMessageSignature(bodyWriter.ToBytes());
 
             if (!signature.SequenceEqual(messageSignature))
             {
@@ -123,9 +123,9 @@ namespace SmartGlass.Channels
             writer.Write(new byte[] { 0xde, 0xad });
             writer.Write((ushort)bytes.Length);
             writer.Write(_cryptoContext.Encrypt(bytes));
-            writer.Write(_cryptoContext.CalculateMessageSignature(writer.ToArray()));
+            writer.Write(_cryptoContext.CalculateMessageSignature(writer.ToBytes()));
 
-            var buffer = writer.ToArray();
+            var buffer = writer.ToBytes();
 
             await _client.GetStream().WriteAsync(buffer, 0, buffer.Length);
         }

@@ -18,11 +18,11 @@ namespace SmartGlass.Nano.Packets
         public VideoControl()
         {
         }
-        
+
         public VideoControl(VideoControlFlags flags,
-                            uint lastDisplayedFrameId=0, long timestamp=0,
-                            uint queueDepth=0, uint firstLostFrame=0,
-                            uint lastLostFrame=0)
+                            uint lastDisplayedFrameId = 0, long timestamp = 0,
+                            uint queueDepth = 0, uint firstLostFrame = 0,
+                            uint lastLostFrame = 0)
         {
             Flags = flags;
             LastDisplayedFrameId = lastDisplayedFrameId;
@@ -32,7 +32,7 @@ namespace SmartGlass.Nano.Packets
             LastLostFrame = lastLostFrame;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             Flags = (VideoControlFlags)br.ReadUInt32();
 
@@ -52,7 +52,7 @@ namespace SmartGlass.Nano.Packets
             }
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write((uint)Flags);
             if (Flags.HasFlag(VideoControlFlags.LastDisplayedFrame))

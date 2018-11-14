@@ -108,7 +108,7 @@ namespace SmartGlass.Messaging
 
             var writer = new BEWriter();
             message.Serialize(writer);
-            var serialized = writer.ToArray();
+            var serialized = writer.ToBytes();
 
             if (_addressOrHostname == null)
             {

@@ -15,7 +15,7 @@ namespace SmartGlass.Nano.Packets
         public ControlHeader()
         {
         }
-        
+
         public ControlHeader(uint previousSequence, ushort unknown1,
                              ushort unknown2, ControlOpCode opCode)
         {
@@ -25,7 +25,7 @@ namespace SmartGlass.Nano.Packets
             OpCode = opCode;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             PreviousSequence = br.ReadUInt32();
             Unknown1 = br.ReadUInt16();
@@ -33,7 +33,7 @@ namespace SmartGlass.Nano.Packets
             OpCode = (ControlOpCode)br.ReadUInt16();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write(PreviousSequence);
             bw.Write(Unknown1);

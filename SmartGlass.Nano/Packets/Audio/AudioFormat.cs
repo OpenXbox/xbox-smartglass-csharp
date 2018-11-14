@@ -27,7 +27,7 @@ namespace SmartGlass.Nano.Packets
             SampleType = sampleType;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             Channels = br.ReadUInt32();
             SampleRate = br.ReadUInt32();
@@ -39,7 +39,7 @@ namespace SmartGlass.Nano.Packets
             }
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(Channels);
             bw.Write(SampleRate);

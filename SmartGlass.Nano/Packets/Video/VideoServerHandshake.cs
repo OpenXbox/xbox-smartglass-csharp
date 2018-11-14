@@ -18,7 +18,7 @@ namespace SmartGlass.Nano.Packets
         public VideoServerHandshake()
         {
         }
-        
+
         public VideoServerHandshake(uint protocolVersion,
                                     uint width, uint height,
                                     uint fps, ulong refTimestamp,
@@ -32,28 +32,24 @@ namespace SmartGlass.Nano.Packets
             Formats = formats;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             ProtocolVersion = br.ReadUInt32();
             Width = br.ReadUInt32();
             Height = br.ReadUInt32();
             FPS = br.ReadUInt32();
             ReferenceTimestamp = br.ReadUInt64();
-            Formats = br.ReadArrayUInt32<VideoFormat>();
+            Formats = br.ReadUInt32PrefixedArray<VideoFormat>();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write(ProtocolVersion);
             bw.Write(Width);
             bw.Write(Height);
             bw.Write(FPS);
             bw.Write(ReferenceTimestamp);
-            bw.Write((uint)Formats.Length);
-            foreach (ISerializableLE f in Formats)
-            {
-                f.Serialize(bw);
-            }
+            bw.WriteUInt32PrefixedArray(Formats);
         }
     }
 }

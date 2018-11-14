@@ -13,18 +13,18 @@ namespace SmartGlass.Nano.Packets
         public UdpHandshake()
         {
         }
-        
+
         public UdpHandshake(ControlHandshakeType type)
         {
             Type = type;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             Type = (ControlHandshakeType)br.ReadByte();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write((byte)Type);
         }

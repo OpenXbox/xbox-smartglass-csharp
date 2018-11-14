@@ -19,12 +19,12 @@ namespace SmartGlass.Nano.Packets
             Flags = flags;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             Flags = br.ReadUInt32();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write(Flags);
         }
