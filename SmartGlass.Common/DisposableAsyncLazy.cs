@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SmartGlass.Common
 {
-    internal class DisposableAsyncLazy<T> : AsyncLazy<T>, IDisposable
+    public class DisposableAsyncLazy<T> : AsyncLazy<T>, IDisposable
         where T : IDisposable
     {
         private bool _isDisposed;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartGlass.Common
 {
-    internal static class SocketExtensions
+    public static class SocketExtensions
     {
         public static CancellationTokenSource ConsumeReceived(this UdpClient client, Action<UdpReceiveResult> consume)
         {

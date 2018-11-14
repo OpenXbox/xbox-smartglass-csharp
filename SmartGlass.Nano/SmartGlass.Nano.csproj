@@ -17,6 +17,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Common\*.cs" />
+    <ProjectReference Include="..\SmartGlass.Common\SmartGlass.Common.csproj" />
   </ItemGroup>
 </Project>
