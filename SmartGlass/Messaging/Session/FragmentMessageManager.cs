@@ -48,7 +48,7 @@ namespace SmartGlass.Messaging.Session
             }
 
             SessionMessageBase assembled = SessionMessageTransport.CreateFromMessageType(messageType);
-            assembled.Deserialize(new BEReader(writer.ToArray()));
+            assembled.Deserialize(new BEReader(writer.ToBytes()));
             return assembled;
         }
     }

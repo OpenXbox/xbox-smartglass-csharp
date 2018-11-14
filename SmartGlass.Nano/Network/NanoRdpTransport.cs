@@ -97,7 +97,7 @@ namespace SmartGlass.Nano
         {
             var writer = new BEWriter();
             message.Serialize(writer);
-            var serialized = writer.ToArray();
+            var serialized = writer.ToBytes();
 
             return _streamingProtoClient.SendAsync(serialized, serialized.Length);
         }
@@ -106,7 +106,7 @@ namespace SmartGlass.Nano
         {
             var writer = new BEWriter();
             message.Serialize(writer);
-            byte[] serialized = writer.ToArray();
+            byte[] serialized = writer.ToBytes();
 
             return _controlProtoClient.SendAsyncPrefixed(serialized);
         }

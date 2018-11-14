@@ -150,7 +150,7 @@ namespace SmartGlass.Common
             _reader.BaseStream.Seek(offset, origin);
         }
 
-        public byte[] ToArray()
+        public byte[] ToBytes()
         {
             return _reader.BaseStream.ToBytes();
         }

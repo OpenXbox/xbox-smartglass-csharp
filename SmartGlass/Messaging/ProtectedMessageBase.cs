@@ -22,16 +22,16 @@ namespace SmartGlass.Messaging
 
             SerializeProtectedPayload(protectedPayloadWriter);
 
-            var protectedPayload = protectedPayloadWriter.ToArray();
+            var protectedPayload = protectedPayloadWriter.ToBytes();
             Header.ProtectedPayloadLength = (ushort)protectedPayload.Length;
 
             var encryptedPayload = protectedPayload.Length > 0 ?
-                Crypto.Encrypt(protectedPayload, InitVector) : new byte[] {};
+                Crypto.Encrypt(protectedPayload, InitVector) : new byte[] { };
 
             base.Serialize(writer);
             writer.Write(encryptedPayload);
 
-            var signature = Crypto.CalculateMessageSignature(writer.ToArray());
+            var signature = Crypto.CalculateMessageSignature(writer.ToBytes());
             writer.Write(signature);
         }
 
@@ -53,7 +53,7 @@ namespace SmartGlass.Messaging
 
             var protectedPayload = messageReader.ReadToEnd();
             var unencryptedPayload = protectedPayload.Length > 0 ?
-                Crypto.Decrypt(protectedPayload, InitVector) : new byte[] {};
+                Crypto.Decrypt(protectedPayload, InitVector) : new byte[] { };
 
             var protectedPayloadReader = new BEReader(unencryptedPayload);
 

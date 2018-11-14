@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using SmartGlass.Nano;
+using SmartGlass.Nano.Consumer;
 using SmartGlass.Cli.Session;
 using NClap.Metadata;
 using NClap.Repl;
@@ -31,6 +32,11 @@ namespace SmartGlass.Cli
                     Console.WriteLine($"Connecting to Nano, TCP: {result.TcpPort}, UDP: {result.UdpPort}");
                     var nano = new NanoClient(Hostname, result.TcpPort, result.UdpPort, new Guid());
                     await nano.Initialize();
+
+                    FileConsumer consumer = new FileConsumer("nanostream");
+                    nano.AddConsumer(consumer);
+
+                    await nano.StartStream();
 
                     var loop = new Loop(typeof(SessionCommandType));
                     loop.Execute();

@@ -52,22 +52,22 @@ namespace SmartGlass.Nano
             Payload = CreateFromPayloadType(Header.PayloadType);
 
             byte[] buf = br.ReadToEnd();
-            LEReader payloadReader = new LEReader(buf);
+            BinaryReader payloadReader = BinaryExtensions.ReaderFromBytes(buf);
             Payload.Deserialize(payloadReader);
         }
 
         public void Serialize(BEWriter bw)
         {
-            LEWriter payloadWriter = new LEWriter();
+            BinaryWriter payloadWriter = new BinaryWriter(new MemoryStream());
             Payload.Serialize(payloadWriter);
+            byte[] padding = Padding.CreatePaddingData(
+                PaddingType.ANSI_X923,
+                payloadWriter.ToBytes(),
+                alignment: 4);
+            payloadWriter.Write(padding);
 
-            long payloadLength = payloadWriter.BaseStream.Length;
-            if (payloadLength % 4 != 0)
+            if (padding.Length > 0)
             {
-                // ANSI X.923 padding, 4 byte alignment
-                byte[] padding = new byte[4 - (payloadLength % 4)];
-                padding[padding.Length - 1] = (byte)padding.Length;
-                payloadWriter.Write(padding);
                 Header.Padding = true;
             }
 

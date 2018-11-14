@@ -25,21 +25,21 @@ namespace SmartGlass.Nano.Packets
         {
             Header = new ControlHeader();
         }
-        
+
         public StreamerMessageWithHeader(ControlHeader header, ISerializableLE payload)
         {
             Header = header;
             Payload = payload;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             Header.Deserialize(br);
             Payload = CreateFromControlOpCode(Header.OpCode);
             Payload.Deserialize(br);
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             Header.Serialize(bw);
             Payload.Serialize(bw);

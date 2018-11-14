@@ -14,20 +14,20 @@ namespace SmartGlass.Nano.Packets
         public ControlHandshake()
         {
         }
-        
+
         public ControlHandshake(ControlHandshakeType type, ushort connectionId)
         {
             Type = type;
             ConnectionId = connectionId;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader reader)
         {
-            Type = (ControlHandshakeType)br.ReadByte();
-            ConnectionId = br.ReadUInt16();
+            Type = (ControlHandshakeType)reader.ReadByte();
+            ConnectionId = reader.ReadUInt16();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write((byte)Type);
             bw.Write(ConnectionId);

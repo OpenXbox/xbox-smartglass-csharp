@@ -15,25 +15,24 @@ namespace SmartGlass.Nano.Packets
         public ChannelCreate()
         {
         }
-        
+
         public ChannelCreate(string name, uint flags)
         {
             Name = name;
             Flags = flags;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
-            byte[] name = br.ReadBlobUInt16();
+            byte[] name = br.ReadUInt16PrefixedBlob();
             Name = Encoding.GetEncoding("utf-8").GetString(name);
             Flags = br.ReadUInt32();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             byte[] name = Encoding.GetEncoding("utf-8").GetBytes(Name);
-            bw.Write((ushort)name.Length);
-            bw.Write(name);
+            bw.WriteUInt16PrefixedBlob(name);
             bw.Write(Flags);
         }
     }

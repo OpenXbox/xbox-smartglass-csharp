@@ -30,7 +30,7 @@ namespace SmartGlass.Nano.Packets
             Unknown5 = 0;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             Unknown1 = br.ReadByte();
             Unknown2 = br.ReadByte();
@@ -43,7 +43,7 @@ namespace SmartGlass.Nano.Packets
             Unknown5 = br.ReadByte();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(Unknown1);
             bw.Write(Unknown2);

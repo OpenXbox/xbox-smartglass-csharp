@@ -15,23 +15,23 @@ namespace SmartGlass.Nano.Packets
         {
             RequestedFormat = new AudioFormat();
         }
-        
+
         public AudioClientHandshake(uint initialFrameID, AudioFormat requestedFormat)
         {
             InitialFrameID = initialFrameID;
             RequestedFormat = requestedFormat;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             InitialFrameID = br.ReadUInt32();
             ((ISerializableLE)RequestedFormat).Deserialize(br);
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write(InitialFrameID);
             ((ISerializableLE)RequestedFormat).Serialize(bw);
-        } 
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace SmartGlass.Nano.Packets
             RumbleHandleR = 0;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             LeftTrigger = br.ReadByte();
             RightTrigger = br.ReadByte();
@@ -46,7 +46,7 @@ namespace SmartGlass.Nano.Packets
             RumbleHandleR = br.ReadByte();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(LeftTrigger);
             bw.Write(RightTrigger);

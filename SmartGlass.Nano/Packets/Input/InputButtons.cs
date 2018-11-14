@@ -44,7 +44,7 @@ namespace SmartGlass.Nano.Packets
             Y = 0;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             DPadUp = br.ReadByte();
             DPadDown = br.ReadByte();
@@ -64,7 +64,7 @@ namespace SmartGlass.Nano.Packets
             Y = br.ReadByte();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(DPadUp);
             bw.Write(DPadDown);
