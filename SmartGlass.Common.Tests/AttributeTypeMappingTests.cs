@@ -1,8 +1,10 @@
 using NUnit.Framework;
+using System.Threading.Tasks;
+using SmartGlass.Common;
 
 namespace SmartGlass.Common.Tests
 {
-    public class Tests
+    public class AttributeTypeMappingTests
     {
         [SetUp]
         public void Setup()
@@ -10,9 +12,8 @@ namespace SmartGlass.Common.Tests
         }
 
         [Test]
-        public void Test1()
+        public void Test()
         {
-            Assert.Pass();
         }
     }
 }
