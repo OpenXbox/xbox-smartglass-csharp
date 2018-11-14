@@ -26,7 +26,7 @@ namespace SmartGlass.Nano.Packets
             PacketType = packetType;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             Flags = (StreamerFlags)br.ReadUInt32();
             if (Flags.HasFlag(StreamerFlags.GotSeqAndPrev))
@@ -43,9 +43,9 @@ namespace SmartGlass.Nano.Packets
             RawData = br.ReadToEnd();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
-            var payloadWriter = new LEWriter();
+            var payloadWriter = BinaryWriter.Null;
             Data.Serialize(payloadWriter);
             var payload = payloadWriter.ToBytes();
             PacketSize = (uint)payload.Length;
@@ -67,7 +67,7 @@ namespace SmartGlass.Nano.Packets
         public void DeserializeData(ISerializableLE payloadType)
         {
             Data = payloadType;
-            Data.Deserialize(new LEReader(RawData));
+            Data.Deserialize(BinaryExtensions.ReaderFromBytes(RawData));
         }
     }
 }

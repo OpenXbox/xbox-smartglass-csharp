@@ -15,20 +15,20 @@ namespace SmartGlass.Nano.Packets
         {
             RequestedFormat = new VideoFormat();
         }
-        
+
         public VideoClientHandshake(uint initialFrameId, VideoFormat requestedFormat)
         {
             InitialFrameId = initialFrameId;
             RequestedFormat = requestedFormat;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             InitialFrameId = br.ReadUInt32();
             ((ISerializableLE)RequestedFormat).Deserialize(br);
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write(InitialFrameId);
             ((ISerializableLE)RequestedFormat).Serialize(bw);

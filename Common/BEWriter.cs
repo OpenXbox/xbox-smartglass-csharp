@@ -27,13 +27,6 @@ namespace SmartGlass.Common
             _writer.Write(bytes);
         }
 
-        public void WriteWithPaddingAlignment(byte[] bytes, int alignment)
-        {
-            Write(bytes);
-            var paddingSize = BinaryExtensions.CalculatePaddingSize(bytes.Length, alignment);
-            Write(EnumerableExtensions.EnumerableOf((byte)paddingSize, paddingSize).ToArray());
-        }
-
         public void Write(IEnumerable<uint> arr)
         {
             var values = arr.ToList();
@@ -119,7 +112,7 @@ namespace SmartGlass.Common
             _writer.BaseStream.Seek(offset, origin);
         }
 
-        public byte[] ToArray()
+        public byte[] ToBytes()
         {
             return _writer.BaseStream.ToBytes();
         }

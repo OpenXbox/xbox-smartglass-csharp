@@ -4,7 +4,7 @@ namespace SmartGlass.Common
 {
     interface ISerializableLE
     {
-         void Deserialize(LEReader reader);
-         void Serialize(LEWriter writer);
+        void Deserialize(BinaryReader reader);
+        void Serialize(BinaryWriter writer);
     }
 }

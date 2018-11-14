@@ -62,22 +62,28 @@ namespace SmartGlass.Messaging.Session
 
             base.Serialize(messageWriter);
 
-            var message = messageWriter.ToArray();
+            var message = messageWriter.ToBytes();
 
             var initVectorSource = message.Take(16).ToArray();
             var initVector = Crypto.CreateDerivedInitVector(initVectorSource);
 
             var fragmentWriter = new BEWriter();
-            fragmentWriter.WriteWithPaddingAlignment(
-                Fragment,
-                payloadSizeAlignment);
 
-            var encryptedFragment = Crypto.EncryptWithoutPadding(fragmentWriter.ToArray(), initVector);
+            byte[] padding = Padding.CreatePaddingData(
+                PaddingType.PKCS7,
+                Fragment,
+                alignment: payloadSizeAlignment
+            );
+
+            fragmentWriter.Write(Fragment);
+            fragmentWriter.Write(padding);
+
+            var encryptedFragment = Crypto.EncryptWithoutPadding(fragmentWriter.ToBytes(), initVector);
 
             Header.Serialize(writer);
             writer.Write(encryptedFragment);
 
-            var signature = Crypto.CalculateMessageSignature(writer.ToArray());
+            var signature = Crypto.CalculateMessageSignature(writer.ToBytes());
             writer.Write(signature);
         }
     }

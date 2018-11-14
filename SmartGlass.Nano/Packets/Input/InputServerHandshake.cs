@@ -28,7 +28,7 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = initialFrameId;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             ProtocolVersion = br.ReadUInt32();
             DesktopWidth = br.ReadUInt32();
@@ -37,7 +37,7 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = br.ReadUInt32();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(ProtocolVersion);
             bw.Write(DesktopWidth);

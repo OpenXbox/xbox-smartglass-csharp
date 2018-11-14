@@ -44,15 +44,21 @@ namespace SmartGlass.Channels
         public byte[] Encrypt(byte[] data)
         {
             var writer = new BEWriter();
-            writer.WriteWithPaddingAlignment(data, 16);
+            byte[] padding = Padding.CreatePaddingData(
+                PaddingType.PKCS7,
+                data,
+                alignment: 16);
 
-            var padded = writer.ToArray();
+            writer.Write(data);
+            writer.Write(padding);
 
-            var output = new byte[padded.Length];
+            var paddedData = writer.ToBytes();
 
-            for (var i = 0; i < padded.Length; i += 16)
+            var output = new byte[paddedData.Length];
+
+            for (var i = 0; i < paddedData.Length; i += 16)
             {
-                _clientCipher.ProcessBlock(padded, i, output, i);
+                _clientCipher.ProcessBlock(paddedData, i, output, i);
             }
 
             return output;

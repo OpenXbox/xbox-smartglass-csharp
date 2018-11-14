@@ -15,7 +15,7 @@ namespace SmartGlass.Nano.Packets
         public AudioServerHandshake()
         {
         }
-        
+
         public AudioServerHandshake(uint protocolVersion, ulong refTimestamp,
                                     AudioFormat[] formats)
         {
@@ -24,14 +24,14 @@ namespace SmartGlass.Nano.Packets
             Formats = formats;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             ProtocolVersion = br.ReadUInt32();
             ReferenceTimestamp = br.ReadUInt64();
-            Formats = br.ReadArrayUInt32<AudioFormat>();
+            Formats = br.ReadUInt32PrefixedArray<AudioFormat>();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write(ProtocolVersion);
             bw.Write(ReferenceTimestamp);

@@ -20,9 +20,9 @@ namespace SmartGlass.Nano.Packets
         public VideoFormat()
         {
         }
-        
+
         public VideoFormat(uint fps, uint width, uint height, VideoCodec codec,
-                           uint bpp=0, uint bytes=0, uint redMask=0, uint greenMask=0, uint blueMask=0)
+                           uint bpp = 0, uint bytes = 0, uint redMask = 0, uint greenMask = 0, uint blueMask = 0)
         {
             FPS = fps;
             Width = width;
@@ -35,7 +35,7 @@ namespace SmartGlass.Nano.Packets
             BlueMask = blueMask;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             FPS = br.ReadUInt32();
             Width = br.ReadUInt32();
@@ -51,7 +51,7 @@ namespace SmartGlass.Nano.Packets
             }
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(FPS);
             bw.Write(Width);

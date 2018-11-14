@@ -21,13 +21,13 @@ namespace SmartGlass.Nano.Packets
             ReferenceTimestamp = refTimestamp;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             MaxTouches = br.ReadUInt32();
             ReferenceTimestamp = br.ReadUInt64();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(MaxTouches);
             bw.Write(ReferenceTimestamp);

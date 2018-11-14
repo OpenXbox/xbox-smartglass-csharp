@@ -26,7 +26,7 @@ namespace SmartGlass.Nano.Packets
             Unknown6 = unk6;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             Unknown1 = br.ReadUInt32();
             Unknown2 = br.ReadUInt32();
@@ -36,7 +36,7 @@ namespace SmartGlass.Nano.Packets
             Unknown6 = br.ReadUInt32();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write(Unknown1);
             bw.Write(Unknown2);

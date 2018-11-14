@@ -36,7 +36,7 @@ namespace SmartGlass.Messaging
             var payloadWriter = new BEWriter();
             SerializePayload(payloadWriter);
 
-            var payload = payloadWriter.ToArray();
+            var payload = payloadWriter.ToBytes();
             Header.PayloadLength = (ushort)payload.Length;
 
             Header.Serialize(writer);

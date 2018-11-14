@@ -13,18 +13,18 @@ namespace SmartGlass.Nano.Packets
         public ChannelOpen()
         {
         }
-        
+
         public ChannelOpen(byte[] flags)
         {
             Flags = flags;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
-            Flags = br.ReadBlobUInt32();
+            Flags = br.ReadUInt32PrefixedBlob();
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             if (Flags != null && Flags.Length > 0)
             {

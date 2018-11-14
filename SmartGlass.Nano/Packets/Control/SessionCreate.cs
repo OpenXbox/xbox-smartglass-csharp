@@ -12,11 +12,11 @@ namespace SmartGlass.Nano.Packets
         {
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
         }
     }

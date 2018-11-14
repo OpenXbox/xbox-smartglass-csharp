@@ -19,12 +19,12 @@ namespace SmartGlass.Nano.Packets
             AckedFrame = ackedFrame;
         }
 
-        void ISerializableLE.Deserialize(LEReader br)
+        void ISerializableLE.Deserialize(BinaryReader br)
         {
             AckedFrame = br.ReadUInt32();
         }
 
-        void ISerializableLE.Serialize(LEWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter bw)
         {
             bw.Write(AckedFrame);
         }

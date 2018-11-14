@@ -25,21 +25,21 @@ namespace SmartGlass.Nano.Packets
         public ChannelControl()
         {
         }
-        
+
         public ChannelControl(ChannelControlType type, ISerializableLE data)
         {
             Type = type;
             Data = data;
         }
 
-        public void Deserialize(LEReader br)
+        public void Deserialize(BinaryReader br)
         {
             Type = (ChannelControlType)br.ReadUInt32();
             Data = CreateFromControlType(Type);
             Data.Deserialize(br);
         }
 
-        public void Serialize(LEWriter bw)
+        public void Serialize(BinaryWriter bw)
         {
             bw.Write((uint)Type);
             Data.Serialize(bw);
