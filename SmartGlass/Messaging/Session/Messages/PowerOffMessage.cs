@@ -14,7 +14,7 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public override void Serialize(BEWriter writer)
         {
-            writer.Write(LiveId);
+            writer.WriteUInt16Prefixed(LiveId);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SmartGlass.Messaging.Session.Messages
             TextSessionId = reader.ReadUInt64();
             TextBufferVersion = reader.ReadUInt32();
             Result = (TextResult)reader.ReadUInt16();
-            Text = reader.ReadString();
+            Text = reader.ReadUInt16PrefixedString();
         }
 
         public override void Serialize(BEWriter writer)
@@ -24,7 +24,7 @@ namespace SmartGlass.Messaging.Session.Messages
             writer.Write(TextSessionId);
             writer.Write(TextBufferVersion);
             writer.Write((ushort)Result);
-            writer.Write(Text);
+            writer.WriteUInt16Prefixed(Text);
         }
     }
 }

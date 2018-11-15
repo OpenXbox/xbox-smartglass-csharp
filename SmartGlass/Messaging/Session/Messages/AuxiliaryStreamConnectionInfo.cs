@@ -14,12 +14,12 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public void Deserialize(BEReader reader)
         {
-            CryptoKey = reader.ReadBlob();
-            ServerInitVector = reader.ReadBlob();
-            ClientInitVector = reader.ReadBlob();
-            SignHash = reader.ReadBlob();
+            CryptoKey = reader.ReadUInt16PrefixedBlob();
+            ServerInitVector = reader.ReadUInt16PrefixedBlob();
+            ClientInitVector = reader.ReadUInt16PrefixedBlob();
+            SignHash = reader.ReadUInt16PrefixedBlob();
 
-            Endpoints = reader.ReadArray<AuxiliaryStreamEndpoint>();
+            Endpoints = reader.ReadUInt16PrefixedArray<AuxiliaryStreamEndpoint>();
         }
 
         public void Serialize(BEWriter writer)

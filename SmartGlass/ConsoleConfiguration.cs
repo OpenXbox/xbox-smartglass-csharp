@@ -17,7 +17,7 @@ namespace SmartGlass
             MajorVersion = reader.ReadUInt32();
             MinorVersion = reader.ReadUInt32();
             BuildNumber = reader.ReadUInt32();
-            Locale = reader.ReadString();
+            Locale = reader.ReadUInt16PrefixedString();
         }
 
         void ISerializable.Serialize(BEWriter writer)

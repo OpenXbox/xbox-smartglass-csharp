@@ -14,7 +14,7 @@ namespace SmartGlass.Messaging.Session.Messages
             Configuration = new ConsoleConfiguration();
             ((ISerializable)Configuration).Deserialize(reader);
 
-            ActiveTitles = reader.ReadArray<ActiveTitle>();
+            ActiveTitles = reader.ReadUInt16PrefixedArray<ActiveTitle>();
         }
 
         public override void Serialize(BEWriter writer)

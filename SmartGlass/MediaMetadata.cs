@@ -10,8 +10,8 @@ namespace SmartGlass
 
         public void Deserialize(BEReader reader)
         {
-            Name = reader.ReadString();
-            Value = reader.ReadString();
+            Name = reader.ReadUInt16PrefixedString();
+            Value = reader.ReadUInt16PrefixedString();
         }
 
         public void Serialize(BEWriter writer)

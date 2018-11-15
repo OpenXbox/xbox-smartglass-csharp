@@ -42,7 +42,7 @@ namespace SmartGlass.Messaging.Session.Messages
             writer.Write(OsMajorVersion);
             writer.Write(OsMinorVersion);
 
-            writer.Write(DisplayName);
+            writer.WriteUInt16Prefixed(DisplayName);
         }
     }
 }

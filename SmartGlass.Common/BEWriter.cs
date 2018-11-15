@@ -98,10 +98,14 @@ namespace SmartGlass.Common
             _writer.Write(BitConverter.GetBytes(value).Reverse().ToArray());
         }
 
-        public void Write(string str)
+        /// <summary>
+        /// Write a string, prefixed with it's length as UInt16.
+        /// A null terminator byte is appended.
+        /// </summary>
+        /// <param name="str">The string to write</param>
+        public void WriteUInt16Prefixed(string str)
         {
             var bytes = Encoding.ASCII.GetBytes(str ?? string.Empty);
-
             Write((ushort)bytes.Length);
             _writer.Write(bytes);
             _writer.Write(new byte[1]);

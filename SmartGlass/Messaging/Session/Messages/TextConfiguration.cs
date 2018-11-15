@@ -25,8 +25,8 @@ namespace SmartGlass.Messaging.Session.Messages
             TextOptions = (TextOption)reader.ReadUInt32();
             InputScope = (TextInputScope)reader.ReadUInt32();
             MaxTextLength = reader.ReadUInt32();
-            Locale = reader.ReadString();
-            Prompt = reader.ReadString();
+            Locale = reader.ReadUInt16PrefixedString();
+            Prompt = reader.ReadUInt16PrefixedString();
         }
 
         public override void Serialize(BEWriter writer)
