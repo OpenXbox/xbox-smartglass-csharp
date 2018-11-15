@@ -23,7 +23,7 @@ namespace SmartGlass
             ProductId = new Guid(reader.ReadBytes(16));
             SandboxId = new Guid(reader.ReadBytes(16));
 
-            AumId = reader.ReadString();
+            AumId = reader.ReadUInt16PrefixedString();
         }
 
         void ISerializable.Serialize(BEWriter writer)

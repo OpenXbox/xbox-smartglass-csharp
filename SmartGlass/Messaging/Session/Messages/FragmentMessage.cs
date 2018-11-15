@@ -15,7 +15,7 @@ namespace SmartGlass.Messaging.Session.Messages
         {
             SequenceBegin = reader.ReadUInt32();
             SequenceEnd = reader.ReadUInt32();
-            Data = reader.ReadBlob();
+            Data = reader.ReadUInt16PrefixedBlob();
         }
 
         public override void Serialize(BEWriter writer)

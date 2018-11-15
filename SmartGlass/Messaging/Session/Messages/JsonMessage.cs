@@ -14,12 +14,12 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public override void Deserialize(BEReader reader)
         {
-            Json = reader.ReadString();
+            Json = reader.ReadUInt16PrefixedString();
         }
 
         public override void Serialize(BEWriter writer)
         {
-            writer.Write(Json);
+            writer.WriteUInt16Prefixed(Json);
         }
     }
 }

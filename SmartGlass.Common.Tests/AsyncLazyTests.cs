@@ -15,17 +15,28 @@ namespace SmartGlass.Common.Tests
         public void TestAsyncLazy()
         {
             int tmpInt = 99;
-            Task<int> ReturnInt42()
+
+            AsyncLazy<int> cls = new AsyncLazy<int>(() =>
             {
                 return Task<int>.Run(() => { tmpInt = 42; return tmpInt; });
-            }
-
-            AsyncLazy<int> cls = new AsyncLazy<int>(ReturnInt42);
+            });
 
             Assert.AreEqual(99, tmpInt);
             int result42 = cls.GetAsync().GetAwaiter().GetResult();
+
             Assert.AreEqual(42, tmpInt);
             Assert.AreEqual(42, result42);
+        }
+
+        [Test]
+        public void TestAsyncLazyException()
+        {
+            AsyncLazy<int> cls = new AsyncLazy<int>(() =>
+            {
+                throw new System.DivideByZeroException("");
+            });
+
+            Assert.ThrowsAsync<System.DivideByZeroException>(cls.GetAsync);
         }
     }
 }
