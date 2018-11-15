@@ -92,15 +92,21 @@ namespace SmartGlass.Common
             return BitConverter.ToSingle(BitConverter.GetBytes(_reader.ReadSingle()).Reverse().ToArray(), 0);
         }
 
-        public byte[] ReadBlob()
+        public byte[] ReadUInt16PrefixedBlob()
         {
             var length = ReadUInt16();
             return _reader.ReadBytes(length);
         }
 
-        public string ReadString()
+        /// <summary>
+        /// Read a UInt16 length prefixed string.
+        /// Forwards the underlaying stream
+        /// by length prefix + string length + 1 (null terminator)
+        /// </summary>
+        /// <returns>Result as string</returns>
+        public string ReadUInt16PrefixedString()
         {
-            var value = Encoding.ASCII.GetString(ReadBlob());
+            var value = Encoding.ASCII.GetString(ReadUInt16PrefixedBlob());
             _reader.ReadByte();
 
             return value;
@@ -119,7 +125,7 @@ namespace SmartGlass.Common
             return values;
         }
 
-        public T[] ReadArray<T>()
+        public T[] ReadUInt16PrefixedArray<T>()
             where T : ISerializable, new()
         {
             var count = ReadUInt16();

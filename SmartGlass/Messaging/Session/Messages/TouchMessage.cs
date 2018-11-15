@@ -11,7 +11,7 @@ namespace SmartGlass.Messaging.Session.Messages
         public override void Deserialize(BEReader reader)
         {
             Timestamp = reader.ReadUInt32();
-            Touchpoints = reader.ReadArray<TouchPoint>();
+            Touchpoints = reader.ReadUInt16PrefixedArray<TouchPoint>();
         }
 
         public override void Serialize(BEWriter writer)

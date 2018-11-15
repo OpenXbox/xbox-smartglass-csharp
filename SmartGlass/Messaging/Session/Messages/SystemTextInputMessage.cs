@@ -5,7 +5,7 @@ namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.SystemTextInput)]
     internal class SystemTextInputMessage : SessionMessageBase
-	{
+    {
         public uint TextSessionId { get; set; }
         public uint BaseVersion { get; set; }
         public uint SubmittedVersion { get; set; }
@@ -18,9 +18,9 @@ namespace SmartGlass.Messaging.Session.Messages
         public TextDelta[] Delta { get; set; }
 
         public SystemTextInputMessage()
-		{
+        {
             Header.RequestAcknowledge = true;
-		}
+        }
 
         public override void Deserialize(BEReader reader)
         {
@@ -32,8 +32,8 @@ namespace SmartGlass.Messaging.Session.Messages
             SelectionLength = reader.ReadUInt32();
             Flags = reader.ReadUInt16();
             TextChunkByteStart = reader.ReadUInt32();
-            TextChunk = reader.ReadString();
-            Delta = reader.ReadArray<TextDelta>();
+            TextChunk = reader.ReadUInt16PrefixedString();
+            Delta = reader.ReadUInt16PrefixedArray<TextDelta>();
         }
 
         public override void Serialize(BEWriter writer)
@@ -46,8 +46,8 @@ namespace SmartGlass.Messaging.Session.Messages
             writer.Write(SelectionLength);
             writer.Write(Flags);
             writer.Write(TextChunkByteStart);
-            writer.Write(TextChunk);
+            writer.WriteUInt16Prefixed(TextChunk);
             // writer.Write(Delta);
         }
-	}
+    }
 }

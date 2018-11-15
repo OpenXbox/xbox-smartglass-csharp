@@ -11,12 +11,13 @@ namespace SmartGlass.Messaging.Session.Messages
     {
         public MediaState State { get; set; }
 
-        public override void Deserialize(BEReader reader) {
+        public override void Deserialize(BEReader reader)
+        {
             State = new MediaState();
 
             State.TitleId = reader.ReadUInt32();
-            State.AumId = reader.ReadString();
-            State.AssetId = reader.ReadString();
+            State.AumId = reader.ReadUInt16PrefixedString();
+            State.AssetId = reader.ReadUInt16PrefixedString();
             State.MediaType = (MediaType)reader.ReadUInt16();
             State.SoundLevel = (MediaSoundLevel)reader.ReadUInt16();
             State.EnabledCommands = (MediaControlCommands)reader.ReadUInt32();
@@ -29,10 +30,12 @@ namespace SmartGlass.Messaging.Session.Messages
             State.MaximumSeek = TimeSpan.FromTicks((long)reader.ReadUInt64());
 
             State.Metadata = new ReadOnlyDictionary<string, string>(
-                reader.ReadArray<MediaMetadata>().ToDictionary(entry => entry.Name, entry => entry.Value));
+                reader.ReadUInt16PrefixedArray<MediaMetadata>()
+                    .ToDictionary(entry => entry.Name, entry => entry.Value));
         }
 
-        public override void Serialize(BEWriter writer) {
+        public override void Serialize(BEWriter writer)
+        {
             throw new NotImplementedException();
         }
     }

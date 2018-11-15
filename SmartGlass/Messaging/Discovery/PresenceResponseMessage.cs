@@ -19,10 +19,11 @@ namespace SmartGlass.Messaging.Discovery
         {
             Flags = (DeviceFlags)reader.ReadUInt32();
             DeviceType = (DeviceType)reader.ReadUInt16();
-            Name = reader.ReadString();
-            HardwareId = Guid.Parse(reader.ReadString());
+            Name = reader.ReadUInt16PrefixedString();
+            HardwareId = Guid.Parse(reader.ReadUInt16PrefixedString());
             LastError = reader.ReadUInt32();
-            Certificate = CryptoExtensions.DeserializeCertificateAsn(reader.ReadBlob());
+            Certificate = CryptoExtensions
+                            .DeserializeCertificateAsn(reader.ReadUInt16PrefixedBlob());
         }
 
         protected override void SerializePayload(BEWriter writer)

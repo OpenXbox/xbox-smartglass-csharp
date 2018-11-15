@@ -36,8 +36,8 @@ namespace SmartGlass.Messaging.Connection
 
         protected override void SerializeProtectedPayload(BEWriter writer)
         {
-            writer.Write(UserHash);
-            writer.Write(Authorization);
+            writer.WriteUInt16Prefixed(UserHash);
+            writer.WriteUInt16Prefixed(Authorization);
 
             writer.Write(SequenceNumber);
             writer.Write(SequenceBegin);

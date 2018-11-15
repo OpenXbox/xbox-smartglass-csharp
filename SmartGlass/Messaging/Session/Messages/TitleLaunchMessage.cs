@@ -22,7 +22,7 @@ namespace SmartGlass.Messaging.Session.Messages
         public override void Serialize(BEWriter writer)
         {
             writer.Write((ushort)Location);
-            writer.Write(Uri);
+            writer.WriteUInt16Prefixed(Uri);
         }
     }
 }

@@ -13,14 +13,14 @@ namespace SmartGlass
         {
             Offset = reader.ReadUInt32();
             DeleteCount = reader.ReadUInt32();
-            InsertContent = reader.ReadString();
+            InsertContent = reader.ReadUInt16PrefixedString();
         }
 
         public void Serialize(BEWriter writer)
         {
             writer.Write(Offset);
             writer.Write(DeleteCount);
-            writer.Write(InsertContent);
+            writer.WriteUInt16Prefixed(InsertContent);
         }
     }
 }

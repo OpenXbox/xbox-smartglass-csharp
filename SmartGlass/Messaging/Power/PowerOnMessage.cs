@@ -6,15 +6,15 @@ namespace SmartGlass.Messaging.Power
     internal class PowerOnMessage : MessageBase<PowerOnMessageHeader>
     {
         public string LiveId { get; set; }
-        
+
         protected override void DeserializePayload(BEReader reader)
         {
-            LiveId = reader.ReadString();
+            LiveId = reader.ReadUInt16PrefixedString();
         }
 
         protected override void SerializePayload(BEWriter writer)
         {
-            writer.Write(LiveId);
+            writer.WriteUInt16Prefixed(LiveId);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public void Deserialize(BEReader reader)
         {
-            Host = reader.ReadString();
-            Service = reader.ReadString();
+            Host = reader.ReadUInt16PrefixedString();
+            Service = reader.ReadUInt16PrefixedString();
         }
 
         public void Serialize(BEWriter writer)
