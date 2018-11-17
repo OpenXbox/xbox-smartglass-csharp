@@ -1,10 +1,10 @@
 ﻿using System;
 namespace SmartGlass.Nano
 {
-    public enum RtpPayloadType : byte
+    public enum NanoPayloadType : byte
     {
         Streamer = 0x23,
-        Control = 0x60,
+        ControlHandshake = 0x60,
         ChannelControl = 0x61,
         UDPHandshake = 0x64
     }

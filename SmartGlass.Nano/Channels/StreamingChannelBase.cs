@@ -2,89 +2,32 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal abstract class StreamingChannelBase
+    public abstract class StreamingChannelBase
     {
         internal readonly NanoClient _client;
-        public NanoChannelId ChannelId { get; private set; }
-        public ushort ChannelNumber { get; private set; }
-        public bool IsOpen { get; private set; }
+        public NanoChannel Channel { get; private set; }
         public ushort SequenceNumber { get; set; }
-        public DateTime ReferenceTimestamp { get; set; }
-        public uint FrameId { get; set; }
+        public DateTime ReferenceTimestamp { get; private set; }
+        public uint FrameId { get; private set; }
+        public bool IsOpen { get; private set; }
+        public bool HandshakeComplete { get; internal set; }
 
-        public ushort NextSequenceNumber
-        {
-            get
-            {
-                return ++SequenceNumber;
-            }
-        }
+        public ushort NextSequenceNumber => ++SequenceNumber;
+        public uint NextFrameId => ++FrameId;
 
-        public uint NextFrameId
-        {
-            get
-            {
-                return ++FrameId;
-            }
-        }
-
-        public StreamingChannelBase(NanoClient client, NanoChannelId channelId)
+        public StreamingChannelBase(NanoClient client, NanoChannel channel)
         {
             _client = client;
-            ChannelId = channelId;
-            ChannelNumber = 0;
+            Channel = channel;
             SequenceNumber = 0;
             IsOpen = false;
-        }
-
-        public void OnChannelCreated(uint flags, ushort channelNumber)
-        {
-            ChannelNumber = channelNumber;
-        }
-
-        public void OnChannelOpened(byte[] flags)
-        {
-            if (IsOpen)
-            {
-                throw new Exception($"Channel {ChannelId} was already opened!");
-            }
-            SendChannelOpen(flags);
-            IsOpen = true;
-        }
-
-        public void OnChannelClosed(uint flags)
-        {
-            if (!IsOpen)
-            {
-                throw new Exception($"Channel {ChannelId} is not open, can't be closed!");
-            }
-            SendChannelClose(flags);
-            IsOpen = false;
-        }
-
-        private void SendChannelOpen(byte[] flags)
-        {
-            var payload = new Nano.Packets.ChannelControl(
-                type: ChannelControlType.Open,
-                data: new Nano.Packets.ChannelOpen(flags)
-            );
-            var packet = new RtpPacket(RtpPayloadType.ChannelControl, payload);
-            SendOnControlSocket(packet);
-        }
-
-        private void SendChannelClose(uint flags)
-        {
-            var payload = new Nano.Packets.ChannelControl(
-                type: ChannelControlType.Close,
-                data: new Nano.Packets.ChannelClose(flags)
-            );
-            var packet = new RtpPacket(RtpPayloadType.ChannelControl, payload);
-            SendOnControlSocket(packet);
+            HandshakeComplete = false;
         }
 
         public ulong GenerateTimestamp()
@@ -105,7 +48,7 @@ namespace SmartGlass.Nano.Channels
         public void SetReferenceTimestamp(ulong timestamp)
         {
             ReferenceTimestamp = new DateTime(1970, 1, 1).AddMilliseconds(timestamp).ToUniversalTime();
-            Debug.WriteLine("RefTimestamp for {0} set to: {1}", ChannelId, ReferenceTimestamp);
+            Debug.WriteLine("RefTimestamp for {0} set to: {1}", Channel, ReferenceTimestamp);
         }
 
         public uint GenerateInitialFrameId()
@@ -114,38 +57,37 @@ namespace SmartGlass.Nano.Channels
             return FrameId;
         }
 
-        public void SendStreamerOnStreamingSocket(Streamer payload)
+        public void Create(uint flags)
         {
-            var packet = new RtpPacket(RtpPayloadType.Streamer, payload);
+        }
 
+        public void Open(byte[] flags)
+        {
+            IsOpen = true;
+        }
+
+        public void Close(uint flags)
+        {
+            IsOpen = false;
+        }
+
+        public void SendStreamerOnStreamingSocket(IStreamerMessage packet)
+        {
+            packet.Channel = Channel;
             packet.Header.SequenceNumber = NextSequenceNumber;
-            ((Packets.Streamer)packet.Payload).Flags = 0;
+            packet.StreamerHeader.Flags = 0;
 
-            SendOnStreamingSocket(packet);
+            _client.SendOnStreamingSocketAsync(packet).GetAwaiter().GetResult();
         }
 
-        public void SendStreamerOnControlSocket(Streamer payload)
+        public void SendStreamerOnControlSocket(IStreamerMessage packet)
         {
-            var packet = new RtpPacket(RtpPayloadType.Streamer, payload);
+            packet.Channel = Channel;
+            packet.StreamerHeader.PreviousSequenceNumber = SequenceNumber;
+            packet.StreamerHeader.SequenceNumber = NextSequenceNumber;
+            packet.StreamerHeader.Flags = StreamerFlags.GotSeqAndPrev | StreamerFlags.Unknown1;
 
-            ((Packets.Streamer)packet.Payload).PreviousSequenceNumber = SequenceNumber;
-            ((Packets.Streamer)packet.Payload).SequenceNumber = NextSequenceNumber;
-            ((Packets.Streamer)packet.Payload).Flags = StreamerFlags.GotSeqAndPrev | StreamerFlags.Unknown1;
-
-            packet.Header.ChannelId = ChannelNumber;
-            SendOnControlSocket(packet);
-        }
-
-        private void SendOnStreamingSocket(RtpPacket packet)
-        {
-            packet.Header.ChannelId = ChannelNumber;
-            _client.SendOnStreamingSocket(packet);
-        }
-
-        private void SendOnControlSocket(RtpPacket packet)
-        {
-            packet.Header.ChannelId = ChannelNumber;
-            _client.SendOnControlSocket(packet);
+            _client.SendOnControlSocketAsync(packet).GetAwaiter().GetResult();
         }
     }
 }

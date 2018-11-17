@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [VideoPayloadType(VideoPayloadType.Control)]
-    public class VideoControl : ISerializableLE
+    public class VideoControl : StreamerMessage
     {
         public VideoControlFlags Flags { get; private set; }
         public uint LastDisplayedFrameId { get; private set; }
@@ -16,6 +16,7 @@ namespace SmartGlass.Nano.Packets
         public uint LastLostFrame { get; private set; }
 
         public VideoControl()
+            : base((uint)VideoPayloadType.Control)
         {
         }
 
@@ -23,6 +24,7 @@ namespace SmartGlass.Nano.Packets
                             uint lastDisplayedFrameId = 0, long timestamp = 0,
                             uint queueDepth = 0, uint firstLostFrame = 0,
                             uint lastLostFrame = 0)
+            : base((uint)VideoPayloadType.Control)
         {
             Flags = flags;
             LastDisplayedFrameId = lastDisplayedFrameId;
@@ -32,42 +34,42 @@ namespace SmartGlass.Nano.Packets
             LastLostFrame = lastLostFrame;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        public override void DeserializeStreamer(BinaryReader reader)
         {
-            Flags = (VideoControlFlags)br.ReadUInt32();
+            Flags = (VideoControlFlags)reader.ReadUInt32();
 
             if (Flags.HasFlag(VideoControlFlags.LastDisplayedFrame))
             {
-                LastDisplayedFrameId = br.ReadUInt32();
-                Timestamp = br.ReadInt64();
+                LastDisplayedFrameId = reader.ReadUInt32();
+                Timestamp = reader.ReadInt64();
             }
             if (Flags.HasFlag(VideoControlFlags.QueueDepth))
             {
-                QueueDepth = br.ReadUInt32();
+                QueueDepth = reader.ReadUInt32();
             }
             if (Flags.HasFlag(VideoControlFlags.LostFrames))
             {
-                FirstLostFrame = br.ReadUInt32();
-                LastLostFrame = br.ReadUInt32();
+                FirstLostFrame = reader.ReadUInt32();
+                LastLostFrame = reader.ReadUInt32();
             }
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        public override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write((uint)Flags);
+            writer.Write((uint)Flags);
             if (Flags.HasFlag(VideoControlFlags.LastDisplayedFrame))
             {
-                bw.Write(LastDisplayedFrameId);
-                bw.Write(Timestamp);
+                writer.Write(LastDisplayedFrameId);
+                writer.Write(Timestamp);
             }
             if (Flags.HasFlag(VideoControlFlags.QueueDepth))
             {
-                bw.Write(QueueDepth);
+                writer.Write(QueueDepth);
             }
             if (Flags.HasFlag(VideoControlFlags.LostFrames))
             {
-                bw.Write(FirstLostFrame);
-                bw.Write(LastLostFrame);
+                writer.Write(FirstLostFrame);
+                writer.Write(LastLostFrame);
             }
         }
     }

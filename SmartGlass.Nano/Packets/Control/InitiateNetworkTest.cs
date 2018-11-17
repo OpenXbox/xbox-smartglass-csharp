@@ -6,18 +6,21 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ControlOpCode(ControlOpCode.InitiateNetworkTest)]
-    internal class InitiateNetworkTest : ISerializableLE
+    public class InitiateNetworkTest : StreamerMessageWithHeader
     {
         public InitiateNetworkTest()
+            : base(ControlOpCode.InitiateNetworkTest)
         {
         }
 
-        public void Deserialize(BinaryReader br)
+        public override void DeserializeStreamer(BinaryReader reader)
         {
+            throw new NotImplementedException();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public override void SerializeStreamer(BinaryWriter writer)
         {
+            throw new NotImplementedException();
         }
     }
 }

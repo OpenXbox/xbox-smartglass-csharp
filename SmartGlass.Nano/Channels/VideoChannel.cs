@@ -6,31 +6,29 @@ using SmartGlass.Nano.Consumer;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal class VideoChannel : VideoChannelBase
+    public class VideoChannel : VideoChannelBase
     {
-        public bool HandshakeDone { get; internal set; }
         public Packets.VideoFormat[] AvailableFormats { get; internal set; }
         public Packets.VideoFormat ActiveFormat { get; internal set; }
         public event EventHandler<VideoFormatEventArgs> FeedVideoFormat;
         public event EventHandler<VideoDataEventArgs> FeedVideoData;
 
         public VideoChannel(NanoClient client)
-            : base(client, NanoChannelId.Video)
+            : base(client, NanoChannel.Video)
         {
-            HandshakeDone = false;
         }
 
         public void StartStream()
         {
             var controlData = new VideoControl(
                 VideoControlFlags.StartStream | VideoControlFlags.RequestKeyframe);
-            SendControl(controlData);
+            SendStreamerOnControlSocket(controlData);
         }
 
         public void StopStream()
         {
             var controlData = new VideoControl(VideoControlFlags.StopStream);
-            SendControl(controlData);
+            SendStreamerOnControlSocket(controlData);
         }
 
         public void ReportLostFrames(uint firstFrame, uint lastFrame)
@@ -40,7 +38,7 @@ namespace SmartGlass.Nano.Channels
                 firstLostFrame: firstFrame,
                 lastLostFrame: lastFrame
             );
-            SendControl(controlData);
+            SendStreamerOnControlSocket(controlData);
         }
 
         public override void OnClientHandshake(VideoClientHandshake handshake)
@@ -53,7 +51,7 @@ namespace SmartGlass.Nano.Channels
             AvailableFormats = handshake.Formats;
             ActiveFormat = AvailableFormats[0];
             SendClientHandshake(ActiveFormat);
-            HandshakeDone = true;
+            HandshakeComplete = true;
 
             FeedVideoFormat?.Invoke(this,
                 new VideoFormatEventArgs(ActiveFormat));
@@ -73,22 +71,9 @@ namespace SmartGlass.Nano.Channels
         private void SendClientHandshake(VideoFormat format)
         {
             uint initialFrameId = GenerateInitialFrameId();
-            var payload = new Streamer((uint)VideoPayloadType.ClientHandshake)
-            {
-                Data = new VideoClientHandshake(initialFrameId, format)
-            };
+            var packet = new VideoClientHandshake(initialFrameId, format);
 
-            SendStreamerOnControlSocket(payload);
-        }
-
-        private void SendControl(VideoControl controlData)
-        {
-            var payload = new Streamer((uint)VideoPayloadType.Control)
-            {
-                Data = controlData
-            };
-
-            SendStreamerOnControlSocket(payload);
+            SendStreamerOnControlSocket(packet);
         }
     }
 }

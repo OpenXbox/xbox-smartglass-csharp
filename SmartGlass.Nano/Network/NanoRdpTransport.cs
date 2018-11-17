@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -7,10 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using SmartGlass.Common;
 using SmartGlass.Nano;
+using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano
 {
-    internal class NanoRdpTransport : IDisposable, IMessageTransport<RtpPacket>
+    internal class NanoRdpTransport : IDisposable, IMessageTransport<INanoPacket>
     {
         private readonly TcpClient _controlProtoClient;
         private readonly UdpClient _streamingProtoClient;
@@ -18,7 +20,7 @@ namespace SmartGlass.Nano
         private readonly CancellationTokenSource _cancellationTokenSourceStreaming;
         private readonly CancellationTokenSource _cancellationTokenSourceControl;
 
-        private readonly BlockingCollection<RtpPacket> _receiveQueue = new BlockingCollection<RtpPacket>();
+        private readonly BlockingCollection<INanoPacket> _receiveQueue = new BlockingCollection<INanoPacket>();
 
         private readonly string _address;
         private readonly int _tcpPort;
@@ -27,7 +29,8 @@ namespace SmartGlass.Nano
         private readonly IPEndPoint _controlProtoEp;
         private readonly IPEndPoint _streamingProtoEp;
 
-        public event EventHandler<MessageReceivedEventArgs<RtpPacket>> MessageReceived;
+        public NanoChannelContext ChannelContext { get; private set; }
+        public event EventHandler<MessageReceivedEventArgs<INanoPacket>> MessageReceived;
 
         public bool udpDataActive { get; private set; } = false;
 
@@ -50,23 +53,29 @@ namespace SmartGlass.Nano
             _controlProtoClient.Connect(_controlProtoEp);
             _streamingProtoClient.Connect(_streamingProtoEp);
 
-            _cancellationTokenSourceControl = _controlProtoClient.ConsumeReceived(receiveResult =>
-            {
-                BEReader reader = new BEReader(receiveResult);
-                RtpPacket packet = RtpPacket.CreateFromBuffer(reader);
-                _receiveQueue.TryAdd(packet);
-            });
+            ChannelContext = new NanoChannelContext();
 
-            _cancellationTokenSourceStreaming = _streamingProtoClient.ConsumeReceived(receiveResult =>
+            void ProcessPacket(byte[] packetData)
             {
-                // Lets NanoClient know when to end sending UDP handshake packets
-                if (!udpDataActive)
-                    udpDataActive = true;
+                try
+                {
+                    BEReader reader = new BEReader(packetData);
+                    INanoPacket packet = NanoPacketFactory.ParsePacket(packetData, ChannelContext);
+                    _receiveQueue.TryAdd(packet);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"Failed to parse nano packet: {e.Message}", e);
+                }
+            }
 
-                BEReader reader = new BEReader(receiveResult.Buffer);
-                RtpPacket packet = RtpPacket.CreateFromBuffer(reader);
-                _receiveQueue.TryAdd(packet);
-            });
+            _cancellationTokenSourceControl = _controlProtoClient.ConsumeReceived(
+                receiveResult => ProcessPacket(receiveResult)
+            );
+
+            _cancellationTokenSourceStreaming = _streamingProtoClient.ConsumeReceived(
+                receiveResult => ProcessPacket(receiveResult.Buffer)
+            );
 
             Task.Run(() =>
             {
@@ -75,7 +84,7 @@ namespace SmartGlass.Nano
                     try
                     {
                         var message = _receiveQueue.Take();
-                        MessageReceived?.Invoke(this, new MessageReceivedEventArgs<RtpPacket>(message));
+                        MessageReceived?.Invoke(this, new MessageReceivedEventArgs<INanoPacket>(message));
                     }
                     catch (Exception e)
                     {
@@ -87,39 +96,33 @@ namespace SmartGlass.Nano
         }
 
 #pragma warning disable 1998
-        public async Task SendAsync(RtpPacket message)
+        public async Task SendAsync(INanoPacket message)
         {
             throw new InvalidOperationException("Please use SendAsyncStreaming/Control");
         }
 #pragma warning restore 1998
 
-        public Task SendAsyncStreaming(RtpPacket message)
+        public Task SendAsyncStreaming(INanoPacket message)
         {
-            var writer = new BEWriter();
-            message.Serialize(writer);
-            var serialized = writer.ToBytes();
-
-            return _streamingProtoClient.SendAsync(serialized, serialized.Length);
+            byte[] packet = NanoPacketFactory.AssemblePacket(message, ChannelContext);
+            return _streamingProtoClient.SendAsync(packet, packet.Length);
         }
 
-        public Task SendAsyncControl(RtpPacket message)
+        public Task SendAsyncControl(INanoPacket message)
         {
-            var writer = new BEWriter();
-            message.Serialize(writer);
-            byte[] serialized = writer.ToBytes();
-
-            return _controlProtoClient.SendAsyncPrefixed(serialized);
+            byte[] packet = NanoPacketFactory.AssemblePacket(message, ChannelContext);
+            return _controlProtoClient.SendAsyncPrefixed(packet);
         }
 
-        public Task<RtpPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        public Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
         {
-            return this.WaitForMessageAsync<RtpPacket, RtpPacket>(timeout, startAction);
+            return this.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
         }
 
         public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
-            where T : RtpPacket
+            where T : INanoPacket
         {
-            return this.WaitForMessageAsync<T, RtpPacket>(timeout, startAction, filter);
+            return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
         }
 
         public void Dispose()

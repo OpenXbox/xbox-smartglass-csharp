@@ -7,33 +7,35 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ChannelControlType(ChannelControlType.Create)]
-    internal class ChannelCreate : ISerializableLE
+    public class ChannelCreate : ChannelControlMessage
     {
         public string Name { get; private set; }
         public uint Flags { get; private set; }
 
         public ChannelCreate()
+            : base(ChannelControlType.Create)
         {
         }
 
         public ChannelCreate(string name, uint flags)
+            : base(ChannelControlType.Create)
         {
             Name = name;
             Flags = flags;
         }
 
-        public void Deserialize(BinaryReader br)
+        public override void DeserializeData(BinaryReader reader)
         {
-            byte[] name = br.ReadUInt16PrefixedBlob();
+            byte[] name = reader.ReadUInt16PrefixedBlob();
             Name = Encoding.GetEncoding("utf-8").GetString(name);
-            Flags = br.ReadUInt32();
+            Flags = reader.ReadUInt32();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public override void SerializeData(BinaryWriter writer)
         {
             byte[] name = Encoding.GetEncoding("utf-8").GetBytes(Name);
-            bw.WriteUInt16PrefixedBlob(name);
-            bw.Write(Flags);
+            writer.WriteUInt16PrefixedBlob(name);
+            writer.Write(Flags);
         }
     }
 }

@@ -3,9 +3,9 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal abstract class InputChannelBase : StreamingChannelBase, IStreamingChannel
+    public abstract class InputChannelBase : StreamingChannelBase, IStreamingChannel
     {
-        public InputChannelBase(NanoClient client, NanoChannelId id)
+        public InputChannelBase(NanoClient client, NanoChannel id)
             : base(client, id)
         {
         }
@@ -15,25 +15,21 @@ namespace SmartGlass.Nano.Channels
         public abstract void OnFrame(InputFrame frame);
         public abstract void OnFrameAck(InputFrameAck ack);
 
-        public void OnStreamer(Streamer streamer)
+        public void OnPacket(IStreamerMessage packet)
         {
-            switch ((InputPayloadType)streamer.PacketType)
+            switch ((InputPayloadType)packet.StreamerHeader.PacketType)
             {
                 case InputPayloadType.ClientHandshake:
-                    streamer.DeserializeData(new InputClientHandshake());
-                    OnClientHandshake((InputClientHandshake)streamer.Data);
+                    OnClientHandshake((InputClientHandshake)packet);
                     break;
                 case InputPayloadType.ServerHandshake:
-                    streamer.DeserializeData(new InputServerHandshake());
-                    OnServerHandshake((InputServerHandshake)streamer.Data);
+                    OnServerHandshake((InputServerHandshake)packet);
                     break;
                 case InputPayloadType.Frame:
-                    streamer.DeserializeData(new InputFrame());
-                    OnFrame((InputFrame)streamer.Data);
+                    OnFrame((InputFrame)packet);
                     break;
                 case InputPayloadType.FrameAck:
-                    streamer.DeserializeData(new InputFrameAck());
-                    OnFrameAck((InputFrameAck)streamer.Data);
+                    OnFrameAck((InputFrameAck)packet);
                     break;
             }
         }

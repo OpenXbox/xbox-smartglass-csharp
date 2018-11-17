@@ -4,14 +4,14 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal class ChatAudioChannel : AudioChannelBase
+    public class ChatAudioChannel : AudioChannelBase
     {
         public bool HandshakeDone { get; internal set; }
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
         public Packets.AudioFormat ActiveFormat { get; internal set; }
 
         public ChatAudioChannel(NanoClient client)
-            : base(client, NanoChannelId.ChatAudio)
+            : base(client, NanoChannel.ChatAudio)
         {
             HandshakeDone = false;
         }

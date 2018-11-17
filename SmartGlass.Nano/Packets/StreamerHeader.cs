@@ -5,23 +5,18 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    [RtpPayloadType(RtpPayloadType.Streamer)]
-    internal class Streamer : ISerializableLE
+    public class StreamerHeader
     {
         public StreamerFlags Flags { get; internal set; }
         public uint SequenceNumber { get; internal set; }
         public uint PreviousSequenceNumber { get; internal set; }
         public uint PacketType { get; internal set; }
-        public uint PacketSize { get; internal set; }
 
-        private byte[] RawData;
-        public ISerializableLE Data { get; internal set; }
-
-        public Streamer()
+        public StreamerHeader()
         {
         }
 
-        public Streamer(uint packetType)
+        public StreamerHeader(uint packetType)
         {
             PacketType = packetType;
         }
@@ -35,21 +30,10 @@ namespace SmartGlass.Nano.Packets
                 PreviousSequenceNumber = br.ReadUInt32();
             }
             PacketType = br.ReadUInt32();
-            if (PacketType != 0)
-            {
-                PacketSize = br.ReadUInt32();
-            }
-
-            RawData = br.ReadToEnd();
         }
 
         public void Serialize(BinaryWriter bw)
         {
-            var payloadWriter = new BinaryWriter(new MemoryStream());
-            Data.Serialize(payloadWriter);
-            var payload = payloadWriter.ToBytes();
-            PacketSize = (uint)payload.Length;
-
             bw.Write((uint)Flags);
             if (Flags.HasFlag(StreamerFlags.GotSeqAndPrev))
             {
@@ -57,17 +41,6 @@ namespace SmartGlass.Nano.Packets
                 bw.Write(PreviousSequenceNumber);
             }
             bw.Write(PacketType);
-            if (PacketType != 0)
-            {
-                bw.Write(PacketSize);
-            }
-            bw.Write(payload);
-        }
-
-        public void DeserializeData(ISerializableLE payloadType)
-        {
-            Data = payloadType;
-            Data.Deserialize(BinaryExtensions.ReaderFromBytes(RawData));
         }
     }
 }

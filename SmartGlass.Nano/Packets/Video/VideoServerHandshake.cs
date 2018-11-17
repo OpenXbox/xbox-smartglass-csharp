@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [VideoPayloadType(VideoPayloadType.ServerHandshake)]
-    internal class VideoServerHandshake : ISerializableLE
+    public class VideoServerHandshake : StreamerMessage
     {
         public uint ProtocolVersion { get; private set; }
         public uint Width { get; private set; }
@@ -16,6 +16,7 @@ namespace SmartGlass.Nano.Packets
         public VideoFormat[] Formats { get; private set; }
 
         public VideoServerHandshake()
+            : base((uint)VideoPayloadType.ServerHandshake)
         {
         }
 
@@ -23,6 +24,7 @@ namespace SmartGlass.Nano.Packets
                                     uint width, uint height,
                                     uint fps, ulong refTimestamp,
                                     VideoFormat[] formats)
+            : base((uint)VideoPayloadType.ServerHandshake)
         {
             ProtocolVersion = protocolVersion;
             Width = width;
@@ -32,24 +34,24 @@ namespace SmartGlass.Nano.Packets
             Formats = formats;
         }
 
-        public void Deserialize(BinaryReader br)
+        public override void DeserializeStreamer(BinaryReader reader)
         {
-            ProtocolVersion = br.ReadUInt32();
-            Width = br.ReadUInt32();
-            Height = br.ReadUInt32();
-            FPS = br.ReadUInt32();
-            ReferenceTimestamp = br.ReadUInt64();
-            Formats = br.ReadUInt32PrefixedArray<VideoFormat>();
+            ProtocolVersion = reader.ReadUInt32();
+            Width = reader.ReadUInt32();
+            Height = reader.ReadUInt32();
+            FPS = reader.ReadUInt32();
+            ReferenceTimestamp = reader.ReadUInt64();
+            Formats = reader.ReadUInt32PrefixedArray<VideoFormat>();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(ProtocolVersion);
-            bw.Write(Width);
-            bw.Write(Height);
-            bw.Write(FPS);
-            bw.Write(ReferenceTimestamp);
-            bw.WriteUInt32PrefixedArray(Formats);
+            writer.Write(ProtocolVersion);
+            writer.Write(Width);
+            writer.Write(Height);
+            writer.Write(FPS);
+            writer.Write(ReferenceTimestamp);
+            writer.WriteUInt32PrefixedArray(Formats);
         }
     }
 }

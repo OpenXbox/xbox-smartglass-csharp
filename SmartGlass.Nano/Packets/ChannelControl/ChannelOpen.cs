@@ -6,34 +6,37 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ChannelControlType(ChannelControlType.Open)]
-    internal class ChannelOpen : ISerializableLE
+    public class ChannelOpen : ChannelControlMessage
     {
         public byte[] Flags { get; private set; }
 
         public ChannelOpen()
+            : base(ChannelControlType.Open)
         {
+            Flags = new byte[0];
         }
 
         public ChannelOpen(byte[] flags)
+            : base(ChannelControlType.Open)
         {
             Flags = flags;
         }
 
-        public void Deserialize(BinaryReader br)
+        public override void DeserializeData(BinaryReader reader)
         {
-            Flags = br.ReadUInt32PrefixedBlob();
+            Flags = reader.ReadUInt32PrefixedBlob();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public override void SerializeData(BinaryWriter writer)
         {
             if (Flags != null && Flags.Length > 0)
             {
-                bw.Write((uint)Flags.Length);
-                bw.Write(Flags);
+                writer.Write((uint)Flags.Length);
+                writer.Write(Flags);
             }
             else
             {
-                bw.Write((uint)0);
+                writer.Write((uint)0);
             }
         }
     }

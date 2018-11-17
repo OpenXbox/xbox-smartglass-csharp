@@ -3,9 +3,9 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal abstract class VideoChannelBase : StreamingChannelBase, IStreamingChannel
+    public abstract class VideoChannelBase : StreamingChannelBase, IStreamingChannel
     {
-        public VideoChannelBase(NanoClient client, NanoChannelId id)
+        public VideoChannelBase(NanoClient client, NanoChannel id)
             : base(client, id)
         {
         }
@@ -15,25 +15,21 @@ namespace SmartGlass.Nano.Channels
         public abstract void OnControl(VideoControl control);
         public abstract void OnData(VideoData data);
 
-        public void OnStreamer(Streamer streamer)
+        public void OnPacket(IStreamerMessage packet)
         {
-            switch((VideoPayloadType)streamer.PacketType)
+            switch ((VideoPayloadType)packet.StreamerHeader.PacketType)
             {
                 case VideoPayloadType.ClientHandshake:
-                    streamer.DeserializeData(new VideoClientHandshake());
-                    OnClientHandshake((VideoClientHandshake)streamer.Data);
+                    OnClientHandshake((VideoClientHandshake)packet);
                     break;
                 case VideoPayloadType.ServerHandshake:
-                    streamer.DeserializeData(new VideoServerHandshake());
-                    OnServerHandshake((VideoServerHandshake)streamer.Data);
+                    OnServerHandshake((VideoServerHandshake)packet);
                     break;
                 case VideoPayloadType.Control:
-                    streamer.DeserializeData(new VideoControl());
-                    OnControl((VideoControl)streamer.Data);
+                    OnControl((VideoControl)packet);
                     break;
                 case VideoPayloadType.Data:
-                    streamer.DeserializeData(new VideoData());
-                    OnData((VideoData)streamer.Data);
+                    OnData((VideoData)packet);
                     break;
             }
         }

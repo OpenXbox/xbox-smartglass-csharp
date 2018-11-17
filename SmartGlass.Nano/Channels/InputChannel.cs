@@ -4,14 +4,11 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal class InputChannel : InputChannelBase
+    public class InputChannel : InputChannelBase
     {
-        public bool HandshakeDone { get; internal set; }
-
         public InputChannel(NanoClient client)
-            : base(client, NanoChannelId.Input)
+            : base(client, NanoChannel.Input)
         {
-            HandshakeDone = false;
         }
 
         public void OnInputFrameReceived(object sender, InputFrameEventArgs args)

@@ -5,23 +5,19 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    internal class ControlHeader : ISerializableLE
+    public class StreamerControlHeader : ISerializableLE
     {
-        public uint PreviousSequence { get; private set; }
-        public uint Unknown1 { get; private set; }
-        public uint Unknown2 { get; private set; }
+        public uint PreviousSequence { get; set; }
+        public uint Unknown1 { get; set; }
+        public uint Unknown2 { get; set; }
         public ControlOpCode OpCode { get; private set; }
 
-        public ControlHeader()
+        public StreamerControlHeader()
         {
         }
 
-        public ControlHeader(uint previousSequence, ushort unknown1,
-                             ushort unknown2, ControlOpCode opCode)
+        public StreamerControlHeader(ControlOpCode opCode)
         {
-            PreviousSequence = previousSequence;
-            Unknown1 = unknown1;
-            Unknown2 = unknown2;
             OpCode = opCode;
         }
 

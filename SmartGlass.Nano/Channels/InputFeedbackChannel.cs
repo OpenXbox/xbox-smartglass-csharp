@@ -5,17 +5,14 @@ using SmartGlass.Nano.Consumer;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal class InputFeedbackChannel : InputChannelBase
+    public class InputFeedbackChannel : InputChannelBase
     {
-        public bool HandshakeDone { get; internal set; }
-
         public event EventHandler<InputConfigEventArgs> FeedInputFeedbackConfig;
         public event EventHandler<InputFrameEventArgs> FeedInputFeedbackFrame;
 
         public InputFeedbackChannel(NanoClient client)
-            : base(client, NanoChannelId.InputFeedback)
+            : base(client, NanoChannel.InputFeedback)
         {
-            HandshakeDone = false;
         }
 
         public override void OnClientHandshake(InputClientHandshake handshake)

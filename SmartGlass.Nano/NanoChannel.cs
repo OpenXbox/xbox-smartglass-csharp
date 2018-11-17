@@ -1,7 +1,7 @@
 using System;
 namespace SmartGlass.Nano
 {
-    public enum NanoChannelId
+    public enum NanoChannel
     {
         Video = 1,
         Audio,

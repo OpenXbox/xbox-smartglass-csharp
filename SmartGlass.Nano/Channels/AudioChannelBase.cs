@@ -3,9 +3,9 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal abstract class AudioChannelBase : StreamingChannelBase, IStreamingChannel
+    public abstract class AudioChannelBase : StreamingChannelBase, IStreamingChannel
     {
-        public AudioChannelBase(NanoClient client, NanoChannelId id)
+        public AudioChannelBase(NanoClient client, NanoChannel id)
             : base(client, id)
         {
         }
@@ -15,25 +15,21 @@ namespace SmartGlass.Nano.Channels
         public abstract void OnControl(AudioControl control);
         public abstract void OnData(AudioData data);
 
-        public void OnStreamer(Streamer streamer)
+        public void OnPacket(IStreamerMessage packet)
         {
-            switch((AudioPayloadType)streamer.PacketType)
+            switch ((AudioPayloadType)packet.StreamerHeader.PacketType)
             {
                 case AudioPayloadType.ClientHandshake:
-                    streamer.DeserializeData(new AudioClientHandshake());
-                    OnClientHandshake((AudioClientHandshake)streamer.Data);
+                    OnClientHandshake((AudioClientHandshake)packet);
                     break;
                 case AudioPayloadType.ServerHandshake:
-                    streamer.DeserializeData(new AudioServerHandshake());
-                    OnServerHandshake((AudioServerHandshake)streamer.Data);
+                    OnServerHandshake((AudioServerHandshake)packet);
                     break;
                 case AudioPayloadType.Control:
-                    streamer.DeserializeData(new AudioControl());
-                    OnControl((AudioControl)streamer.Data);
+                    OnControl((AudioControl)packet);
                     break;
                 case AudioPayloadType.Data:
-                    streamer.DeserializeData(new AudioData());
-                    OnData((AudioData)streamer.Data);
+                    OnData((AudioData)packet);
                     break;
             }
         }

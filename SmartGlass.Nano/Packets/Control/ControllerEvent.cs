@@ -6,32 +6,34 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ControlOpCode(ControlOpCode.ControllerEvent)]
-    internal class ControllerEvent : ISerializableLE
+    public class ControllerEvent : StreamerMessageWithHeader
     {
         public ControllerEventType Type { get; private set; }
         public byte ControllerIndex { get; private set; }
 
         public ControllerEvent()
+            : base(ControlOpCode.ControllerEvent)
         {
         }
-        
+
         public ControllerEvent(ControllerEventType controllerEvent,
                                byte controllerIndex)
+            : base(ControlOpCode.ControllerEvent)
         {
             Type = controllerEvent;
             ControllerIndex = controllerIndex;
         }
 
-        public void Deserialize(BinaryReader br)
+        public override void DeserializeStreamer(BinaryReader reader)
         {
-            Type = (ControllerEventType)br.ReadByte();
-            ControllerIndex = br.ReadByte();
+            Type = (ControllerEventType)reader.ReadByte();
+            ControllerIndex = reader.ReadByte();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write((byte)Type);
-            bw.Write(ControllerIndex);
+            writer.Write((byte)Type);
+            writer.Write(ControllerIndex);
         }
     }
 }

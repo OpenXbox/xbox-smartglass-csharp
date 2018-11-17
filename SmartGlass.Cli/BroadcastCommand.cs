@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SmartGlass.Common;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Consumer;
 using SmartGlass.Cli.Session;
@@ -28,15 +29,21 @@ namespace SmartGlass.Cli
                     var broadcastChannel = Client.BroadcastChannel;
                     // TODO: Wait for BroadcastMessages here...
 
-                    var result = await broadcastChannel.StartGamestreamAsync();
+                    var config = GamestreamConfiguration.GetStandardConfig();
+                    var result = await broadcastChannel.StartGamestreamAsync(config);
                     Console.WriteLine($"Connecting to Nano, TCP: {result.TcpPort}, UDP: {result.UdpPort}");
-                    var nano = new NanoClient(Hostname, result.TcpPort, result.UdpPort, new Guid());
+                    var nano = new NanoClient(Hostname, result);
+
                     await nano.Initialize();
 
                     FileConsumer consumer = new FileConsumer("nanostream");
                     nano.AddConsumer(consumer);
 
-                    await nano.StartStream();
+                    bool success = await nano.StartStream();
+                    if (!success)
+                    {
+                        throw new Exception("Failed to start nano stream");
+                    }
 
                     var loop = new Loop(typeof(SessionCommandType));
                     loop.Execute();

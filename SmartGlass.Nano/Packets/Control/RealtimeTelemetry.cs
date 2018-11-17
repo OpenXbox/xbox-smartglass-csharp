@@ -6,18 +6,20 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ControlOpCode(ControlOpCode.RealtimeTelemetry)]
-    internal class RealtimeTelemetry : ISerializableLE
+    public class RealtimeTelemetry : StreamerMessageWithHeader
     {
         public RealtimeTelemetry()
+            : base(ControlOpCode.RealtimeTelemetry)
         {
         }
 
-        public void Deserialize(BinaryReader br)
+        public override void DeserializeStreamer(BinaryReader reader)
         {
         }
 
-        public void Serialize(BinaryWriter bw)
+        public override void SerializeStreamer(BinaryWriter writer)
         {
+            throw new NotSupportedException();
         }
     }
 }

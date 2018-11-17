@@ -1,10 +1,8 @@
 ﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
-namespace SmartGlass.Channels.Broadcast
+namespace SmartGlass.Common
 {
-    class GamestreamConfiguration
+    public class GamestreamConfiguration
     {
         // TODO: Allow custom configuration.
         public static GamestreamConfiguration GetStandardConfig()
@@ -45,7 +43,7 @@ namespace SmartGlass.Channels.Broadcast
                 UdpMaxSendPacketsInWinsock = "250",
                 UdpSubBurstGroups = "0",
                 UdpBurstDurationMs = "12"
-           };
+            };
         }
 
         public string UrcpType;

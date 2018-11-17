@@ -7,18 +7,16 @@ using SmartGlass.Nano.Consumer;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal class AudioChannel : AudioChannelBase
+    public class AudioChannel : AudioChannelBase
     {
-        public bool HandshakeDone { get; internal set; }
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
         public Packets.AudioFormat ActiveFormat { get; internal set; }
         public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
         public event EventHandler<AudioDataEventArgs> FeedAudioData;
 
         public AudioChannel(NanoClient client)
-            : base(client, NanoChannelId.Audio)
+            : base(client, NanoChannel.Audio)
         {
-            HandshakeDone = false;
         }
 
         public void StartStream()
@@ -41,7 +39,7 @@ namespace SmartGlass.Nano.Channels
             AvailableFormats = handshake.Formats;
             ActiveFormat = AvailableFormats[0];
             SendClientHandshake(ActiveFormat);
-            HandshakeDone = true;
+            HandshakeComplete = true;
 
             FeedAudioFormat?.Invoke(this,
                 new AudioFormatEventArgs(ActiveFormat));
@@ -61,22 +59,15 @@ namespace SmartGlass.Nano.Channels
         private void SendClientHandshake(AudioFormat format)
         {
             uint initialFrameId = GenerateInitialFrameId();
-            var payload = new Streamer((uint)AudioPayloadType.ClientHandshake)
-            {
-                Data = new AudioClientHandshake(initialFrameId, format)
-            };
+            var packet = new AudioClientHandshake(initialFrameId, format);
 
-            SendStreamerOnControlSocket(payload);
+            SendStreamerOnControlSocket(packet);
         }
 
         private void SendControl(AudioControlFlags flags)
         {
-            var payload = new Streamer((uint)AudioPayloadType.Control)
-            {
-                Data = new AudioControl(flags)
-            };
-
-            SendStreamerOnControlSocket(payload);
+            var packet = new AudioControl(flags);
+            SendStreamerOnControlSocket(packet);
         }
     }
 }
