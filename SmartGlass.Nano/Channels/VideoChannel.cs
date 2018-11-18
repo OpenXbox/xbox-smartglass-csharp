@@ -19,12 +19,6 @@ namespace SmartGlass.Nano.Channels
         {
             switch ((VideoPayloadType)packet.StreamerHeader.PacketType)
             {
-                case VideoPayloadType.ClientHandshake:
-                    OnClientHandshake((VideoClientHandshake)packet);
-                    break;
-                case VideoPayloadType.ServerHandshake:
-                    OnServerHandshake((VideoServerHandshake)packet);
-                    break;
                 case VideoPayloadType.Control:
                     OnControl((VideoControl)packet);
                     break;
@@ -34,42 +28,27 @@ namespace SmartGlass.Nano.Channels
             }
         }
 
-        public void StartStream()
+        public async Task StartStreamAsync()
         {
             var controlData = new VideoControl(
                 VideoControlFlags.StartStream | VideoControlFlags.RequestKeyframe);
-            SendStreamerOnControlSocket(controlData);
+            await SendStreamerOnControlSocket(controlData);
         }
 
-        public void StopStream()
+        public async Task StopStreamAsync()
         {
             var controlData = new VideoControl(VideoControlFlags.StopStream);
-            SendStreamerOnControlSocket(controlData);
+            await SendStreamerOnControlSocket(controlData);
         }
 
-        public void ReportLostFrames(uint firstFrame, uint lastFrame)
+        public async Task ReportLostFramesAsync(uint firstFrame, uint lastFrame)
         {
             var controlData = new VideoControl(
                 flags: VideoControlFlags.RequestKeyframe | VideoControlFlags.LostFrames,
                 firstLostFrame: firstFrame,
                 lastLostFrame: lastFrame
             );
-            SendStreamerOnControlSocket(controlData);
-        }
-
-        public void OnClientHandshake(VideoClientHandshake handshake)
-        {
-            throw new NotSupportedException("Client handshake on client side");
-        }
-
-        public void OnServerHandshake(VideoServerHandshake handshake)
-        {
-            AvailableFormats = handshake.Formats;
-            ActiveFormat = AvailableFormats[0];
-            SendClientHandshake(ActiveFormat);
-
-            FeedVideoFormat?.Invoke(this,
-                new VideoFormatEventArgs(ActiveFormat));
+            await SendStreamerOnControlSocket(controlData);
         }
 
         public void OnControl(VideoControl control)
@@ -83,19 +62,19 @@ namespace SmartGlass.Nano.Channels
                 new VideoDataEventArgs(data));
         }
 
-        private void SendClientHandshake(VideoFormat format)
+        public async Task SendClientHandshakeAsync(VideoFormat format)
         {
             uint initialFrameId = GenerateInitialFrameId();
             var packet = new VideoClientHandshake(initialFrameId, format);
 
-            SendStreamerOnControlSocket(packet);
+            await SendStreamerOnControlSocket(packet);
         }
 
         public async Task OpenAsync()
         {
             var handshake = await _client.WaitForMessageAsync<VideoServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await SendChannelOpenAsync()
+                async () => await SendChannelOpenAsync(Channel)
             );
 
             AvailableFormats = handshake.Formats;

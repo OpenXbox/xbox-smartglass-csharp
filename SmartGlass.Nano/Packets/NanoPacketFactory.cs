@@ -95,6 +95,7 @@ namespace SmartGlass.Nano.Packets
             {
                 packet.Header.Padding = true;
             }
+
             packet.Header.ChannelId = context.GetChannelId(packet.Channel);
 
             packet.Header.Serialize(packetWriter);

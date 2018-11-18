@@ -89,6 +89,10 @@ namespace SmartGlass.Messaging
                         var message = _receiveQueue.Take(_cancellationTokenSource.Token);
                         MessageReceived?.Invoke(this, new MessageReceivedEventArgs<IMessage>(message));
                     }
+                    catch (OperationCanceledException)
+                    {
+                        // pass
+                    }
                     catch (Exception e)
                     {
                         Console.WriteLine(

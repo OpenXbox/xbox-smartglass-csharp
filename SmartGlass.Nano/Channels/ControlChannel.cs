@@ -9,11 +9,11 @@ namespace SmartGlass.Nano.Channels
     {
         public override NanoChannel Channel => NanoChannel.Control;
 
-        public void ChangeVideoQuality(uint u1, uint u2, uint u3,
+        public async Task ChangeVideoQuality(uint u1, uint u2, uint u3,
                                         uint u4, uint u5, uint u6)
         {
             var packet = new ChangeVideoQuality(u1, u2, u3, u4, u5, u6);
-            SendControlPacket(packet);
+            await SendControlPacketAsync(packet);
         }
 
         public void ControllerEvent()
@@ -58,16 +58,16 @@ namespace SmartGlass.Nano.Channels
             }
         }
 
-        public void SendControlPacket(StreamerMessageWithHeader packet)
+        public async Task SendControlPacketAsync(StreamerMessageWithHeader packet)
         {
             packet.ControlHeader.Unknown1 = 1;
             packet.ControlHeader.Unknown2 = 1406;
-            SendStreamerOnControlSocket(packet);
+            await SendStreamerOnControlSocket(packet);
         }
 
         public async Task OpenAsync()
         {
-            await SendChannelOpenAsync();
+            await SendChannelOpenAsync(Channel);
         }
     }
 }

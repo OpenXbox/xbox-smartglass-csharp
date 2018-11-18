@@ -61,37 +61,37 @@ namespace SmartGlass.Nano.Channels
             return FrameId;
         }
 
-        internal async Task SendChannelOpenAsync()
+        internal async Task SendChannelOpenAsync(NanoChannel channel)
         {
             var packet = new Nano.Packets.ChannelOpen(Flags);
-            packet.Channel = Channel;
+            packet.Channel = channel;
             await _client.SendOnControlSocketAsync(packet);
         }
 
-        internal async Task SendChannelCloseAsync(uint reason)
+        internal async Task SendChannelCloseAsync(NanoChannel channel, uint reason)
         {
             var packet = new Nano.Packets.ChannelClose(reason);
             packet.Channel = Channel;
             await _client.SendOnControlSocketAsync(packet);
         }
 
-        public void SendStreamerOnStreamingSocket(IStreamerMessage packet)
+        public async Task SendStreamerOnStreamingSocket(IStreamerMessage packet)
         {
             packet.Channel = Channel;
             packet.Header.SequenceNumber = NextSequenceNumber;
             packet.StreamerHeader.Flags = 0;
 
-            _client.SendOnStreamingSocketAsync(packet).GetAwaiter().GetResult();
+            await _client.SendOnStreamingSocketAsync(packet);
         }
 
-        public void SendStreamerOnControlSocket(IStreamerMessage packet)
+        public async Task SendStreamerOnControlSocket(IStreamerMessage packet)
         {
             packet.Channel = Channel;
             packet.StreamerHeader.PreviousSequenceNumber = SequenceNumber;
             packet.StreamerHeader.SequenceNumber = NextSequenceNumber;
             packet.StreamerHeader.Flags = StreamerFlags.GotSeqAndPrev | StreamerFlags.Unknown1;
 
-            _client.SendOnControlSocketAsync(packet).GetAwaiter().GetResult();
+            await _client.SendOnControlSocketAsync(packet);
         }
     }
 }

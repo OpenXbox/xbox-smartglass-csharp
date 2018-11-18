@@ -14,6 +14,11 @@ namespace SmartGlass.Nano.Tests
         public TestPacketParsing()
             : base("Packets")
         {
+        }
+
+        [SetUp]
+        public void Setup()
+        {
             _context = new NanoChannelContext();
             _context.RegisterChannel(1024, NanoChannel.Video);
             _context.RegisterChannel(1025, NanoChannel.Audio);

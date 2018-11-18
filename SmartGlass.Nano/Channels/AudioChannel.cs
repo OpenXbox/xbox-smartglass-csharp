@@ -15,14 +15,14 @@ namespace SmartGlass.Nano.Channels
         public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
         public event EventHandler<AudioDataEventArgs> FeedAudioData;
 
-        public void StartStream()
+        public async Task StartStreamAsync()
         {
-            SendControl(AudioControlFlags.StartStream);
+            await SendControlAsync(AudioControlFlags.StartStream);
         }
 
-        public void StopStream()
+        public async Task StopStreamAsync()
         {
-            SendControl(AudioControlFlags.StopStream);
+            await SendControlAsync(AudioControlFlags.StopStream);
         }
 
         public override void OnControl(AudioControl control)
@@ -36,25 +36,25 @@ namespace SmartGlass.Nano.Channels
                 new AudioDataEventArgs(data));
         }
 
-        private void SendClientHandshake(AudioFormat format)
+        public async Task SendClientHandshakeAsync(AudioFormat format)
         {
             uint initialFrameId = GenerateInitialFrameId();
             var packet = new AudioClientHandshake(initialFrameId, format);
 
-            SendStreamerOnControlSocket(packet);
+            await SendStreamerOnControlSocket(packet);
         }
 
-        private void SendControl(AudioControlFlags flags)
+        private async Task SendControlAsync(AudioControlFlags flags)
         {
             var packet = new AudioControl(flags);
-            SendStreamerOnControlSocket(packet);
+            await SendStreamerOnControlSocket(packet);
         }
 
         public async Task OpenAsync()
         {
             var handshake = await _client.WaitForMessageAsync<AudioServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await SendChannelOpenAsync()
+                async () => await SendChannelOpenAsync(Channel)
             );
 
             AvailableFormats = handshake.Formats;

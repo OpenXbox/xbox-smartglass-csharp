@@ -66,9 +66,9 @@ namespace SmartGlass.Nano
             }
         }
 
-        public async Task Initialize()
+        public async Task InitializeProtocolAsync()
         {
-            Task awaitChannels = WaitForChannels();
+            Task awaitChannels = WaitForChannelsAsync();
 
             ControlHandshake response = await SendControlHandshakeAsync(ConnectionId);
             if (response.Type != ControlHandshakeType.ACK)
@@ -79,25 +79,31 @@ namespace SmartGlass.Nano
             RemoteConnectionId = response.ConnectionId;
 
             await awaitChannels;
-            await OpenChannels();
+            await OpenChannelsAsync();
         }
 
-        public async Task StartStream()
+        public async Task InitializeStreamAsync(AudioFormat audioFormat, VideoFormat videoFormat)
+        {
+            await Audio.SendClientHandshakeAsync(audioFormat);
+            await Video.SendClientHandshakeAsync(videoFormat);
+        }
+
+        public async Task StartStreamAsync()
         {
             Task handshakeTask = SendUdpHandshakeAsync();
 
-            Video.StartStream();
-            Audio.StartStream();
+            await Video.StartStreamAsync();
+            await Audio.StartStreamAsync();
 
             await handshakeTask;
         }
 
-        private async Task WaitForChannels()
+        private async Task WaitForChannelsAsync()
         {
-            Task<VideoChannel> video = WaitForChannelOpen<VideoChannel>();
-            Task<AudioChannel> audio = WaitForChannelOpen<AudioChannel>();
-            Task<ChatAudioChannel> chatAudio = WaitForChannelOpen<ChatAudioChannel>();
-            Task<ControlChannel> control = WaitForChannelOpen<ControlChannel>();
+            Task<VideoChannel> video = WaitForChannelOpenAsync<VideoChannel>();
+            Task<AudioChannel> audio = WaitForChannelOpenAsync<AudioChannel>();
+            Task<ChatAudioChannel> chatAudio = WaitForChannelOpenAsync<ChatAudioChannel>();
+            Task<ControlChannel> control = WaitForChannelOpenAsync<ControlChannel>();
 
             await Task.WhenAll(video, audio, chatAudio, control);
 
@@ -107,7 +113,7 @@ namespace SmartGlass.Nano
             Control = control.Result;
         }
 
-        private async Task OpenChannels()
+        private async Task OpenChannelsAsync()
         {
             Task video = Video.OpenAsync();
             Task audio = Audio.OpenAsync();
@@ -117,7 +123,7 @@ namespace SmartGlass.Nano
             await Task.WhenAll(video, audio, chatAudio, control);
         }
 
-        private async Task<TChannel> WaitForChannelOpen<TChannel>()
+        private async Task<TChannel> WaitForChannelOpenAsync<TChannel>()
             where TChannel : StreamingChannel, new()
         {
             TChannel channel = new TChannel();
@@ -144,7 +150,10 @@ namespace SmartGlass.Nano
         private async Task<ControlHandshake> SendControlHandshakeAsync(ushort connectionId,
             ControlHandshakeType type = ControlHandshakeType.SYN)
         {
-            var packet = new Packets.ControlHandshake(type, connectionId);
+            var packet = new Packets.ControlHandshake(type, connectionId)
+            {
+                Channel = NanoChannel.TcpBase
+            };
 
             return await WaitForMessageAsync<ControlHandshake>(
                 TimeSpan.FromSeconds(1),
@@ -154,7 +163,10 @@ namespace SmartGlass.Nano
         private async Task SendUdpHandshakeAsync(
             ControlHandshakeType type = ControlHandshakeType.ACK)
         {
-            var packet = new Packets.UdpHandshake(type);
+            var packet = new Packets.UdpHandshake(type)
+            {
+                Channel = NanoChannel.TcpBase
+            };
 
             await TaskExtensions.WithRetries(() =>
                 WaitForMessageAsync<VideoData>(
