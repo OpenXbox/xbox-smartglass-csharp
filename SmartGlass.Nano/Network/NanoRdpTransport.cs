@@ -114,17 +114,6 @@ namespace SmartGlass.Nano
             return _controlProtoClient.SendAsyncPrefixed(packet);
         }
 
-        public Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
-        {
-            return this.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
-        }
-
-        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
-            where T : INanoPacket
-        {
-            return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
-        }
-
         public void Dispose()
         {
             _receiveQueue.CompleteAdding();

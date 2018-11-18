@@ -1,15 +1,13 @@
 using System;
+using System.Threading.Tasks;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    public class InputChannel : InputChannelBase
+    public class InputChannel : InputChannelBase, IStreamingChannel
     {
-        public InputChannel(NanoClient client)
-            : base(client, NanoChannel.Input)
-        {
-        }
+        public override NanoChannel Channel => NanoChannel.Input;
 
         public void OnInputFrameReceived(object sender, InputFrameEventArgs args)
         {
@@ -17,16 +15,6 @@ namespace SmartGlass.Nano.Channels
         }
 
         public void OnInputConfigReceived(object sender, InputConfigEventArgs args)
-        {
-            throw new NotImplementedException("");
-        }
-
-        public override void OnClientHandshake(InputClientHandshake handshake)
-        {
-            throw new NotImplementedException("");
-        }
-
-        public override void OnServerHandshake(InputServerHandshake handshake)
         {
             throw new NotImplementedException("");
         }

@@ -8,26 +8,30 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    public abstract class StreamingChannelBase
+    public abstract class StreamingChannel
     {
-        internal readonly NanoClient _client;
-        public NanoChannel Channel { get; private set; }
+        internal NanoClient _client;
         public ushort SequenceNumber { get; set; }
         public DateTime ReferenceTimestamp { get; private set; }
         public uint FrameId { get; private set; }
-        public bool IsOpen { get; private set; }
-        public bool HandshakeComplete { get; internal set; }
+        internal bool IsOpen { get; set; }
+        internal byte[] Flags { get; set; }
 
         public ushort NextSequenceNumber => ++SequenceNumber;
         public uint NextFrameId => ++FrameId;
 
-        public StreamingChannelBase(NanoClient client, NanoChannel channel)
+        public abstract NanoChannel Channel { get; }
+
+        public StreamingChannel()
+        {
+            IsOpen = false;
+            SequenceNumber = 0;
+        }
+
+        public void RegisterOpen(NanoClient client, byte[] flags)
         {
             _client = client;
-            Channel = channel;
-            SequenceNumber = 0;
-            IsOpen = false;
-            HandshakeComplete = false;
+            Flags = flags;
         }
 
         public ulong GenerateTimestamp()
@@ -57,18 +61,18 @@ namespace SmartGlass.Nano.Channels
             return FrameId;
         }
 
-        public void Create(uint flags)
+        internal async Task SendChannelOpenAsync()
         {
+            var packet = new Nano.Packets.ChannelOpen(Flags);
+            packet.Channel = Channel;
+            await _client.SendOnControlSocketAsync(packet);
         }
 
-        public void Open(byte[] flags)
+        internal async Task SendChannelCloseAsync(uint reason)
         {
-            IsOpen = true;
-        }
-
-        public void Close(uint flags)
-        {
-            IsOpen = false;
+            var packet = new Nano.Packets.ChannelClose(reason);
+            packet.Channel = Channel;
+            await _client.SendOnControlSocketAsync(packet);
         }
 
         public void SendStreamerOnStreamingSocket(IStreamerMessage packet)

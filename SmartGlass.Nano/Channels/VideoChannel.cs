@@ -3,19 +3,35 @@ using System.Diagnostics;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 using SmartGlass.Nano.Consumer;
+using System.Threading.Tasks;
 
 namespace SmartGlass.Nano.Channels
 {
-    public class VideoChannel : VideoChannelBase
+    public class VideoChannel : StreamingChannel, IStreamingChannel
     {
+        public override NanoChannel Channel => NanoChannel.Video;
         public Packets.VideoFormat[] AvailableFormats { get; internal set; }
         public Packets.VideoFormat ActiveFormat { get; internal set; }
         public event EventHandler<VideoFormatEventArgs> FeedVideoFormat;
         public event EventHandler<VideoDataEventArgs> FeedVideoData;
 
-        public VideoChannel(NanoClient client)
-            : base(client, NanoChannel.Video)
+        public void OnPacket(IStreamerMessage packet)
         {
+            switch ((VideoPayloadType)packet.StreamerHeader.PacketType)
+            {
+                case VideoPayloadType.ClientHandshake:
+                    OnClientHandshake((VideoClientHandshake)packet);
+                    break;
+                case VideoPayloadType.ServerHandshake:
+                    OnServerHandshake((VideoServerHandshake)packet);
+                    break;
+                case VideoPayloadType.Control:
+                    OnControl((VideoControl)packet);
+                    break;
+                case VideoPayloadType.Data:
+                    OnData((VideoData)packet);
+                    break;
+            }
         }
 
         public void StartStream()
@@ -41,28 +57,27 @@ namespace SmartGlass.Nano.Channels
             SendStreamerOnControlSocket(controlData);
         }
 
-        public override void OnClientHandshake(VideoClientHandshake handshake)
+        public void OnClientHandshake(VideoClientHandshake handshake)
         {
             throw new NotSupportedException("Client handshake on client side");
         }
 
-        public override void OnServerHandshake(VideoServerHandshake handshake)
+        public void OnServerHandshake(VideoServerHandshake handshake)
         {
             AvailableFormats = handshake.Formats;
             ActiveFormat = AvailableFormats[0];
             SendClientHandshake(ActiveFormat);
-            HandshakeComplete = true;
 
             FeedVideoFormat?.Invoke(this,
                 new VideoFormatEventArgs(ActiveFormat));
         }
 
-        public override void OnControl(VideoControl control)
+        public void OnControl(VideoControl control)
         {
             throw new NotSupportedException("Control message on client side");
         }
 
-        public override void OnData(VideoData data)
+        public void OnData(VideoData data)
         {
             FeedVideoData?.Invoke(this,
                 new VideoDataEventArgs(data));
@@ -74,6 +89,16 @@ namespace SmartGlass.Nano.Channels
             var packet = new VideoClientHandshake(initialFrameId, format);
 
             SendStreamerOnControlSocket(packet);
+        }
+
+        public async Task OpenAsync()
+        {
+            var handshake = await _client.WaitForMessageAsync<VideoServerHandshake>(
+                TimeSpan.FromSeconds(1),
+                async () => await SendChannelOpenAsync()
+            );
+
+            AvailableFormats = handshake.Formats;
         }
     }
 }

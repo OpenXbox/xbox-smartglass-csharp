@@ -13,6 +13,14 @@ namespace SmartGlass.Nano
     {
         private readonly NanoRdpTransport _transport;
 
+        private static TimeSpan[] UdpHandshakeRetries = new TimeSpan[]
+        {
+            TimeSpan.FromMilliseconds(100),
+            TimeSpan.FromMilliseconds(200),
+            TimeSpan.FromMilliseconds(400),
+            TimeSpan.FromMilliseconds(800)
+        };
+
         public AudioChannel Audio { get; private set; }
         public ChatAudioChannel ChatAudio { get; private set; }
         public ControlChannel Control { get; private set; }
@@ -41,13 +49,6 @@ namespace SmartGlass.Nano
             _provider = null;
             SessionId = sessionId;
             ConnectionId = (ushort)new Random().Next(5000);
-
-            Control = new ControlChannel(this);
-            Video = new VideoChannel(this);
-            Audio = new AudioChannel(this);
-            ChatAudio = new ChatAudioChannel(this);
-            Input = new InputChannel(this);
-            InputFeedback = new InputFeedbackChannel(this);
         }
 
         private IStreamingChannel GetChannelById(NanoChannel id)
@@ -67,44 +68,66 @@ namespace SmartGlass.Nano
 
         public async Task Initialize()
         {
-            var response = await _transport.WaitForMessageAsync<ControlHandshake>(
-                TimeSpan.FromSeconds(1),
-                async () => await SendControlHandshakeAsync(ConnectionId));
+            Task awaitChannels = WaitForChannels();
 
+            ControlHandshake response = await SendControlHandshakeAsync(ConnectionId);
             if (response.Type != ControlHandshakeType.ACK)
             {
                 throw new NotSupportedException(
                     $"Invalid ControlHandshake type received {response.Type}");
             }
             RemoteConnectionId = response.ConnectionId;
+
+            await awaitChannels;
+            await OpenChannels();
         }
 
-        public async Task<bool> StartStream()
+        public async Task StartStream()
         {
-            if (!Video.HandshakeComplete || !Audio.HandshakeComplete)
-            {
-                Console.WriteLine("Audio or Video handshake not done yet, cant start stream");
-                return false;
-            }
+            Task handshakeTask = SendUdpHandshakeAsync();
 
             Video.StartStream();
             Audio.StartStream();
 
-            TimeSpan[] udpHandshakeRetries = new TimeSpan[]
-            {
-                TimeSpan.FromMilliseconds(100),
-                TimeSpan.FromMilliseconds(200),
-                TimeSpan.FromMilliseconds(400),
-                TimeSpan.FromMilliseconds(800)
-            };
+            await handshakeTask;
+        }
 
-            var response = await TaskExtensions.WithRetries(() =>
-                _transport.WaitForMessageAsync<VideoData>(
-                    TimeSpan.FromSeconds(1),
-                    async () => await SendUdpHandshakeAsync()
-                ), udpHandshakeRetries);
+        private async Task WaitForChannels()
+        {
+            Task<VideoChannel> video = WaitForChannelOpen<VideoChannel>();
+            Task<AudioChannel> audio = WaitForChannelOpen<AudioChannel>();
+            Task<ChatAudioChannel> chatAudio = WaitForChannelOpen<ChatAudioChannel>();
+            Task<ControlChannel> control = WaitForChannelOpen<ControlChannel>();
 
-            return response != null;
+            await Task.WhenAll(video, audio, chatAudio, control);
+
+            Video = video.Result;
+            Audio = audio.Result;
+            ChatAudio = chatAudio.Result;
+            Control = control.Result;
+        }
+
+        private async Task OpenChannels()
+        {
+            Task video = Video.OpenAsync();
+            Task audio = Audio.OpenAsync();
+            Task chatAudio = ChatAudio.OpenAsync();
+            Task control = Control.OpenAsync();
+
+            await Task.WhenAll(video, audio, chatAudio, control);
+        }
+
+        private async Task<TChannel> WaitForChannelOpen<TChannel>()
+            where TChannel : StreamingChannel, new()
+        {
+            TChannel channel = new TChannel();
+            var openPacket = await WaitForMessageAsync<ChannelOpen>(
+                TimeSpan.FromSeconds(3),
+                startAction: null,
+                filter: open => open.Channel == channel.Channel);
+
+            channel.RegisterOpen(this, openPacket.Flags);
+            return channel;
         }
 
         internal void MessageReceived(object sender, MessageReceivedEventArgs<INanoPacket> message)
@@ -114,110 +137,52 @@ namespace SmartGlass.Nano
 
             Debug.WriteLine($"NANO: Received {pt} on Channel <{packet.Channel}>");
 
-            switch (pt)
-            {
-                case NanoPayloadType.ControlHandshake:
-                    // Handled by this.Initialize()
-                    break;
-                case NanoPayloadType.ChannelControl:
-                    OnChannelControlMessage(packet as Packets.ChannelControlMessage);
-                    break;
-                case NanoPayloadType.Streamer:
-                    OnStreamer(packet as IStreamerMessage);
-                    break;
-                case NanoPayloadType.UDPHandshake:
-                    throw new NotSupportedException($"UDP handshake received from server :/");
-                default:
-                    throw new NotSupportedException($"Unsupported payload type: {pt}");
-            }
+            if (packet as IStreamerMessage != null)
+                GetChannelById(packet.Channel).OnPacket((IStreamerMessage)packet);
         }
 
-        private void OnStreamer(IStreamerMessage msg)
-        {
-            GetChannelById(msg.Channel).OnPacket(msg);
-        }
-
-        private void OnChannelControlMessage(Packets.ChannelControlMessage packet)
-        {
-            if (ChannelControlType.Create == packet.Type)
-                OnChannelCreate(packet as Packets.ChannelCreate);
-            else if (ChannelControlType.Open == packet.Type)
-                OnChannelOpen(packet as ChannelOpen);
-            else if (ChannelControlType.Close == packet.Type)
-                OnChannelClose(packet as ChannelClose);
-            else
-                throw new NanoException(
-                    $"Invalid ChannelControl packet: {packet.Type}");
-        }
-
-        private void OnChannelCreate(Packets.ChannelCreate packet)
-        {
-            IStreamingChannel channel = GetChannelById(NanoChannelClass
-                .GetIdByClassName(packet.Name));
-            ((StreamingChannelBase)channel).Create(packet.Flags);
-        }
-
-        private void OnChannelOpen(Packets.ChannelOpen packet)
-        {
-            if (packet.Channel == NanoChannel.Unknown)
-            {
-                throw new NanoException(
-                    $"Unknown channel was opened, id: {packet.Header.ChannelId}");
-            }
-
-            IStreamingChannel channel = GetChannelById(packet.Channel);
-            ((StreamingChannelBase)channel).Open(packet.Flags);
-
-            SendChannelOpenAsync(packet.Channel, packet.Flags)
-                .GetAwaiter().GetResult();
-        }
-
-        private void OnChannelClose(Packets.ChannelClose packet)
-        {
-            IStreamingChannel channel = GetChannelById(packet.Channel);
-            ((StreamingChannelBase)channel).Close(packet.Flags);
-
-            SendChannelCloseAsync(packet.Channel, packet.Flags)
-                .GetAwaiter().GetResult();
-        }
-
-        private Task SendControlHandshakeAsync(ushort connectionId,
+        private async Task<ControlHandshake> SendControlHandshakeAsync(ushort connectionId,
             ControlHandshakeType type = ControlHandshakeType.SYN)
         {
             var packet = new Packets.ControlHandshake(type, connectionId);
-            return SendOnControlSocketAsync(packet);
+
+            return await WaitForMessageAsync<ControlHandshake>(
+                TimeSpan.FromSeconds(1),
+                async () => await SendOnControlSocketAsync(packet));
         }
 
-        private Task SendUdpHandshakeAsync(
+        private async Task SendUdpHandshakeAsync(
             ControlHandshakeType type = ControlHandshakeType.ACK)
         {
             var packet = new Packets.UdpHandshake(type);
-            return SendOnStreamingSocketAsync(packet);
+
+            await TaskExtensions.WithRetries(() =>
+                WaitForMessageAsync<VideoData>(
+                    TimeSpan.FromSeconds(1),
+                    async () => await SendOnStreamingSocketAsync(packet)
+                ), UdpHandshakeRetries);
         }
 
-        internal Task SendChannelOpenAsync(NanoChannel channel, byte[] flags)
+        internal Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
         {
-            var packet = new Nano.Packets.ChannelOpen(flags);
-            packet.Channel = channel;
-            return SendOnControlSocketAsync(packet);
+            return _transport.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
         }
 
-        internal Task SendChannelCloseAsync(NanoChannel channel, uint flags)
+        internal Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+            where T : INanoPacket
         {
-            var packet = new Nano.Packets.ChannelClose(flags);
-            packet.Channel = channel;
-            return SendOnControlSocketAsync(packet);
+            return _transport.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
         }
 
-        internal Task SendOnStreamingSocketAsync(INanoPacket packet)
+        internal async Task SendOnStreamingSocketAsync(INanoPacket packet)
         {
             packet.Header.ConnectionId = RemoteConnectionId;
-            return _transport.SendAsyncStreaming(packet);
+            await _transport.SendAsyncStreaming(packet);
         }
 
-        internal Task SendOnControlSocketAsync(INanoPacket packet)
+        internal async Task SendOnControlSocketAsync(INanoPacket packet)
         {
-            return _transport.SendAsyncControl(packet);
+            await _transport.SendAsyncControl(packet);
         }
 
         public void AddConsumer(Consumer.IConsumer consumer)

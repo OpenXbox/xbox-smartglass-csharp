@@ -39,11 +39,7 @@ namespace SmartGlass.Cli
                     FileConsumer consumer = new FileConsumer("nanostream");
                     nano.AddConsumer(consumer);
 
-                    bool success = await nano.StartStream();
-                    if (!success)
-                    {
-                        throw new Exception("Failed to start nano stream");
-                    }
+                    await nano.StartStream();
 
                     var loop = new Loop(typeof(SessionCommandType));
                     loop.Execute();

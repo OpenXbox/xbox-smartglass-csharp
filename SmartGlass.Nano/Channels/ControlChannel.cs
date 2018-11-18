@@ -1,15 +1,13 @@
 using System;
+using System.Threading.Tasks;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    public class ControlChannel : StreamingChannelBase, IStreamingChannel
+    public class ControlChannel : StreamingChannel, IStreamingChannel
     {
-        public ControlChannel(NanoClient client)
-            : base(client, NanoChannel.Control)
-        {
-        }
+        public override NanoChannel Channel => NanoChannel.Control;
 
         public void ChangeVideoQuality(uint u1, uint u2, uint u3,
                                         uint u4, uint u5, uint u6)
@@ -65,6 +63,11 @@ namespace SmartGlass.Nano.Channels
             packet.ControlHeader.Unknown1 = 1;
             packet.ControlHeader.Unknown2 = 1406;
             SendStreamerOnControlSocket(packet);
+        }
+
+        public async Task OpenAsync()
+        {
+            await SendChannelOpenAsync();
         }
     }
 }

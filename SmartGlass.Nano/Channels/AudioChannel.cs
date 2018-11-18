@@ -7,17 +7,13 @@ using SmartGlass.Nano.Consumer;
 
 namespace SmartGlass.Nano.Channels
 {
-    public class AudioChannel : AudioChannelBase
+    public class AudioChannel : AudioChannelBase, IStreamingChannel
     {
+        public override NanoChannel Channel => NanoChannel.Audio;
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
         public Packets.AudioFormat ActiveFormat { get; internal set; }
         public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
         public event EventHandler<AudioDataEventArgs> FeedAudioData;
-
-        public AudioChannel(NanoClient client)
-            : base(client, NanoChannel.Audio)
-        {
-        }
 
         public void StartStream()
         {
@@ -27,22 +23,6 @@ namespace SmartGlass.Nano.Channels
         public void StopStream()
         {
             SendControl(AudioControlFlags.StopStream);
-        }
-
-        public override void OnClientHandshake(AudioClientHandshake handshake)
-        {
-            throw new NotSupportedException("Client handshake on client side");
-        }
-
-        public override void OnServerHandshake(AudioServerHandshake handshake)
-        {
-            AvailableFormats = handshake.Formats;
-            ActiveFormat = AvailableFormats[0];
-            SendClientHandshake(ActiveFormat);
-            HandshakeComplete = true;
-
-            FeedAudioFormat?.Invoke(this,
-                new AudioFormatEventArgs(ActiveFormat));
         }
 
         public override void OnControl(AudioControl control)
@@ -68,6 +48,16 @@ namespace SmartGlass.Nano.Channels
         {
             var packet = new AudioControl(flags);
             SendStreamerOnControlSocket(packet);
+        }
+
+        public async Task OpenAsync()
+        {
+            var handshake = await _client.WaitForMessageAsync<AudioServerHandshake>(
+                TimeSpan.FromSeconds(1),
+                async () => await SendChannelOpenAsync()
+            );
+
+            AvailableFormats = handshake.Formats;
         }
     }
 }
