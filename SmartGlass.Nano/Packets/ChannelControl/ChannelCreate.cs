@@ -24,14 +24,14 @@ namespace SmartGlass.Nano.Packets
             Flags = flags;
         }
 
-        public override void DeserializeData(BinaryReader reader)
+        internal override void DeserializeData(BinaryReader reader)
         {
             byte[] name = reader.ReadUInt16PrefixedBlob();
             Name = Encoding.GetEncoding("utf-8").GetString(name);
             Flags = reader.ReadUInt32();
         }
 
-        public override void SerializeData(BinaryWriter writer)
+        internal override void SerializeData(BinaryWriter writer)
         {
             byte[] name = Encoding.GetEncoding("utf-8").GetBytes(Name);
             writer.WriteUInt16PrefixedBlob(name);

@@ -13,12 +13,12 @@ namespace SmartGlass.Nano.Packets
         {
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             throw new NotImplementedException();
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             throw new NotImplementedException();
         }

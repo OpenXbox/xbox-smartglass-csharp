@@ -30,7 +30,7 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = initialFrameId;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             ProtocolVersion = reader.ReadUInt32();
             DesktopWidth = reader.ReadUInt32();
@@ -39,7 +39,7 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = reader.ReadUInt32();
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write(ProtocolVersion);
             writer.Write(DesktopWidth);

@@ -18,6 +18,9 @@ namespace SmartGlass.Nano.Packets
         public InputFrame()
             : base((uint)InputPayloadType.Frame)
         {
+            Buttons = new InputButtons();
+            Analog = new InputAnalogue();
+            Extension = new InputExtension();
         }
 
         public InputFrame(uint frameId, ulong timestamp, ulong createdTimestamp,
@@ -32,7 +35,7 @@ namespace SmartGlass.Nano.Packets
             Extension = extension;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             FrameId = reader.ReadUInt32();
             Timestamp = reader.ReadUInt64();
@@ -43,7 +46,7 @@ namespace SmartGlass.Nano.Packets
             ((ISerializableLE)Extension).Deserialize(reader);
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write(FrameId);
             writer.Write(Timestamp);

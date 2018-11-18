@@ -23,13 +23,13 @@ namespace SmartGlass.Nano.Packets
             ReferenceTimestamp = refTimestamp;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             MaxTouches = reader.ReadUInt32();
             ReferenceTimestamp = reader.ReadUInt64();
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write(MaxTouches);
             writer.Write(ReferenceTimestamp);

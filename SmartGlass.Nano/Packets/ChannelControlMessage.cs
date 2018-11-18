@@ -37,7 +37,7 @@ namespace SmartGlass.Nano.Packets
             SerializeData(writer);
         }
 
-        public abstract void DeserializeData(BinaryReader reader);
-        public abstract void SerializeData(BinaryWriter writer);
+        internal abstract void DeserializeData(BinaryReader reader);
+        internal abstract void SerializeData(BinaryWriter writer);
     }
 }

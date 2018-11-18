@@ -22,12 +22,12 @@ namespace SmartGlass.Nano.Packets
             Flags = flags;
         }
 
-        public override void DeserializeData(BinaryReader reader)
+        internal override void DeserializeData(BinaryReader reader)
         {
             Flags = reader.ReadUInt32PrefixedBlob();
         }
 
-        public override void SerializeData(BinaryWriter writer)
+        internal override void SerializeData(BinaryWriter writer)
         {
             if (Flags != null && Flags.Length > 0)
             {

@@ -32,7 +32,7 @@ namespace SmartGlass.Nano.Packets
             Unknown6 = unk6;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             Unknown1 = reader.ReadUInt32();
             Unknown2 = reader.ReadUInt32();
@@ -42,7 +42,7 @@ namespace SmartGlass.Nano.Packets
             Unknown6 = reader.ReadUInt32();
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write(Unknown1);
             writer.Write(Unknown2);

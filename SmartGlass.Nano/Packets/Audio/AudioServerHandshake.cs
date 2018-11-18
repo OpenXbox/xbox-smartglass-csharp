@@ -26,14 +26,14 @@ namespace SmartGlass.Nano.Packets
             Formats = formats;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             ProtocolVersion = reader.ReadUInt32();
             ReferenceTimestamp = reader.ReadUInt64();
             Formats = reader.ReadUInt32PrefixedArray<AudioFormat>();
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write(ProtocolVersion);
             writer.Write(ReferenceTimestamp);

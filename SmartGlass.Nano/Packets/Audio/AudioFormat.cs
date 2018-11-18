@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    public class AudioFormat : StreamerMessage
+    public class AudioFormat : ISerializableLE
     {
         public uint Channels { get; private set; }
         public uint SampleRate { get; private set; }
@@ -27,7 +27,7 @@ namespace SmartGlass.Nano.Packets
             SampleType = sampleType;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        void ISerializableLE.Deserialize(BinaryReader reader)
         {
             Channels = reader.ReadUInt32();
             SampleRate = reader.ReadUInt32();
@@ -39,7 +39,7 @@ namespace SmartGlass.Nano.Packets
             }
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        void ISerializableLE.Serialize(BinaryWriter writer)
         {
             writer.Write(Channels);
             writer.Write(SampleRate);

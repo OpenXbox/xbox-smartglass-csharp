@@ -34,7 +34,7 @@ namespace SmartGlass.Nano.Packets
             LastLostFrame = lastLostFrame;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             Flags = (VideoControlFlags)reader.ReadUInt32();
 
@@ -54,7 +54,7 @@ namespace SmartGlass.Nano.Packets
             }
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write((uint)Flags);
             if (Flags.HasFlag(VideoControlFlags.LastDisplayedFrame))

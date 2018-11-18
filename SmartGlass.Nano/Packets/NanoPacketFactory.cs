@@ -127,7 +127,7 @@ namespace SmartGlass.Nano.Packets
                     return CreateFromInputPayloadType((InputPayloadType)streamerType);
                 case NanoChannel.Control:
                     // Skip to opCode
-                    reader.Seek(12, SeekOrigin.Current);
+                    reader.Seek(8, SeekOrigin.Current);
                     ushort opCode = reader.ReadUInt16();
                     return CreateFromControlOpCode((ControlOpCode)opCode);
                 default:
@@ -204,12 +204,33 @@ namespace SmartGlass.Nano.Packets
 
         private static INanoPacket CreateFromControlOpCode(ControlOpCode opCode)
         {
-            var type = ControlOpCodeAttribute.GetTypeForMessageType(opCode);
-            if (type == null)
+            switch (opCode)
             {
-                return null;
+                case ControlOpCode.ChangeVideoQuality:
+                    return new ChangeVideoQuality();
+                case ControlOpCode.ControllerEvent:
+                    return new ControllerEvent();
+                case ControlOpCode.InitiateNetworkTest:
+                    return new InitiateNetworkTest();
+                case ControlOpCode.NetworkInformation:
+                    return new NetworkInformation();
+                case ControlOpCode.NetworkTestResponse:
+                    return new NetworkTestResponse();
+                case ControlOpCode.RealtimeTelemetry:
+                    return new RealtimeTelemetry();
+                case ControlOpCode.SessionCreate:
+                    return new SessionCreate();
+                case ControlOpCode.SessionCreateResponse:
+                    return new SessionCreateResponse();
+                case ControlOpCode.SessionDestroy:
+                    return new SessionDestroy();
+                case ControlOpCode.SessionInit:
+                    return new SessionInit();
+                case ControlOpCode.VideoStatistics:
+                    return new VideoStatistics();
+                default:
+                    throw new NanoException($"Invalid Control OpCode: {opCode}");
             }
-            return (INanoPacket)Activator.CreateInstance(type);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace SmartGlass.Nano.Packets
             Formats = formats;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             ProtocolVersion = reader.ReadUInt32();
             Width = reader.ReadUInt32();
@@ -44,7 +44,7 @@ namespace SmartGlass.Nano.Packets
             Formats = reader.ReadUInt32PrefixedArray<VideoFormat>();
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write(ProtocolVersion);
             writer.Write(Width);

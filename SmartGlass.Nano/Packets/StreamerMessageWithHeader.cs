@@ -49,7 +49,7 @@ namespace SmartGlass.Nano.Packets
             SerializeStreamer(writer);
         }
 
-        public abstract void DeserializeStreamer(BinaryReader reader);
-        public abstract void SerializeStreamer(BinaryWriter writer);
+        internal abstract void DeserializeStreamer(BinaryReader reader);
+        internal abstract void SerializeStreamer(BinaryWriter writer);
     }
 }

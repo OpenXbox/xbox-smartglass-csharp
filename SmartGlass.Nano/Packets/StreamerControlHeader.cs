@@ -8,8 +8,8 @@ namespace SmartGlass.Nano.Packets
     public class StreamerControlHeader : ISerializableLE
     {
         public uint PreviousSequence { get; set; }
-        public uint Unknown1 { get; set; }
-        public uint Unknown2 { get; set; }
+        public ushort Unknown1 { get; set; }
+        public ushort Unknown2 { get; set; }
         public ControlOpCode OpCode { get; private set; }
 
         public StreamerControlHeader()

@@ -28,7 +28,7 @@ namespace SmartGlass.Nano.Packets
             Data = data;
         }
 
-        public override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
             Flags = reader.ReadUInt32();
             FrameId = reader.ReadUInt32();
@@ -36,7 +36,7 @@ namespace SmartGlass.Nano.Packets
             Data = reader.ReadUInt32PrefixedBlob();
         }
 
-        public override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
             writer.Write(Flags);
             writer.Write(FrameId);

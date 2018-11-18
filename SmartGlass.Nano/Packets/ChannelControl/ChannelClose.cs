@@ -21,12 +21,12 @@ namespace SmartGlass.Nano.Packets
             Flags = flags;
         }
 
-        public override void DeserializeData(BinaryReader reader)
+        internal override void DeserializeData(BinaryReader reader)
         {
             Flags = reader.ReadUInt32();
         }
 
-        public override void SerializeData(BinaryWriter writer)
+        internal override void SerializeData(BinaryWriter writer)
         {
             writer.Write(Flags);
         }

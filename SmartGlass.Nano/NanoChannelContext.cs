@@ -49,7 +49,12 @@ namespace SmartGlass.Nano
 
         public bool UnregisterChannel(ChannelClose closePacket)
         {
-            return _channels.Remove(closePacket.Header.ChannelId);
+            return UnregisterChannel(closePacket.Header.ChannelId);
+        }
+
+        public bool UnregisterChannel(ushort channelId)
+        {
+            return _channels.Remove(channelId);
         }
     }
 }
