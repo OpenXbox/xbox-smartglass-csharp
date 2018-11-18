@@ -63,7 +63,7 @@ namespace SmartGlass.Nano
                     INanoPacket packet = NanoPacketFactory.ParsePacket(packetData, ChannelContext);
                     _receiveQueue.TryAdd(packet);
                 }
-                catch (Exception e)
+                catch (NanoPackingException e)
                 {
                     Debug.WriteLine($"Failed to parse nano packet: {e.Message}", e);
                 }

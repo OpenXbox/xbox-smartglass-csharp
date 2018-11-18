@@ -43,13 +43,13 @@ namespace SmartGlass.Nano.Packets
                     packet = CreateFromStreamerHeader(payloadReader, channel);
                     break;
                 default:
-                    throw new NanoException(
+                    throw new NanoPackingException(
                         $"Unknown packet type received: {payloadType}");
             }
 
             if (packet == null)
             {
-                throw new NanoException("Failed to find matching body for packet");
+                throw new NanoPackingException("Failed to find matching body for packet");
             }
 
             payloadReader.Seek(0, SeekOrigin.Begin);
@@ -67,7 +67,7 @@ namespace SmartGlass.Nano.Packets
             }
             else if (channel == NanoChannel.Unknown)
             {
-                throw new NanoException("ParsePacket: INanoPacket.Channel is UNKNOWN");
+                throw new NanoPackingException("ParsePacket: INanoPacket.Channel is UNKNOWN");
             }
 
             packet.Channel = channel;
@@ -78,7 +78,7 @@ namespace SmartGlass.Nano.Packets
         {
             if (packet.Channel == NanoChannel.Unknown)
             {
-                throw new NanoException("AssemblePacket: INanoPacket.Channel is UNKNOWN");
+                throw new NanoPackingException("AssemblePacket: INanoPacket.Channel is UNKNOWN");
             }
 
             BEWriter packetWriter = new BEWriter();
@@ -107,7 +107,7 @@ namespace SmartGlass.Nano.Packets
         {
             if (channel == NanoChannel.Unknown)
             {
-                throw new NanoException(
+                throw new NanoPackingException(
                     $"Received Streamer Msg on UNKNOWN channel");
             }
 
@@ -131,7 +131,7 @@ namespace SmartGlass.Nano.Packets
                     ushort opCode = reader.ReadUInt16();
                     return CreateFromControlOpCode((ControlOpCode)opCode);
                 default:
-                    throw new NanoException(
+                    throw new NanoPackingException(
                         $"Received Streamer Msg on INVALID channel: {channel}");
             }
         }
@@ -147,7 +147,7 @@ namespace SmartGlass.Nano.Packets
                 case ChannelControlType.Close:
                     return new ChannelClose();
                 default:
-                    throw new NanoException($"Invalid ChannelControlType: {controlType}");
+                    throw new NanoPackingException($"Invalid ChannelControlType: {controlType}");
             }
         }
 
@@ -164,7 +164,7 @@ namespace SmartGlass.Nano.Packets
                 case AudioPayloadType.Data:
                     return new AudioData();
                 default:
-                    throw new NanoException($"Invalid AudioPayloadType: {audioType}");
+                    throw new NanoPackingException($"Invalid AudioPayloadType: {audioType}");
             }
         }
 
@@ -181,7 +181,7 @@ namespace SmartGlass.Nano.Packets
                 case VideoPayloadType.Data:
                     return new VideoData();
                 default:
-                    throw new NanoException($"Invalid VideoPayloadType: {videoType}");
+                    throw new NanoPackingException($"Invalid VideoPayloadType: {videoType}");
             }
         }
 
@@ -198,7 +198,7 @@ namespace SmartGlass.Nano.Packets
                 case InputPayloadType.FrameAck:
                     return new InputFrameAck();
                 default:
-                    throw new NanoException($"Invalid InputPayloadType: {inputType}");
+                    throw new NanoPackingException($"Invalid InputPayloadType: {inputType}");
             }
         }
 
@@ -229,7 +229,7 @@ namespace SmartGlass.Nano.Packets
                 case ControlOpCode.VideoStatistics:
                     return new VideoStatistics();
                 default:
-                    throw new NanoException($"Invalid Control OpCode: {opCode}");
+                    throw new NanoPackingException($"Invalid Control OpCode: {opCode}");
             }
         }
     }
