@@ -204,8 +204,8 @@ namespace SmartGlass.Nano
             Video.FeedVideoFormat += consumer.ConsumeVideoFormat;
             Video.FeedVideoData += consumer.ConsumeVideoData;
 
-            InputFeedback.FeedInputFeedbackConfig += consumer.ConsumeInputFeedbackConfig;
-            InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
+            //InputFeedback.FeedInputFeedbackConfig += consumer.ConsumeInputFeedbackConfig;
+            //InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
             _consumers.Add(consumer);
         }
 

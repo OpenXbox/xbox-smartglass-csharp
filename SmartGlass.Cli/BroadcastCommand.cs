@@ -34,14 +34,19 @@ namespace SmartGlass.Cli
                     Console.WriteLine($"Connecting to Nano, TCP: {result.TcpPort}, UDP: {result.UdpPort}");
                     var nano = new NanoClient(Hostname, result);
 
+                    Console.WriteLine($"Running protocol init...");
                     await nano.InitializeProtocolAsync();
 
+                    Console.WriteLine("Adding FileConsumer");
                     FileConsumer consumer = new FileConsumer("nanostream");
                     nano.AddConsumer(consumer);
 
+                    Console.WriteLine("Initializing AV stream (handshaking)...");
                     await nano.InitializeStreamAsync(nano.Audio.AvailableFormats[0],
                                                 nano.Video.AvailableFormats[0]);
+                    Console.WriteLine("Starting stream...");
                     await nano.StartStreamAsync();
+                    Console.WriteLine("Stream is running");
 
                     var loop = new Loop(typeof(SessionCommandType));
                     loop.Execute();

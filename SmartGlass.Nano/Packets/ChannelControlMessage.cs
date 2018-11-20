@@ -22,6 +22,10 @@ namespace SmartGlass.Nano.Packets
 
         public ChannelControlMessage(ChannelControlType type)
         {
+            Header = new RtpHeader()
+            {
+                PayloadType = NanoPayloadType.ChannelControl
+            };
             Type = type;
         }
 
