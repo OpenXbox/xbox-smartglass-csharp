@@ -95,9 +95,10 @@ namespace SmartGlass.Connection
             CryptoBlob = CreateCryptoBlob(sharedSecret);
         }
 
-        public CryptoContext(byte[] cryptoBlob)
+        public CryptoContext(byte[] cryptoBlob, byte[] publicKey = null)
         {
             CryptoBlob = cryptoBlob;
+            _publicKey = publicKey ?? new byte[64];
         }
 
         public byte[] CreateDerivedInitVector(byte[] data)
@@ -105,7 +106,7 @@ namespace SmartGlass.Connection
             var cipher = CipherUtilities.GetCipher(NistObjectIdentifiers.IdAes128Ecb);
             var keyParams = ParameterUtilities.CreateKeyParameter(NistObjectIdentifiers.IdAes128Ecb, _derivationKey);
 
-            cipher.Init(true, keyParams);
+            cipher.Init(true, keyParams); 
 
             return cipher.DoFinal(data).Take(16).ToArray();
         }

@@ -193,6 +193,7 @@ namespace SmartGlass.Messaging.Session
 
             message.Header.ChannelId = fragment.Header.ChannelId;
             message.Header.RequestAcknowledge = fragment.Header.RequestAcknowledge;
+            message.Header.IsFragment = fragment.Header.IsFragment;
             message.Header.SessionMessageType = fragment.Header.SessionMessageType;
             message.Header.Version = fragment.Header.Version;
 

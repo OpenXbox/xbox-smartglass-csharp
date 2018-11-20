@@ -5,10 +5,10 @@ namespace SmartGlass
 {
     public class TouchPoint : ISerializable
     {
-        public uint Id { get; private set; }
-        public TouchAction Action { get; private set; }
-        public uint PointX { get; private set; }
-        public uint PointY { get; private set; }
+        public uint Id { get; set; }
+        public TouchAction Action { get; set; }
+        public uint PointX { get; set; }
+        public uint PointY { get; set; }
 
         void ISerializable.Deserialize(BEReader reader)
         {
