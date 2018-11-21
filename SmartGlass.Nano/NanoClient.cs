@@ -298,39 +298,6 @@ namespace SmartGlass.Nano
             return _consumers.Remove(consumer);
         }
 
-        public bool AddProvider(Provider.IProvider provider)
-        {
-            if (_provider != null)
-            {
-                Debug.WriteLine("Already got a provider!");
-                return false;
-            }
-            _provider = provider;
-
-            _provider.FeedInputConfig += Input.OnInputConfigReceived;
-            _provider.FeedInputFrame += Input.OnInputFrameReceived;
-            _provider.FeedChatAudioFormat += ChatAudio.OnChatAudioConfigReceived;
-            _provider.FeedChatAudioData += ChatAudio.OnChatAudioDataReceived;
-            return true;
-        }
-
-        public bool RemoveProvider()
-        {
-            if (_provider == null)
-            {
-                Debug.WriteLine("Got no provider to remove!");
-                return false;
-            }
-
-            _provider.FeedInputConfig -= Input.OnInputConfigReceived;
-            _provider.FeedInputFrame -= Input.OnInputFrameReceived;
-            _provider.FeedChatAudioFormat -= ChatAudio.OnChatAudioConfigReceived;
-            _provider.FeedChatAudioData -= ChatAudio.OnChatAudioDataReceived;
-
-            _provider = null;
-            return true;
-        }
-
         public void Dispose()
         {
             _transport.Dispose();
