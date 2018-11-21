@@ -29,6 +29,7 @@ namespace SmartGlass.Nano
         private readonly IPEndPoint _controlProtoEp;
         private readonly IPEndPoint _streamingProtoEp;
 
+        internal ushort RemoteConnectionId { get; set; }
         public NanoChannelContext ChannelContext { get; private set; }
         public event EventHandler<MessageReceivedEventArgs<INanoPacket>> MessageReceived;
 
@@ -60,9 +61,22 @@ namespace SmartGlass.Nano
                 try
                 {
                     BEReader reader = new BEReader(packetData);
-                    // ParsePacket will handle ControlHandshake response (connection id)
-                    // and Channel registrations (ChannelCreate packets)
                     INanoPacket packet = NanoPacketFactory.ParsePacket(packetData, ChannelContext);
+
+                    if (packet.Header.PayloadType == NanoPayloadType.ChannelControl &&
+                        packet as ChannelCreate != null)
+                    {
+                        ChannelContext.RegisterChannel((ChannelCreate)packet);
+                    }
+                    else if (packet.Header.PayloadType == NanoPayloadType.ChannelControl &&
+                             packet as ChannelClose != null)
+                    {
+                        ChannelContext.UnregisterChannel((ChannelClose)packet);
+                    }
+                    else if (RemoteConnectionId == 0 && packet as ControlHandshake != null)
+                    {
+                        RemoteConnectionId = ((ControlHandshake)packet).ConnectionId;
+                    }
 
                     _receiveQueue.TryAdd(packet);
                 }
@@ -150,13 +164,13 @@ namespace SmartGlass.Nano
 
         private Task SendAsyncStreaming(INanoPacket message)
         {
-            if (ChannelContext.RemoteConnectionId == 0)
+            if (RemoteConnectionId == 0)
             {
                 throw new NanoException(
                     "ControlHandshake was not registered inside NanoChannelContext");
             }
 
-            message.Header.ConnectionId = ChannelContext.RemoteConnectionId;
+            message.Header.ConnectionId = RemoteConnectionId;
             byte[] packet = NanoPacketFactory.AssemblePacket(message, ChannelContext);
             return _streamingProtoClient.SendAsync(packet, packet.Length);
         }

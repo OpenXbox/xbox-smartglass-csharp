@@ -8,7 +8,6 @@ namespace SmartGlass.Nano
     public class NanoChannelContext
     {
         private readonly Dictionary<ushort, NanoChannel> _channels;
-        public ushort RemoteConnectionId { get; internal set; }
         public NanoChannelContext()
         {
             _channels = new Dictionary<ushort, NanoChannel>()

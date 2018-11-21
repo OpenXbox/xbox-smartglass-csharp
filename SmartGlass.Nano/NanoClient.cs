@@ -31,11 +31,12 @@ namespace SmartGlass.Nano
         internal List<Consumer.IConsumer> _consumers { get; set; }
         internal Provider.IProvider _provider { get; set; }
 
+        public GamestreamConfiguration Configuration { get; private set; }
         public bool ProtocolInitialized { get; private set; }
         public bool StreamInitialized { get; private set; }
         public Guid SessionId { get; internal set; }
         public ushort ConnectionId { get; private set; }
-        public ushort RemoteConnectionId { get; private set; }
+        public ushort RemoteConnectionId => _transport.RemoteConnectionId;
 
         /// <summary>
         /// 
@@ -60,10 +61,12 @@ namespace SmartGlass.Nano
         {
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
             _transport.MessageReceived += MessageReceived;
+
             _consumers = new List<Consumer.IConsumer>();
             _provider = null;
             ProtocolInitialized = false;
             StreamInitialized = false;
+            Configuration = configuration;
             SessionId = sessionId;
             ConnectionId = (ushort)new Random().Next(5000);
         }
@@ -87,7 +90,6 @@ namespace SmartGlass.Nano
                 throw new NotSupportedException(
                     $"Invalid ControlHandshake type received {response.Type}");
             }
-            RemoteConnectionId = response.ConnectionId;
 
             await awaitChannels;
             await OpenChannelsAsync();
