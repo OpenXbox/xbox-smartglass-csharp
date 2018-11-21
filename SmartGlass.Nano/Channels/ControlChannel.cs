@@ -8,16 +8,26 @@ namespace SmartGlass.Nano.Channels
     public class ControlChannel : StreamingChannel, IStreamingChannel
     {
         public override NanoChannel Channel => NanoChannel.Control;
+        public override int ProtocolVersion => 0;
 
-        public async Task ChangeVideoQuality(uint u1, uint u2, uint u3,
+        public ControlChannel(NanoClient client, byte[] flags)
+        {
+            _client = client;
+            Flags = flags;
+        }
+
+        public async Task ChangeVideoQualityAsync(uint u1, uint u2, uint u3,
                                         uint u4, uint u5, uint u6)
         {
             var packet = new ChangeVideoQuality(u1, u2, u3, u4, u5, u6);
             await SendControlPacketAsync(packet);
         }
 
-        public void ControllerEvent()
+        public async Task SendControllerEventAsync(ControllerEventType controllerType,
+                                                    byte controllerIndex)
         {
+            var packet = new ControllerEvent(controllerType, controllerIndex);
+            await SendControlPacketAsync(packet);
         }
 
         public void InitiateNetworkTest()
@@ -67,7 +77,7 @@ namespace SmartGlass.Nano.Channels
 
         public async Task OpenAsync()
         {
-            await SendChannelOpenAsync(Channel);
+            await _client.SendChannelOpenAsync(Channel, Flags);
         }
     }
 }

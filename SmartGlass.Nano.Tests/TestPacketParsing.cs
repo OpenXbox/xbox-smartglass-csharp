@@ -54,7 +54,7 @@ namespace SmartGlass.Nano.Tests
             NanoChannelContext localContext = new NanoChannelContext();
 
             byte[] packetData = TestData["tcp_channel_open_no_flags.bin"];
-            Assert.Throws<NanoException>(() =>
+            Assert.Throws<NanoPackingException>(() =>
             {
                 NanoPacketFactory
                     .ParsePacket(packetData, localContext);

@@ -10,10 +10,17 @@ namespace SmartGlass.Nano.Channels
     public class AudioChannel : AudioChannelBase, IStreamingChannel
     {
         public override NanoChannel Channel => NanoChannel.Audio;
+        public override int ProtocolVersion => 4;
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
-        public Packets.AudioFormat ActiveFormat { get; internal set; }
+
         public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
         public event EventHandler<AudioDataEventArgs> FeedAudioData;
+
+        public AudioChannel(NanoClient client, byte[] flags)
+        {
+            _client = client;
+            Flags = flags;
+        }
 
         public async Task StartStreamAsync()
         {
@@ -38,8 +45,7 @@ namespace SmartGlass.Nano.Channels
 
         public async Task SendClientHandshakeAsync(AudioFormat format)
         {
-            uint initialFrameId = GenerateInitialFrameId();
-            var packet = new AudioClientHandshake(initialFrameId, format);
+            var packet = new AudioClientHandshake(FrameId, format);
 
             await SendStreamerOnControlSocket(packet);
         }
@@ -54,9 +60,10 @@ namespace SmartGlass.Nano.Channels
         {
             var handshake = await _client.WaitForMessageAsync<AudioServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await SendChannelOpenAsync(Channel)
+                async () => await _client.SendChannelOpenAsync(Channel, Flags)
             );
 
+            ReferenceTimestamp = handshake.ReferenceTimestamp;
             AvailableFormats = handshake.Formats;
         }
     }

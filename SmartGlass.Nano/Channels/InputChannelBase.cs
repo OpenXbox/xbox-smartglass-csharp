@@ -5,6 +5,9 @@ namespace SmartGlass.Nano.Channels
 {
     public abstract class InputChannelBase : StreamingChannel, IStreamingChannel
     {
+        public uint MaxTouches { get; internal set; }
+        public uint DesktopWidth { get; internal set; }
+        public uint DesktopHeight { get; internal set; }
         public abstract void OnFrame(InputFrame frame);
         public abstract void OnFrameAck(InputFrameAck ack);
 

@@ -11,9 +11,42 @@ namespace SmartGlass.Nano.Channels
     public abstract class StreamingChannel
     {
         internal NanoClient _client;
-        public ushort SequenceNumber { get; set; }
-        public DateTime ReferenceTimestamp { get; private set; }
-        public uint FrameId { get; private set; }
+        private DateTime _referenceTimestamp;
+        private uint _frameId;
+        public ushort SequenceNumber { get; private set; }
+
+        public ulong ReferenceTimestamp
+        {
+            get
+            {
+                _referenceTimestamp = DateTime.UtcNow;
+                return (ulong)(_referenceTimestamp - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            }
+            internal set
+            {
+                _referenceTimestamp = new DateTime(1970, 1, 1).AddMilliseconds(value).ToUniversalTime();
+            }
+        }
+
+        public ulong Timestamp
+        {
+            get => (ulong)(DateTime.UtcNow - _referenceTimestamp).TotalMilliseconds;
+        }
+
+        public uint FrameId
+        {
+            get
+            {
+                if (_frameId != 0)
+                    return _frameId;
+                else
+                    return _frameId = (uint)new Random().Next(0, 500);
+            }
+            internal set
+            {
+                _frameId = value;
+            }
+        }
         internal bool IsOpen { get; set; }
         internal byte[] Flags { get; set; }
 
@@ -21,58 +54,11 @@ namespace SmartGlass.Nano.Channels
         public uint NextFrameId => ++FrameId;
 
         public abstract NanoChannel Channel { get; }
+        public abstract int ProtocolVersion { get; }
 
         public StreamingChannel()
         {
-            IsOpen = false;
             SequenceNumber = 0;
-        }
-
-        public void RegisterOpen(NanoClient client, byte[] flags)
-        {
-            _client = client;
-            Flags = flags;
-        }
-
-        public ulong GenerateTimestamp()
-        {
-            if (ReferenceTimestamp == null)
-            {
-                throw new InvalidOperationException("Reference Timestamp not set");
-            }
-            return (ulong)(DateTime.UtcNow - ReferenceTimestamp).TotalMilliseconds;
-        }
-
-        public ulong GenerateReferenceTimestamp()
-        {
-            ReferenceTimestamp = DateTime.UtcNow;
-            return (ulong)(ReferenceTimestamp - new DateTime(1970, 1, 1)).TotalMilliseconds;
-        }
-
-        public void SetReferenceTimestamp(ulong timestamp)
-        {
-            ReferenceTimestamp = new DateTime(1970, 1, 1).AddMilliseconds(timestamp).ToUniversalTime();
-            Debug.WriteLine("RefTimestamp for {0} set to: {1}", Channel, ReferenceTimestamp);
-        }
-
-        public uint GenerateInitialFrameId()
-        {
-            FrameId = (uint)new Random().Next(0, 500);
-            return FrameId;
-        }
-
-        internal async Task SendChannelOpenAsync(NanoChannel channel)
-        {
-            var packet = new Nano.Packets.ChannelOpen(Flags);
-            packet.Channel = channel;
-            await _client.SendOnControlSocketAsync(packet);
-        }
-
-        internal async Task SendChannelCloseAsync(NanoChannel channel, uint reason)
-        {
-            var packet = new Nano.Packets.ChannelClose(reason);
-            packet.Channel = Channel;
-            await _client.SendOnControlSocketAsync(packet);
         }
 
         public async Task SendStreamerOnStreamingSocket(IStreamerMessage packet)
