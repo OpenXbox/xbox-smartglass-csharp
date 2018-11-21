@@ -4,6 +4,7 @@ using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 using SmartGlass.Nano.Consumer;
 using System.Threading.Tasks;
+using SmartGlass.Common;
 
 namespace SmartGlass.Nano.Channels
 {
@@ -19,14 +20,15 @@ namespace SmartGlass.Nano.Channels
         public event EventHandler<VideoFormatEventArgs> FeedVideoFormat;
         public event EventHandler<VideoDataEventArgs> FeedVideoData;
 
-        public VideoChannel(NanoClient client, byte[] flags)
+        internal VideoChannel(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            _client = client;
-            Flags = flags;
+            _transport.MessageReceived += OnMessage;
         }
 
-        public void OnPacket(IStreamerMessage packet)
+        public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)
         {
+            IStreamerMessage packet = args.Message as IStreamerMessage;
             switch ((VideoPayloadType)packet.StreamerHeader.PacketType)
             {
                 case VideoPayloadType.Control:
@@ -42,13 +44,13 @@ namespace SmartGlass.Nano.Channels
         {
             var controlData = new VideoControl(
                 VideoControlFlags.StartStream | VideoControlFlags.RequestKeyframe);
-            await SendStreamerOnControlSocket(controlData);
+            await SendAsync(controlData);
         }
 
         public async Task StopStreamAsync()
         {
             var controlData = new VideoControl(VideoControlFlags.StopStream);
-            await SendStreamerOnControlSocket(controlData);
+            await SendAsync(controlData);
         }
 
         public async Task ReportLostFramesAsync(uint firstFrame, uint lastFrame)
@@ -58,7 +60,7 @@ namespace SmartGlass.Nano.Channels
                 firstLostFrame: firstFrame,
                 lastLostFrame: lastFrame
             );
-            await SendStreamerOnControlSocket(controlData);
+            await SendAsync(controlData);
         }
 
         public void OnControl(VideoControl control)
@@ -75,14 +77,14 @@ namespace SmartGlass.Nano.Channels
         public async Task SendClientHandshakeAsync(VideoFormat format)
         {
             var packet = new VideoClientHandshake(FrameId, format);
-            await SendStreamerOnControlSocket(packet);
+            await SendAsync(packet);
         }
 
         public async Task OpenAsync()
         {
-            var handshake = await _client.WaitForMessageAsync<VideoServerHandshake>(
+            var handshake = await WaitForMessageAsync<VideoServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await _client.SendChannelOpenAsync(Channel, Flags)
+                async () => await _transport.SendChannelOpenAsync(Channel, Flags)
             );
 
             if (handshake.ProtocolVersion != ProtocolVersion)

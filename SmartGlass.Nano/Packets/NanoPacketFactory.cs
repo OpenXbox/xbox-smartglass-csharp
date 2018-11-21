@@ -65,6 +65,10 @@ namespace SmartGlass.Nano.Packets
             {
                 context.UnregisterChannel((ChannelClose)packet);
             }
+            else if (packet as ControlHandshake != null)
+            {
+                context.RemoteConnectionId = ((ControlHandshake)packet).ConnectionId;
+            }
             else if (channel == NanoChannel.Unknown)
             {
                 throw new NanoPackingException("ParsePacket: INanoPacket.Channel is UNKNOWN");

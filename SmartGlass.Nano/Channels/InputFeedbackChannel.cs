@@ -13,13 +13,9 @@ namespace SmartGlass.Nano.Channels
         public event EventHandler<InputConfigEventArgs> FeedInputFeedbackConfig;
         public event EventHandler<InputFrameEventArgs> FeedInputFeedbackFrame;
 
-        public InputFeedbackChannel(NanoClient client, byte[] flags,
-                                    uint desktopWidth, uint desktopHeight)
+        internal InputFeedbackChannel(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            _client = client;
-            Flags = flags;
-            DesktopWidth = desktopWidth;
-            DesktopHeight = desktopHeight;
         }
 
         public override void OnFrame(InputFrame frame)
@@ -32,7 +28,18 @@ namespace SmartGlass.Nano.Channels
             throw new NotSupportedException("Input frameack on client side");
         }
 
-        public async Task OpenAsync()
+        private async Task SendServerHandshakeAsync()
+        {
+            InputServerHandshake packet = new InputServerHandshake(
+                (uint)ProtocolVersion,
+                DesktopWidth,
+                DesktopHeight,
+                maxTouches: 0,
+                initialFrameId: FrameId);
+            await SendAsync(packet);
+        }
+
+        public async Task OpenAsync(uint desktopWidth, uint desktopHeight)
         {
             // -> Console to client
             // <- Client to console
@@ -42,31 +49,27 @@ namespace SmartGlass.Nano.Channels
             // <- ChannelOpen
             // <- ServerHandshake
             // -> ClientHandshake
-            Task<ChannelCreate> waitCreateTask = _client.WaitForMessageAsync<ChannelCreate>(
+            DesktopWidth = desktopWidth;
+            DesktopHeight = desktopHeight;
+
+            Task<ChannelCreate> waitCreateTask = WaitForMessageAsync<ChannelCreate>(
                 TimeSpan.FromSeconds(3),
                 startAction: null,
                 filter: p => p.Channel == NanoChannel.InputFeedback);
 
-            Task<ChannelOpen> openTask = _client.WaitForMessageAsync<ChannelOpen>(
+            Task<ChannelOpen> openTask = WaitForMessageAsync<ChannelOpen>(
                 TimeSpan.FromSeconds(3),
                 startAction: null,
                 filter: open => open.Channel == NanoChannel.InputFeedback);
 
             await Task.WhenAll(waitCreateTask, openTask);
 
-            await _client.SendOnControlSocketAsync(
+            await SendAsync(
                 new ChannelOpen(openTask.Result.Flags));
 
-            InputServerHandshake serverHandshake = new InputServerHandshake(
-                (uint)ProtocolVersion,
-                DesktopWidth,
-                DesktopHeight,
-                maxTouches: 0,
-                initialFrameId: FrameId);
-
-            InputClientHandshake handshake = await _client.WaitForMessageAsync<InputClientHandshake>(
+            InputClientHandshake handshake = await WaitForMessageAsync<InputClientHandshake>(
                 TimeSpan.FromSeconds(3),
-                async () => await _client.SendOnControlSocketAsync(serverHandshake),
+                async () => await SendServerHandshakeAsync(),
                 p => p.Channel == NanoChannel.InputFeedback
             );
 

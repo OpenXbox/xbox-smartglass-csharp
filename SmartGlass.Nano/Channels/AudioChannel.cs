@@ -16,10 +16,9 @@ namespace SmartGlass.Nano.Channels
         public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
         public event EventHandler<AudioDataEventArgs> FeedAudioData;
 
-        public AudioChannel(NanoClient client, byte[] flags)
+        internal AudioChannel(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            _client = client;
-            Flags = flags;
         }
 
         public async Task StartStreamAsync()
@@ -47,20 +46,20 @@ namespace SmartGlass.Nano.Channels
         {
             var packet = new AudioClientHandshake(FrameId, format);
 
-            await SendStreamerOnControlSocket(packet);
+            await SendAsync(packet);
         }
 
         private async Task SendControlAsync(AudioControlFlags flags)
         {
             var packet = new AudioControl(flags);
-            await SendStreamerOnControlSocket(packet);
+            await SendAsync(packet);
         }
 
         public async Task OpenAsync()
         {
-            var handshake = await _client.WaitForMessageAsync<AudioServerHandshake>(
+            var handshake = await WaitForMessageAsync<AudioServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await _client.SendChannelOpenAsync(Channel, Flags)
+                async () => await _transport.SendChannelOpenAsync(Channel, Flags)
             );
 
             ReferenceTimestamp = handshake.ReferenceTimestamp;

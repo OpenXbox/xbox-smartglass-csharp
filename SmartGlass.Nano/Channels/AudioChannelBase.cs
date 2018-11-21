@@ -1,4 +1,5 @@
 using System;
+using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
@@ -8,8 +9,15 @@ namespace SmartGlass.Nano.Channels
         public abstract void OnControl(AudioControl control);
         public abstract void OnData(AudioData data);
 
-        public void OnPacket(IStreamerMessage packet)
+        internal AudioChannelBase(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
+            _transport.MessageReceived += OnMessage;
+        }
+
+        public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)
+        {
+            IStreamerMessage packet = args.Message as IStreamerMessage;
             switch ((AudioPayloadType)packet.StreamerHeader.PacketType)
             {
                 case AudioPayloadType.Control:

@@ -60,7 +60,10 @@ namespace SmartGlass.Nano
                 try
                 {
                     BEReader reader = new BEReader(packetData);
+                    // ParsePacket will handle ControlHandshake response (connection id)
+                    // and Channel registrations (ChannelCreate packets)
                     INanoPacket packet = NanoPacketFactory.ParsePacket(packetData, ChannelContext);
+
                     _receiveQueue.TryAdd(packet);
                 }
                 catch (NanoPackingException e)
@@ -95,30 +98,105 @@ namespace SmartGlass.Nano
             });
         }
 
-#pragma warning disable 1998
         public async Task SendAsync(INanoPacket message)
         {
-            throw new InvalidOperationException("Please use SendAsyncStreaming/Control");
+            switch (message.Header.PayloadType)
+            {
+                case NanoPayloadType.ChannelControl:
+                case NanoPayloadType.ControlHandshake:
+                    await SendAsyncControl(message);
+                    break;
+                case NanoPayloadType.UDPHandshake:
+                    await SendAsyncStreaming(message);
+                    break;
+                case NanoPayloadType.Streamer:
+                    IStreamerMessage s = message as IStreamerMessage;
+                    if (s.StreamerHeader.PacketType == 4)
+                        await SendAsyncStreaming(message);
+                    else
+                        await SendAsyncControl(message);
+                    break;
+                default:
+                    throw new NanoException(
+                        "SendAsync: Unexpected PayloadType: {message.Header.PayloadType}");
+            }
         }
-#pragma warning restore 1998
 
-        public Task SendAsyncStreaming(INanoPacket message)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        internal async Task SendChannelOpenAsync(NanoChannel channel, byte[] flags)
         {
+            var packet = new Nano.Packets.ChannelOpen(flags);
+            packet.Channel = channel;
+            await SendAsyncControl(packet);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        internal async Task SendChannelCloseAsync(NanoChannel channel, uint reason)
+        {
+            var packet = new Nano.Packets.ChannelClose(reason);
+            packet.Channel = channel;
+            await SendAsyncControl(packet);
+        }
+
+        private Task SendAsyncStreaming(INanoPacket message)
+        {
+            if (ChannelContext.RemoteConnectionId == 0)
+            {
+                throw new NanoException(
+                    "ControlHandshake was not registered inside NanoChannelContext");
+            }
+
+            message.Header.ConnectionId = ChannelContext.RemoteConnectionId;
             byte[] packet = NanoPacketFactory.AssemblePacket(message, ChannelContext);
             return _streamingProtoClient.SendAsync(packet, packet.Length);
         }
 
-        public Task SendAsyncControl(INanoPacket message)
+        private Task SendAsyncControl(INanoPacket message)
         {
             byte[] packet = NanoPacketFactory.AssemblePacket(message, ChannelContext);
             return _controlProtoClient.SendAsyncPrefixed(packet);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="timeout"></param>
+        /// <param name="startAction"></param>
+        /// <returns></returns>
+        internal Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        {
+            return this.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="timeout"></param>
+        /// <param name="startAction"></param>
+        /// <param name="filter"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        internal Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+            where T : INanoPacket
+        {
+            return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
+        }
+
         public void Dispose()
         {
-            _receiveQueue.CompleteAdding();
             _cancellationTokenSourceStreaming.Cancel();
             _cancellationTokenSourceControl.Cancel();
+            _receiveQueue.CompleteAdding();
             _streamingProtoClient.Dispose();
             _controlProtoClient.Dispose();
         }

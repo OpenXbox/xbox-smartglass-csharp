@@ -10,10 +10,9 @@ namespace SmartGlass.Nano.Channels
         public override NanoChannel Channel => NanoChannel.Input;
         public override int ProtocolVersion => 3;
 
-        public InputChannel(NanoClient client, byte[] flags)
+        internal InputChannel(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            _client = client;
-            Flags = flags;
         }
 
         public void OnInputFrameReceived(object sender, InputFrameEventArgs args)
@@ -36,6 +35,12 @@ namespace SmartGlass.Nano.Channels
             throw new NotImplementedException("");
         }
 
+        private async Task SendClientHandshakeAsync()
+        {
+            InputClientHandshake packet = new InputClientHandshake(10, ReferenceTimestamp);
+            await SendAsync(packet);
+        }
+
         public async Task OpenAsync()
         {
             // -> Console to client
@@ -48,24 +53,18 @@ namespace SmartGlass.Nano.Channels
             // -> ServerHandshake
             // <- ClientHandshake
 
-            // Send ControllerEvent.Added
-            await _client.WaitForMessageAsync<ChannelCreate>(
-                TimeSpan.FromSeconds(3),
-                async () => await _client.Control.SendControllerEventAsync(ControllerEventType.Added, 0),
-                p => p.Channel == NanoChannel.Input);
-
             // Start waiting for server handshake, it's received right after console's
             // ChannelOpen
-            Task<InputServerHandshake> handshakeTask = _client.WaitForMessageAsync<InputServerHandshake>(
+            Task<InputServerHandshake> handshakeTask = WaitForMessageAsync<InputServerHandshake>(
                 TimeSpan.FromSeconds(3),
                 null,
                 p => p.Channel == NanoChannel.Input
             );
 
             // Send ChannelOpen and wait for ChannelOpen response
-            Task<ChannelOpen> openTask = _client.WaitForMessageAsync<ChannelOpen>(
+            Task<ChannelOpen> openTask = WaitForMessageAsync<ChannelOpen>(
                 TimeSpan.FromSeconds(3),
-                async () => await _client.SendChannelOpenAsync(NanoChannel.Input, Flags),
+                async () => await _transport.SendChannelOpenAsync(NanoChannel.Input, Flags),
                 p => p.Channel == NanoChannel.Input
             );
 
@@ -80,8 +79,7 @@ namespace SmartGlass.Nano.Channels
             DesktopWidth = handshake.DesktopWidth;
             DesktopHeight = handshake.DesktopHeight;
 
-            var clientHandshake = new InputClientHandshake(10, ReferenceTimestamp);
-            await _client.SendOnControlSocketAsync(clientHandshake);
+            await SendClientHandshakeAsync();
         }
     }
 }

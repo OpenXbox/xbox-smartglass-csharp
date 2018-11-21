@@ -1,4 +1,5 @@
 using System;
+using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
@@ -11,8 +12,15 @@ namespace SmartGlass.Nano.Channels
         public abstract void OnFrame(InputFrame frame);
         public abstract void OnFrameAck(InputFrameAck ack);
 
-        public void OnPacket(IStreamerMessage packet)
+        internal InputChannelBase(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
+            transport.MessageReceived += OnMessage;
+        }
+
+        public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)
+        {
+            IStreamerMessage packet = args.Message as IStreamerMessage;
             switch ((InputPayloadType)packet.StreamerHeader.PacketType)
             {
                 case InputPayloadType.Frame:

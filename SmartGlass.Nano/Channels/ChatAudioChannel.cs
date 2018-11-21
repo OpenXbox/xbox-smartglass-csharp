@@ -13,11 +13,10 @@ namespace SmartGlass.Nano.Channels
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
         public Packets.AudioFormat ActiveFormat { get; internal set; }
 
-        public ChatAudioChannel(NanoClient client, byte[] flags, AudioFormat format)
+        internal ChatAudioChannel(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            _client = client;
-            Flags = flags;
-            AvailableFormats = new AudioFormat[] { format };
+            AvailableFormats = new AudioFormat[] { };
         }
 
         public void OnChatAudioConfigReceived(object sender, AudioFormatEventArgs args)
@@ -38,8 +37,7 @@ namespace SmartGlass.Nano.Channels
             var packet = new AudioServerHandshake((uint)ProtocolVersion,
                                                     ReferenceTimestamp,
                                                     AvailableFormats);
-
-            await SendStreamerOnControlSocket(packet);
+            await SendAsync(packet);
         }
 
         public override void OnData(AudioData data)
@@ -47,7 +45,7 @@ namespace SmartGlass.Nano.Channels
             throw new NotSupportedException("ChatAudio data on client side");
         }
 
-        public async Task OpenAsync()
+        public async Task OpenAsync(AudioFormat format)
         {
             // -> Console to client
             // <- Client to console 
@@ -57,15 +55,16 @@ namespace SmartGlass.Nano.Channels
             // <- Server handshake
             // -> Client handshake
             // -> AudioControl
-            await _client.SendChannelOpenAsync(Channel, Flags);
+            AvailableFormats = new AudioFormat[] { format };
+            await _transport.SendChannelOpenAsync(Channel, Flags);
 
-            Task<AudioControl> controlStart = _client.WaitForMessageAsync<AudioControl>(
+            Task<AudioControl> controlStart = WaitForMessageAsync<AudioControl>(
                 TimeSpan.FromSeconds(3),
                 null,
                 p => p.Channel == NanoChannel.ChatAudio
             );
 
-            Task<AudioClientHandshake> handshake = _client.WaitForMessageAsync<AudioClientHandshake>(
+            Task<AudioClientHandshake> handshake = WaitForMessageAsync<AudioClientHandshake>(
                 TimeSpan.FromSeconds(3),
                 async () => await SendServerHandshakeAsync()
             );

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using SmartGlass.Common;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 
@@ -10,10 +11,9 @@ namespace SmartGlass.Nano.Channels
         public override NanoChannel Channel => NanoChannel.Control;
         public override int ProtocolVersion => 0;
 
-        public ControlChannel(NanoClient client, byte[] flags)
+        internal ControlChannel(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            _client = client;
-            Flags = flags;
         }
 
         public async Task ChangeVideoQualityAsync(uint u1, uint u2, uint u3,
@@ -42,9 +42,9 @@ namespace SmartGlass.Nano.Channels
         {
         }
 
-        public void OnPacket(IStreamerMessage packet)
+        public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)
         {
-            StreamerMessageWithHeader streamer = packet as StreamerMessageWithHeader;
+            StreamerMessageWithHeader streamer = args.Message as StreamerMessageWithHeader;
             ControlOpCode opCode = streamer.ControlHeader.OpCode;
             switch (opCode)
             {
@@ -72,12 +72,12 @@ namespace SmartGlass.Nano.Channels
         {
             packet.ControlHeader.Unknown1 = 1;
             packet.ControlHeader.Unknown2 = 1406;
-            await SendStreamerOnControlSocket(packet);
+            await SendAsync(packet);
         }
 
         public async Task OpenAsync()
         {
-            await _client.SendChannelOpenAsync(Channel, Flags);
+            await _transport.SendChannelOpenAsync(Channel, Flags);
         }
     }
 }

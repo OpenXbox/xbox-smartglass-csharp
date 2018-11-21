@@ -31,6 +31,8 @@ namespace SmartGlass.Nano
         internal List<Consumer.IConsumer> _consumers { get; set; }
         internal Provider.IProvider _provider { get; set; }
 
+        public bool ProtocolInitialized { get; private set; }
+        public bool StreamInitialized { get; private set; }
         public Guid SessionId { get; internal set; }
         public ushort ConnectionId { get; private set; }
         public ushort RemoteConnectionId { get; private set; }
@@ -60,28 +62,10 @@ namespace SmartGlass.Nano
             _transport.MessageReceived += MessageReceived;
             _consumers = new List<Consumer.IConsumer>();
             _provider = null;
+            ProtocolInitialized = false;
+            StreamInitialized = false;
             SessionId = sessionId;
             ConnectionId = (ushort)new Random().Next(5000);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private IStreamingChannel GetChannelById(NanoChannel id)
-        {
-            switch (id)
-            {
-                case NanoChannel.Audio: return Audio;
-                case NanoChannel.ChatAudio: return ChatAudio;
-                case NanoChannel.Input: return Input;
-                case NanoChannel.InputFeedback: return InputFeedback;
-                case NanoChannel.Video: return Video;
-                case NanoChannel.Control: return Control;
-                default:
-                    throw new NotSupportedException($"Unsupported NanoChannel: {id}");
-            }
         }
 
         /// <summary>
@@ -90,6 +74,11 @@ namespace SmartGlass.Nano
         /// <returns></returns>
         public async Task InitializeProtocolAsync()
         {
+            if (ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is already initialized");
+            }
+
             Task awaitChannels = WaitForChannelsAsync();
 
             ControlHandshake response = await SendControlHandshakeAsync(ConnectionId);
@@ -102,6 +91,7 @@ namespace SmartGlass.Nano
 
             await awaitChannels;
             await OpenChannelsAsync();
+            ProtocolInitialized = true;
         }
 
         /// <summary>
@@ -112,37 +102,56 @@ namespace SmartGlass.Nano
         /// <returns></returns>
         public async Task InitializeStreamAsync(AudioFormat audioFormat, VideoFormat videoFormat)
         {
+            if (!ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is not initialized");
+            }
+            else if (StreamInitialized)
+            {
+                throw new NanoException("Stream is already initialized");
+            }
+
             await Audio.SendClientHandshakeAsync(audioFormat);
             await Video.SendClientHandshakeAsync(videoFormat);
+            StreamInitialized = true;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task InitializeInputChannel(uint desktopWidth, uint desktopHeight)
+        public async Task OpenInputChannel(uint desktopWidth, uint desktopHeight)
         {
-            InputChannel tmpInput = new InputChannel(this, new byte[] { });
-            InputFeedbackChannel tmpInputFeedback =
-                new InputFeedbackChannel(this, new byte[] { }, desktopWidth, desktopHeight);
+            if (!ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is not initialized");
+            }
 
-            await Task.WhenAll(tmpInput.OpenAsync(), tmpInputFeedback.OpenAsync());
+            // Send ControllerEvent.Added
+            await _transport.WaitForMessageAsync<ChannelCreate>(
+                TimeSpan.FromSeconds(3),
+                async () => await Control.SendControllerEventAsync(
+                    ControllerEventType.Added, 0),
+                p => p.Channel == NanoChannel.Input);
 
-            Input = tmpInput;
-            InputFeedback = tmpInputFeedback;
+            await Task.WhenAll(
+                Input.OpenAsync(),
+                InputFeedback.OpenAsync(desktopWidth, desktopHeight)
+            );
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task InitializeChatAudioChannel(AudioFormat audioFormat)
+        public async Task OpenChatAudioChannel(AudioFormat audioFormat)
         {
-            ChatAudioChannel tmpChatAudio = new ChatAudioChannel(
-                this, new byte[0], audioFormat);
+            if (!ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is not initialized");
+            }
 
-            await tmpChatAudio.OpenAsync();
-            ChatAudio = tmpChatAudio;
+            await ChatAudio.OpenAsync(audioFormat);
         }
 
         /// <summary>
@@ -151,6 +160,10 @@ namespace SmartGlass.Nano
         /// <returns></returns>
         public async Task StartStreamAsync()
         {
+            if (!StreamInitialized)
+            {
+                throw new NanoException("Stream is not initialized");
+            }
             Task handshakeTask = SendUdpHandshakeAsync();
 
             await Video.StartStreamAsync();
@@ -172,11 +185,15 @@ namespace SmartGlass.Nano
 
             await Task.WhenAll(video, audio, chatAudio, control);
 
-            Video = new VideoChannel(this, video.Result.Flags);
-            Audio = new AudioChannel(this, audio.Result.Flags);
-            // ChatAudio channel is opened separately
-            // ChatAudio = new ChatAudioChannel(this, audio.Result.Flags);
-            Control = new ControlChannel(this, audio.Result.Flags);
+            Video = new VideoChannel(_transport, video.Result.Flags);
+            Audio = new AudioChannel(_transport, audio.Result.Flags);
+            ChatAudio = new ChatAudioChannel(_transport, audio.Result.Flags);
+            Control = new ControlChannel(_transport, audio.Result.Flags);
+
+            // Already create Input/InputFeedback channels
+            // it will get opened via "OpenInputChannel" later
+            Input = new InputChannel(_transport, new byte[] { });
+            InputFeedback = new InputFeedbackChannel(_transport, new byte[] { });
         }
 
         /// <summary>
@@ -199,53 +216,23 @@ namespace SmartGlass.Nano
         /// <returns></returns>
         private async Task<ChannelOpen> WaitForChannelOpenAsync(NanoChannel channel)
         {
-            return await WaitForMessageAsync<ChannelOpen>(
+            return await _transport.WaitForMessageAsync<ChannelOpen>(
                 TimeSpan.FromSeconds(3),
                 startAction: null,
                 filter: open => open.Channel == channel);
         }
 
         /// <summary>
-        /// 
+        /// Event callback for NanoTransport, just logs received packets
         /// </summary>
-        /// <param name="channel"></param>
-        /// <param name="flags"></param>
-        /// <returns></returns>
-        internal async Task SendChannelOpenAsync(NanoChannel channel, byte[] flags)
-        {
-            var packet = new Nano.Packets.ChannelOpen(flags);
-            packet.Channel = channel;
-            await SendOnControlSocketAsync(packet);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="channel"></param>
-        /// <param name="reason"></param>
-        /// <returns></returns>
-        internal async Task SendChannelCloseAsync(NanoChannel channel, uint reason)
-        {
-            var packet = new Nano.Packets.ChannelClose(reason);
-            packet.Channel = channel;
-            await SendOnControlSocketAsync(packet);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="message"></param>
+        /// <param name="sender">Sender of event</param>
+        /// <param name="message">Received message arguments</param>
         internal void MessageReceived(object sender, MessageReceivedEventArgs<INanoPacket> message)
         {
             var packet = message.Message;
             NanoPayloadType pt = packet.Header.PayloadType;
 
             Debug.WriteLine($"NANO: Received {pt} on Channel <{packet.Channel}>");
-
-            IStreamerMessage streamerPacket = packet as IStreamerMessage;
-            if (streamerPacket != null)
-                GetChannelById(packet.Channel).OnPacket(streamerPacket);
         }
 
         /// <summary>
@@ -262,9 +249,9 @@ namespace SmartGlass.Nano
                 Channel = NanoChannel.TcpBase
             };
 
-            return await WaitForMessageAsync<ControlHandshake>(
+            return await _transport.WaitForMessageAsync<ControlHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await SendOnControlSocketAsync(packet));
+                async () => await _transport.SendAsync(packet));
         }
 
         /// <summary>
@@ -281,56 +268,10 @@ namespace SmartGlass.Nano
             };
 
             await TaskExtensions.WithRetries(() =>
-                WaitForMessageAsync<VideoData>(
+                _transport.WaitForMessageAsync<VideoData>(
                     TimeSpan.FromSeconds(1),
-                    async () => await SendOnStreamingSocketAsync(packet)
+                    async () => await _transport.SendAsync(packet)
                 ), UdpHandshakeRetries);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="timeout"></param>
-        /// <param name="startAction"></param>
-        /// <returns></returns>
-        internal Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
-        {
-            return _transport.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="timeout"></param>
-        /// <param name="startAction"></param>
-        /// <param name="filter"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        internal Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
-            where T : INanoPacket
-        {
-            return _transport.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="packet"></param>
-        /// <returns></returns>
-        internal async Task SendOnStreamingSocketAsync(INanoPacket packet)
-        {
-            packet.Header.ConnectionId = RemoteConnectionId;
-            await _transport.SendAsyncStreaming(packet);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="packet"></param>
-        /// <returns></returns>
-        internal async Task SendOnControlSocketAsync(INanoPacket packet)
-        {
-            await _transport.SendAsyncControl(packet);
         }
 
         public void AddConsumer(Consumer.IConsumer consumer)

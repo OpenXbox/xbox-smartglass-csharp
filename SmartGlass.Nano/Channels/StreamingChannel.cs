@@ -8,9 +8,9 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    public abstract class StreamingChannel
+    public abstract class StreamingChannel : IMessageTransport<INanoPacket>, IDisposable
     {
-        internal NanoClient _client;
+        internal NanoRdpTransport _transport;
         private DateTime _referenceTimestamp;
         private uint _frameId;
         public ushort SequenceNumber { get; private set; }
@@ -56,28 +56,64 @@ namespace SmartGlass.Nano.Channels
         public abstract NanoChannel Channel { get; }
         public abstract int ProtocolVersion { get; }
 
-        public StreamingChannel()
+        public event EventHandler<MessageReceivedEventArgs<INanoPacket>> MessageReceived;
+
+
+        internal StreamingChannel(NanoRdpTransport transport, byte[] flags)
         {
+            _transport = transport;
+            _transport.MessageReceived += TransportMessageReceived;
+
+            Flags = flags;
             SequenceNumber = 0;
         }
 
-        public async Task SendStreamerOnStreamingSocket(IStreamerMessage packet)
+        private void TransportMessageReceived(object sender, MessageReceivedEventArgs<INanoPacket> e)
         {
-            packet.Channel = Channel;
-            packet.Header.SequenceNumber = NextSequenceNumber;
-            packet.StreamerHeader.Flags = 0;
-
-            await _client.SendOnStreamingSocketAsync(packet);
+            if (e.Message.Channel == Channel)
+            {
+                MessageReceived?.Invoke(this, e);
+            }
         }
 
-        public async Task SendStreamerOnControlSocket(IStreamerMessage packet)
+        public async Task SendAsync(INanoPacket packet)
         {
-            packet.Channel = Channel;
-            packet.StreamerHeader.PreviousSequenceNumber = SequenceNumber;
-            packet.StreamerHeader.SequenceNumber = NextSequenceNumber;
-            packet.StreamerHeader.Flags = StreamerFlags.GotSeqAndPrev | StreamerFlags.Unknown1;
+            var message = packet as IStreamerMessage;
+            if (message.StreamerHeader.PacketType == 4)
+            {
+                // Data packet -> UDP
+                message.Channel = Channel;
+                message.Header.SequenceNumber = NextSequenceNumber;
+                message.StreamerHeader.Flags = 0;
 
-            await _client.SendOnControlSocketAsync(packet);
+                await _transport.SendAsync(message);
+            }
+            else
+            {
+                // TCP
+                message.Channel = Channel;
+                message.StreamerHeader.PreviousSequenceNumber = SequenceNumber;
+                message.StreamerHeader.SequenceNumber = NextSequenceNumber;
+                message.StreamerHeader.Flags = StreamerFlags.GotSeqAndPrev | StreamerFlags.Unknown1;
+
+                await _transport.SendAsync(message);
+            }
+        }
+
+        public Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        {
+            return this.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
+        }
+
+        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+            where T : INanoPacket
+        {
+            return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
+        }
+
+        public void Dispose()
+        {
+            _transport.MessageReceived -= TransportMessageReceived;
         }
     }
 }
