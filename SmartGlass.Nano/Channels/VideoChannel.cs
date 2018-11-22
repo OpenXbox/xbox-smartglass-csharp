@@ -4,12 +4,14 @@ using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 using SmartGlass.Nano.Consumer;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SmartGlass.Common;
 
 namespace SmartGlass.Nano.Channels
 {
     public class VideoChannel : StreamingChannel, IStreamingChannel
     {
+        private static readonly ILogger logger = Logging.Factory.CreateLogger<VideoChannel>();
         public override NanoChannel Channel => NanoChannel.Video;
         public override int ProtocolVersion => 5;
         public uint FPS { get; private set; }
@@ -69,6 +71,15 @@ namespace SmartGlass.Nano.Channels
 
         public void OnData(VideoData data)
         {
+            if (data.FrameId > (base.FrameId + 1))
+            {
+                uint lostFrameCount = data.FrameId - base.FrameId;
+                logger.LogTrace($"Requesting lost frames, frame count: {lostFrameCount}");
+                ReportLostFramesAsync(base.FrameId + 1, data.FrameId - 1)
+                    .GetAwaiter().GetResult();
+            }
+            FrameId = data.FrameId;
+
             FeedVideoData?.Invoke(this,
                 new VideoDataEventArgs(data));
         }

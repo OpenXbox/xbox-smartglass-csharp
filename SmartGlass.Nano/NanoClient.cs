@@ -31,7 +31,6 @@ namespace SmartGlass.Nano
         public VideoChannel Video { get; private set; }
 
         internal List<Consumer.IConsumer> _consumers { get; set; }
-        internal Provider.IProvider _provider { get; set; }
 
         public GamestreamConfiguration Configuration { get; private set; }
         public bool ProtocolInitialized { get; private set; }
@@ -66,7 +65,6 @@ namespace SmartGlass.Nano
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
 
             _consumers = new List<Consumer.IConsumer>();
-            _provider = null;
             ProtocolInitialized = false;
             StreamInitialized = false;
             Configuration = configuration;

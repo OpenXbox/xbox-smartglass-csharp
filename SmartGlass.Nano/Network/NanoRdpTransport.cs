@@ -80,7 +80,9 @@ namespace SmartGlass.Nano
                         RemoteConnectionId = ((ControlHandshake)packet).ConnectionId;
                     }
 
-                    _receiveQueue.TryAdd(packet);
+                    bool success = _receiveQueue.TryAdd(packet);
+                    if (!success)
+                        logger.LogTrace($"Failed to add message to receive queue");
                 }
                 catch (NanoPackingException e)
                 {
