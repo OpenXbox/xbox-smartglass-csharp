@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SmartGlass.Common;
 using SmartGlass.Nano.Channels;
 using SmartGlass.Nano.Packets;
@@ -11,6 +12,7 @@ namespace SmartGlass.Nano
 {
     public class NanoClient : IDisposable
     {
+        private static readonly ILogger logger = Logging.Factory.CreateLogger<NanoClient>();
         private readonly NanoRdpTransport _transport;
 
         private static TimeSpan[] UdpHandshakeRetries = new TimeSpan[]
@@ -236,7 +238,7 @@ namespace SmartGlass.Nano
             var packet = message.Message;
             NanoPayloadType pt = packet.Header.PayloadType;
 
-            Debug.WriteLine($"NANO: Received {pt} on Channel <{packet.Channel}>");
+            logger.LogTrace($"NANO: Received {pt} on Channel <{packet.Channel}>");
         }
 
         /// <summary>

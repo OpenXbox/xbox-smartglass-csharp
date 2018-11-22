@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SmartGlass.Common;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
@@ -14,6 +15,7 @@ namespace SmartGlass.Nano
 {
     internal class NanoRdpTransport : IDisposable, IMessageTransport<INanoPacket>
     {
+        private static readonly ILogger logger = Logging.Factory.CreateLogger<NanoRdpTransport>();
         private readonly TcpClient _controlProtoClient;
         private readonly UdpClient _streamingProtoClient;
 
@@ -82,7 +84,7 @@ namespace SmartGlass.Nano
                 }
                 catch (NanoPackingException e)
                 {
-                    Debug.WriteLine($"Failed to parse nano packet: {e.Message}", e);
+                    logger.LogError($"Failed to parse nano packet: {e.Message}", e);
                 }
             }
 
@@ -105,8 +107,8 @@ namespace SmartGlass.Nano
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.ToString());
-                        Console.WriteLine("Calling Nano MessageReceived failed!");
+                        logger.LogError(
+                            e, "Calling Nano MessageReceived failed!");
                     }
                 }
             });
@@ -114,6 +116,9 @@ namespace SmartGlass.Nano
 
         public async Task SendAsync(INanoPacket message)
         {
+            logger.LogTrace(
+                $"Sending {message.Header.PayloadType} on Channel <{message.Channel}>");
+
             switch (message.Header.PayloadType)
             {
                 case NanoPayloadType.ChannelControl:
