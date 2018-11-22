@@ -17,7 +17,6 @@ namespace SmartGlass.Nano.Channels
         public uint Height { get; private set; }
         public Packets.VideoFormat[] AvailableFormats { get; internal set; }
         public Packets.VideoFormat ActiveFormat { get; internal set; }
-        public event EventHandler<VideoFormatEventArgs> FeedVideoFormat;
         public event EventHandler<VideoDataEventArgs> FeedVideoData;
 
         internal VideoChannel(NanoRdpTransport transport, byte[] flags)

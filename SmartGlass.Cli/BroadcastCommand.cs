@@ -27,10 +27,10 @@ namespace SmartGlass.Cli
                 using (Client = await SmartGlassClient.ConnectAsync(Hostname))
                 {
                     var broadcastChannel = Client.BroadcastChannel;
-                    // TODO: Wait for BroadcastMessages here...
 
                     var config = GamestreamConfiguration.GetStandardConfig();
                     var result = await broadcastChannel.StartGamestreamAsync(config);
+
                     Console.WriteLine($"Connecting to Nano, TCP: {result.TcpPort}, UDP: {result.UdpPort}");
                     var nano = new NanoClient(Hostname, result);
 
@@ -45,8 +45,8 @@ namespace SmartGlass.Cli
                     nano.AddConsumer(consumer);
 
                     Console.WriteLine("Initializing AV stream (handshaking)...");
-                    await nano.InitializeStreamAsync(nano.Audio.AvailableFormats[0],
-                                                nano.Video.AvailableFormats[0]);
+                    await nano.InitializeStreamAsync(nano.AudioFormats[0],
+                                                     nano.VideoFormats[0]);
                     Console.WriteLine("Starting stream...");
                     await nano.StartStreamAsync();
                     Console.WriteLine("Stream is running");

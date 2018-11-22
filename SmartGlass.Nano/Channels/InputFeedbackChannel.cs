@@ -10,7 +10,6 @@ namespace SmartGlass.Nano.Channels
     {
         public override NanoChannel Channel => NanoChannel.InputFeedback;
         public override int ProtocolVersion => 3;
-        public event EventHandler<InputConfigEventArgs> FeedInputFeedbackConfig;
         public event EventHandler<InputFrameEventArgs> FeedInputFeedbackFrame;
 
         internal InputFeedbackChannel(NanoRdpTransport transport, byte[] flags)

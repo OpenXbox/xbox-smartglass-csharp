@@ -37,6 +37,8 @@ namespace SmartGlass.Nano
         public Guid SessionId { get; internal set; }
         public ushort ConnectionId { get; private set; }
         public ushort RemoteConnectionId => _transport.RemoteConnectionId;
+        public VideoFormat[] VideoFormats => Video == null ? null : Video.AvailableFormats;
+        public AudioFormat[] AudioFormats => Audio == null ? null : Audio.AvailableFormats;
 
         /// <summary>
         /// 
@@ -278,24 +280,16 @@ namespace SmartGlass.Nano
 
         public void AddConsumer(Consumer.IConsumer consumer)
         {
-            Audio.FeedAudioFormat += consumer.ConsumeAudioFormat;
             Audio.FeedAudioData += consumer.ConsumeAudioData;
-            Video.FeedVideoFormat += consumer.ConsumeVideoFormat;
             Video.FeedVideoData += consumer.ConsumeVideoData;
-
-            //InputFeedback.FeedInputFeedbackConfig += consumer.ConsumeInputFeedbackConfig;
-            //InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
+            InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
             _consumers.Add(consumer);
         }
 
         public bool RemoveConsumer(Consumer.IConsumer consumer)
         {
-            Audio.FeedAudioFormat -= consumer.ConsumeAudioFormat;
             Audio.FeedAudioData -= consumer.ConsumeAudioData;
-            Video.FeedVideoFormat -= consumer.ConsumeVideoFormat;
             Video.FeedVideoData -= consumer.ConsumeVideoData;
-
-            InputFeedback.FeedInputFeedbackConfig -= consumer.ConsumeInputFeedbackConfig;
             InputFeedback.FeedInputFeedbackFrame -= consumer.ConsumeInputFeedbackFrame;
             return _consumers.Remove(consumer);
         }

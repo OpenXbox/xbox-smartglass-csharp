@@ -13,7 +13,6 @@ namespace SmartGlass.Nano.Channels
         public override int ProtocolVersion => 4;
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
 
-        public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
         public event EventHandler<AudioDataEventArgs> FeedAudioData;
 
         internal AudioChannel(NanoRdpTransport transport, byte[] flags)
