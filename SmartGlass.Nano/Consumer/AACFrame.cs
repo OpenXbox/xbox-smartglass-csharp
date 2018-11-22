@@ -66,14 +66,14 @@ namespace SmartGlass.Nano.Consumer
 
     public class AACFrame
     {
-        public long TimeStamp { get; private set; }
+        public ulong TimeStamp { get; private set; }
         public uint FrameId { get; private set; }
         public AACProfile Profile { get; private set; }
         public int SampleRate { get; private set; }
         public byte Channels { get; private set; }
         public byte[] RawData { get; private set; }
 
-        public AACFrame(byte[] data, long timeStamp, uint frameId, AACProfile profile,
+        public AACFrame(byte[] data, ulong timeStamp, uint frameId, AACProfile profile,
                         int sampleRate, byte channels)
         {
             RawData = data;

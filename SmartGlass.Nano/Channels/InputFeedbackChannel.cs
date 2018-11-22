@@ -19,6 +19,7 @@ namespace SmartGlass.Nano.Channels
 
         public override void OnFrame(InputFrame frame)
         {
+            SendAsync(new InputFrameAck(frame.FrameId)).GetAwaiter().GetResult();
             FeedInputFeedbackFrame?.Invoke(this, new InputFrameEventArgs(frame));
         }
 

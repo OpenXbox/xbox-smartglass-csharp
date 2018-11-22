@@ -19,12 +19,10 @@ namespace SmartGlass.Nano.Channels
             AvailableFormats = new AudioFormat[] { };
         }
 
-        public void OnChatAudioConfigReceived(object sender, AudioFormatEventArgs args)
+        public async Task SendChatAudioData(byte[] sampleData)
         {
-        }
-
-        public void OnChatAudioDataReceived(object sender, AudioDataEventArgs args)
-        {
+            AudioData data = new AudioData(0, FrameId, Timestamp, sampleData);
+            await SendAsync(data);
         }
 
         public override void OnControl(AudioControl control)

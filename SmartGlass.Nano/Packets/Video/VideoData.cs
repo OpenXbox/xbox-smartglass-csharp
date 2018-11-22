@@ -10,7 +10,7 @@ namespace SmartGlass.Nano.Packets
     {
         public uint Flags { get; private set; }
         public uint FrameId { get; private set; }
-        public long Timestamp { get; private set; }
+        public ulong Timestamp { get; private set; }
         public uint TotalSize { get; private set; }
         public uint PacketCount { get; private set; }
         public uint Offset { get; private set; }
@@ -21,7 +21,7 @@ namespace SmartGlass.Nano.Packets
         {
         }
 
-        public VideoData(uint flags, uint frameId, long timestamp,
+        public VideoData(uint flags, uint frameId, ulong timestamp,
                          uint totalSize, uint packetCount,
                          uint offset, byte[] data)
             : base((uint)VideoPayloadType.Data)
@@ -39,7 +39,7 @@ namespace SmartGlass.Nano.Packets
         {
             Flags = reader.ReadUInt32();
             FrameId = reader.ReadUInt32();
-            Timestamp = reader.ReadInt64();
+            Timestamp = reader.ReadUInt64();
             TotalSize = reader.ReadUInt32();
             PacketCount = reader.ReadUInt32();
             Offset = reader.ReadUInt32();

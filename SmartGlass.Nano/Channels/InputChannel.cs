@@ -15,14 +15,16 @@ namespace SmartGlass.Nano.Channels
         {
         }
 
-        public void OnInputFrameReceived(object sender, InputFrameEventArgs args)
+        public async Task SendInputFrame(ulong createdTimestamp, InputButtons buttons,
+                                   InputAnalogue analogue, InputExtension extension)
         {
-            throw new NotImplementedException("");
-        }
+            InputFrame frame = new InputFrame(FrameId, Timestamp, createdTimestamp,
+                                              buttons, analogue, extension);
 
-        public void OnInputConfigReceived(object sender, InputConfigEventArgs args)
-        {
-            throw new NotImplementedException("");
+            await WaitForMessageAsync<InputFrameAck>(
+                TimeSpan.FromMilliseconds(100),
+                async () => await SendAsync(frame)
+            );
         }
 
         public override void OnFrame(InputFrame frame)
@@ -32,7 +34,6 @@ namespace SmartGlass.Nano.Channels
 
         public override void OnFrameAck(InputFrameAck ack)
         {
-            throw new NotImplementedException("");
         }
 
         private async Task SendClientHandshakeAsync()

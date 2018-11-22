@@ -21,7 +21,7 @@ namespace SmartGlass.Nano.Consumer
             // Intermediate: Flags 0x4 (1-2 packets)
             uint frameId = data.FrameId;
             uint packetCount = data.PacketCount;
-            long timeStamp = data.Timestamp;
+            ulong timeStamp = data.Timestamp;
 
             if (!_videoData.ContainsKey(frameId))
             {

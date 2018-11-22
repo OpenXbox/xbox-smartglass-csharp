@@ -10,7 +10,7 @@ namespace SmartGlass.Nano.Packets
     {
         public uint Flags { get; private set; }
         public uint FrameId { get; private set; }
-        public long Timestamp { get; private set; }
+        public ulong Timestamp { get; private set; }
         public byte[] Data { get; private set; }
 
         public AudioData()
@@ -19,7 +19,7 @@ namespace SmartGlass.Nano.Packets
         }
 
         public AudioData(uint flags, uint frameId,
-                         long timestamp, byte[] data)
+                         ulong timestamp, byte[] data)
             : base((uint)AudioPayloadType.Data)
         {
             Flags = flags;
@@ -32,7 +32,7 @@ namespace SmartGlass.Nano.Packets
         {
             Flags = reader.ReadUInt32();
             FrameId = reader.ReadUInt32();
-            Timestamp = reader.ReadInt64();
+            Timestamp = reader.ReadUInt64();
             Data = reader.ReadUInt32PrefixedBlob();
         }
 
