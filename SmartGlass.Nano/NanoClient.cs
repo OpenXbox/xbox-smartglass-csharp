@@ -64,7 +64,6 @@ namespace SmartGlass.Nano
                           GamestreamConfiguration configuration, Guid sessionId)
         {
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
-            _transport.MessageReceived += MessageReceived;
 
             _consumers = new List<Consumer.IConsumer>();
             _provider = null;
@@ -226,19 +225,6 @@ namespace SmartGlass.Nano
                 TimeSpan.FromSeconds(3),
                 startAction: null,
                 filter: open => open.Channel == channel);
-        }
-
-        /// <summary>
-        /// Event callback for NanoTransport, just logs received packets
-        /// </summary>
-        /// <param name="sender">Sender of event</param>
-        /// <param name="message">Received message arguments</param>
-        internal void MessageReceived(object sender, MessageReceivedEventArgs<INanoPacket> message)
-        {
-            var packet = message.Message;
-            NanoPayloadType pt = packet.Header.PayloadType;
-
-            logger.LogTrace($"NANO: Received {pt} on Channel <{packet.Channel}>");
         }
 
         /// <summary>
