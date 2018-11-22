@@ -71,7 +71,10 @@ namespace SmartGlass.Nano.Channels
 
             await Task.WhenAll(handshake, controlStart);
 
-            if (handshake.Result.RequestedFormat != AvailableFormats[0])
+            AudioFormat requestedFormat = handshake.Result.RequestedFormat;
+            if (requestedFormat.Channels != AvailableFormats[0].Channels ||
+                requestedFormat.SampleRate != AvailableFormats[0].SampleRate ||
+                requestedFormat.Codec != AvailableFormats[0].Codec)
                 throw new NanoException("ChatAudioChannel: Available / requested format mismatch!");
 
             FrameId = handshake.Result.InitialFrameID;

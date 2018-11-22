@@ -22,7 +22,7 @@ namespace SmartGlass.Nano.Channels
         internal VideoChannel(NanoRdpTransport transport, byte[] flags)
             : base(transport, flags)
         {
-            _transport.MessageReceived += OnMessage;
+            MessageReceived += OnMessage;
         }
 
         public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)

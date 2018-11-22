@@ -15,7 +15,7 @@ namespace SmartGlass.Nano.Channels
         internal InputChannelBase(NanoRdpTransport transport, byte[] flags)
             : base(transport, flags)
         {
-            transport.MessageReceived += OnMessage;
+            MessageReceived += OnMessage;
         }
 
         public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)

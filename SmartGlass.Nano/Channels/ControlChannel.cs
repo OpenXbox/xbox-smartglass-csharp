@@ -14,6 +14,7 @@ namespace SmartGlass.Nano.Channels
         internal ControlChannel(NanoRdpTransport transport, byte[] flags)
             : base(transport, flags)
         {
+            MessageReceived += OnMessage;
         }
 
         public async Task ChangeVideoQualityAsync(uint u1, uint u2, uint u3,
