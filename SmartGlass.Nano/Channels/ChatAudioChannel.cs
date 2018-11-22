@@ -64,7 +64,8 @@ namespace SmartGlass.Nano.Channels
 
             Task<AudioClientHandshake> handshake = WaitForMessageAsync<AudioClientHandshake>(
                 TimeSpan.FromSeconds(3),
-                async () => await SendServerHandshakeAsync()
+                async () => await SendServerHandshakeAsync(),
+                p => p.Channel == NanoChannel.ChatAudio
             );
 
             await Task.WhenAll(handshake, controlStart);

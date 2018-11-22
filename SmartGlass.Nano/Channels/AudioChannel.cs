@@ -58,7 +58,8 @@ namespace SmartGlass.Nano.Channels
         {
             var handshake = await WaitForMessageAsync<AudioServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await _transport.SendChannelOpenAsync(Channel, Flags)
+                async () => await _transport.SendChannelOpenAsync(Channel, Flags),
+                p => p.Channel == NanoChannel.Audio
             );
 
             ReferenceTimestamp = handshake.ReferenceTimestamp;
