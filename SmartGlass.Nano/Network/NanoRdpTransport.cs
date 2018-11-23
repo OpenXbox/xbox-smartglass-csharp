@@ -118,7 +118,7 @@ namespace SmartGlass.Nano
             });
         }
 
-        public async Task SendAsync(INanoPacket message)
+        public Task SendAsync(INanoPacket message)
         {
             logger.LogTrace(
                 $"Sending {message.Header.PayloadType} on Channel <{message.Channel}>");
@@ -127,18 +127,15 @@ namespace SmartGlass.Nano
             {
                 case NanoPayloadType.ChannelControl:
                 case NanoPayloadType.ControlHandshake:
-                    await SendAsyncControl(message);
-                    break;
+                    return SendAsyncControl(message);
                 case NanoPayloadType.UDPHandshake:
-                    await SendAsyncStreaming(message);
-                    break;
+                    return SendAsyncStreaming(message);
                 case NanoPayloadType.Streamer:
                     IStreamerMessage s = message as IStreamerMessage;
                     if (s.StreamerHeader.PacketType == 4)
-                        await SendAsyncStreaming(message);
+                        return SendAsyncStreaming(message);
                     else
-                        await SendAsyncControl(message);
-                    break;
+                        return SendAsyncControl(message);
                 default:
                     throw new NanoException(
                         "SendAsync: Unexpected PayloadType: {message.Header.PayloadType}");
@@ -151,11 +148,11 @@ namespace SmartGlass.Nano
         /// <param name="channel"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        internal async Task SendChannelOpenAsync(NanoChannel channel, byte[] flags)
+        internal Task SendChannelOpen(NanoChannel channel, byte[] flags)
         {
             var packet = new Nano.Packets.ChannelOpen(flags);
             packet.Channel = channel;
-            await SendAsyncControl(packet);
+            return SendAsyncControl(packet);
         }
 
         /// <summary>
@@ -164,11 +161,11 @@ namespace SmartGlass.Nano
         /// <param name="channel"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        internal async Task SendChannelCloseAsync(NanoChannel channel, uint reason)
+        internal Task SendChannelClose(NanoChannel channel, uint reason)
         {
             var packet = new Nano.Packets.ChannelClose(reason);
             packet.Channel = channel;
-            await SendAsyncControl(packet);
+            return SendAsyncControl(packet);
         }
 
         private Task SendAsyncStreaming(INanoPacket message)

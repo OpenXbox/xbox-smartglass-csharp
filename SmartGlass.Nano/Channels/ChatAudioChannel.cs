@@ -54,7 +54,7 @@ namespace SmartGlass.Nano.Channels
             // -> Client handshake
             // -> AudioControl
             AvailableFormats = new AudioFormat[] { format };
-            await _transport.SendChannelOpenAsync(Channel, Flags);
+            await _transport.SendChannelOpen(Channel, Flags);
 
             Task<AudioControl> controlStart = WaitForMessageAsync<AudioControl>(
                 TimeSpan.FromSeconds(3),

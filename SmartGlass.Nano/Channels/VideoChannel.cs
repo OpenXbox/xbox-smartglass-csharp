@@ -94,7 +94,7 @@ namespace SmartGlass.Nano.Channels
         {
             var handshake = await WaitForMessageAsync<VideoServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await _transport.SendChannelOpenAsync(Channel, Flags)
+                async () => await _transport.SendChannelOpen(Channel, Flags)
             );
 
             if (handshake.ProtocolVersion != ProtocolVersion)

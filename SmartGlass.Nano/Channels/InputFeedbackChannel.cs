@@ -64,8 +64,8 @@ namespace SmartGlass.Nano.Channels
 
             await Task.WhenAll(waitCreateTask, openTask);
 
-            await SendAsync(
-                new ChannelOpen(openTask.Result.Flags));
+            await _transport
+                .SendChannelOpen(NanoChannel.InputFeedback, openTask.Result.Flags);
 
             InputClientHandshake handshake = await WaitForMessageAsync<InputClientHandshake>(
                 TimeSpan.FromSeconds(3),

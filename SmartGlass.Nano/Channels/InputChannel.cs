@@ -65,7 +65,7 @@ namespace SmartGlass.Nano.Channels
             // Send ChannelOpen and wait for ChannelOpen response
             Task<ChannelOpen> openTask = WaitForMessageAsync<ChannelOpen>(
                 TimeSpan.FromSeconds(3),
-                async () => await _transport.SendChannelOpenAsync(NanoChannel.Input, Flags),
+                async () => await _transport.SendChannelOpen(NanoChannel.Input, Flags),
                 p => p.Channel == NanoChannel.Input
             );
 

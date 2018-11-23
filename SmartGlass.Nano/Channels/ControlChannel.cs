@@ -78,7 +78,7 @@ namespace SmartGlass.Nano.Channels
 
         public async Task OpenAsync()
         {
-            await _transport.SendChannelOpenAsync(Channel, Flags);
+            await _transport.SendChannelOpen(Channel, Flags);
         }
     }
 }
