@@ -240,7 +240,7 @@ namespace SmartGlass.Nano
             };
 
             return await _transport.WaitForMessageAsync<ControlHandshake>(
-                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(5),
                 async () => await _transport.SendAsync(packet));
         }
 
@@ -257,11 +257,10 @@ namespace SmartGlass.Nano
                 Channel = NanoChannel.TcpBase
             };
 
-            await TaskExtensions.WithRetries(() =>
-                _transport.WaitForMessageAsync<VideoData>(
-                    TimeSpan.FromSeconds(1),
-                    async () => await _transport.SendAsync(packet)
-                ), UdpHandshakeRetries);
+            // FIXME: Wait for first VideoPacket
+            // Currently WaitForMessage is broken and blocks VideoData
+            // populating to MessageReceived events
+            await _transport.SendAsync(packet);
         }
 
         public void AddConsumer(Consumer.IConsumer consumer)

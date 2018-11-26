@@ -17,12 +17,8 @@ namespace SmartGlass.Messaging.Session
 
         private static readonly TimeSpan[] messageRetries = new TimeSpan[]
         {
-            TimeSpan.FromMilliseconds(500),
-            TimeSpan.FromMilliseconds(500),
-            TimeSpan.FromMilliseconds(1500),
-            TimeSpan.FromMilliseconds(1500),
-            TimeSpan.FromMilliseconds(3500),
-            TimeSpan.FromMilliseconds(5000)
+            TimeSpan.FromMilliseconds(300),
+            TimeSpan.FromMilliseconds(500)
         };
 
         public static SessionMessageBase CreateFromMessageType(SessionMessageType messageType)
