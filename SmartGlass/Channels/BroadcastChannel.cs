@@ -61,7 +61,7 @@ namespace SmartGlass.Channels
             var startedMessageTask = MessageExtensions.WaitForMessageAsync<GamestreamStateStartedMessage, BroadcastErrorMessage, BroadcastBaseMessage>(
                 _transport,
                 TimeSpan.FromSeconds(10),
-                () => _transport.SendAsync(startMessage));
+                async () => await _transport.SendAsync(startMessage));
 
             var initializingMessageTask = MessageExtensions.WaitForMessageAsync
                 <GamestreamStateInitializingMessage, BroadcastErrorMessage, BroadcastBaseMessage>(_transport, TimeSpan.FromSeconds(10));

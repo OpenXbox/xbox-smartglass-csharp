@@ -234,7 +234,7 @@ namespace SmartGlass.Messaging.Session
                     {
                         var ackMessage = await WaitForMessageAsync<AckMessage>(
                             TimeSpan.FromSeconds(1),
-                            () => SendFragmentAsync(message, sequenceNumber),
+                            async () => await SendFragmentAsync(message, sequenceNumber),
                             ack => ack.ProcessedList.Contains(sequenceNumber) ||
                                    ack.RejectedList.Contains(sequenceNumber));
 
