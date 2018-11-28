@@ -9,76 +9,76 @@ namespace SmartGlass.Common
         {
             return new GamestreamConfiguration()
             {
-                UrcpType = "0",
-                UrcpFixedRate = "-1",
-                UrcpMaximumWindow = "1310720",
-                UrcpMinimumRate = "256000",
-                UrcpMaximumRate = "10000000",
-                UrcpKeepAliveTimeoutMs = "0",
-                AudioFecType = "0",
-                VideoFecType = "0",
-                VideoFecLevel = "3",
-                VideoPacketUtilization = "0",
-                EnableDynamicBitrate = "false",
-                DynamicBitrateScaleFactor = "1",
-                DynamicBitrateUpdateMs = "5000",
-                SendKeyframesOverTCP = "false",
-                VideoMaximumWidth = "1280",
-                VideoMaximumHeight = "720",
-                VideoMaximumFrameRate = "60",
-                VideoPacketDefragTimeoutMs = "16",
-                EnableVideoFrameAcks = "false",
-                EnableAudioChat = "true",
-                AudioBufferLengthHns = "10000000",
-                AudioSyncPolicy = "1",
-                AudioSyncMinLatency = "10",
-                AudioSyncDesiredLatency = "40",
-                AudioSyncMaxLatency = "170",
-                AudioSyncCompressLatency = "100",
-                AudioSyncCompressFactor = "0.99",
-                AudioSyncLengthenFactor = "1.01",
-                EnableOpusAudio = "false",
-                EnableOpusChatAudio = "true",
-                InputReadsPerSecond = "120",
-                UdpMaxSendPacketsInWinsock = "250",
-                UdpSubBurstGroups = "0",
-                UdpBurstDurationMs = "12"
+                UrcpType = 0,
+                UrcpFixedRate = -1,
+                UrcpMaximumWindow = 1310720,
+                UrcpMinimumRate = 256000,
+                UrcpMaximumRate = 10000000,
+                UrcpKeepAliveTimeoutMs = 0,
+                AudioFecType = 0,
+                VideoFecType = 0,
+                VideoFecLevel = 3,
+                VideoPacketUtilization = 0,
+                EnableDynamicBitrate = false,
+                DynamicBitrateScaleFactor = 1,
+                DynamicBitrateUpdateMs = 5000,
+                SendKeyframesOverTCP = false,
+                VideoMaximumWidth = 1280,
+                VideoMaximumHeight = 720,
+                VideoMaximumFrameRate = 60,
+                VideoPacketDefragTimeoutMs = 16,
+                EnableVideoFrameAcks = false,
+                EnableAudioChat = true,
+                AudioBufferLengthHns = 10000000,
+                AudioSyncPolicy = 1,
+                AudioSyncMinLatency = 10,
+                AudioSyncDesiredLatency = 40,
+                AudioSyncMaxLatency = 170,
+                AudioSyncCompressLatency = 100,
+                AudioSyncCompressFactor = 0.99f,
+                AudioSyncLengthenFactor = 1.01f,
+                EnableOpusAudio = false,
+                EnableOpusChatAudio = true,
+                InputReadsPerSecond = 120,
+                UdpMaxSendPacketsInWinsock = 250,
+                UdpSubBurstGroups = 0,
+                UdpBurstDurationMs = 12
             };
         }
 
-        public string UrcpType;
-        public string UrcpFixedRate;
-        public string UrcpMaximumWindow;
-        public string UrcpMinimumRate;
-        public string UrcpMaximumRate;
-        public string UrcpKeepAliveTimeoutMs;
-        public string AudioFecType;
-        public string VideoFecType;
-        public string VideoFecLevel;
-        public string VideoPacketUtilization;
-        public string EnableDynamicBitrate;
-        public string DynamicBitrateScaleFactor;
-        public string DynamicBitrateUpdateMs;
-        public string SendKeyframesOverTCP;
-        public string VideoMaximumWidth;
-        public string VideoMaximumHeight;
-        public string VideoMaximumFrameRate;
-        public string VideoPacketDefragTimeoutMs;
-        public string EnableVideoFrameAcks;
-        public string EnableAudioChat;
-        public string AudioBufferLengthHns;
-        public string AudioSyncPolicy;
-        public string AudioSyncMinLatency;
-        public string AudioSyncDesiredLatency;
-        public string AudioSyncMaxLatency;
-        public string AudioSyncCompressLatency;
-        public string AudioSyncCompressFactor;
-        public string AudioSyncLengthenFactor;
-        public string EnableOpusAudio;
-        public string EnableOpusChatAudio;
-        public string InputReadsPerSecond;
-        public string UdpMaxSendPacketsInWinsock;
-        public string UdpSubBurstGroups;
-        public string UdpBurstDurationMs;
+        public int UrcpType { get; set; }
+        public int UrcpFixedRate { get; set; }
+        public int UrcpMaximumWindow { get; set; }
+        public int UrcpMinimumRate { get; set; }
+        public int UrcpMaximumRate { get; set; }
+        public int UrcpKeepAliveTimeoutMs { get; set; }
+        public int AudioFecType { get; set; }
+        public int VideoFecType { get; set; }
+        public int VideoFecLevel { get; set; }
+        public int VideoPacketUtilization { get; set; }
+        public bool EnableDynamicBitrate { get; set; }
+        public int DynamicBitrateScaleFactor { get; set; }
+        public int DynamicBitrateUpdateMs { get; set; }
+        public bool SendKeyframesOverTCP { get; set; }
+        public int VideoMaximumWidth { get; set; }
+        public int VideoMaximumHeight { get; set; }
+        public int VideoMaximumFrameRate { get; set; }
+        public int VideoPacketDefragTimeoutMs { get; set; }
+        public bool EnableVideoFrameAcks { get; set; }
+        public bool EnableAudioChat { get; set; }
+        public int AudioBufferLengthHns { get; set; }
+        public int AudioSyncPolicy { get; set; }
+        public int AudioSyncMinLatency { get; set; }
+        public int AudioSyncDesiredLatency { get; set; }
+        public int AudioSyncMaxLatency { get; set; }
+        public int AudioSyncCompressLatency { get; set; }
+        public float AudioSyncCompressFactor { get; set; }
+        public float AudioSyncLengthenFactor { get; set; }
+        public bool EnableOpusAudio { get; set; }
+        public bool EnableOpusChatAudio { get; set; }
+        public int InputReadsPerSecond { get; set; }
+        public int UdpMaxSendPacketsInWinsock { get; set; }
+        public int UdpSubBurstGroups { get; set; }
+        public int UdpBurstDurationMs { get; set; }
     }
 }

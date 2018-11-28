@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Newtonsoft.Json;
+using SmartGlass.Common;
 using SmartGlass.Channels;
 using SmartGlass.Channels.Broadcast;
 using SmartGlass.Channels.Broadcast.Messages;
@@ -105,6 +106,24 @@ namespace SmartGlass.Tests
             Assert.AreEqual(BroadcastMessageType.PreviewStatus, msg.Type);
             Assert.IsFalse(msg.IsPublicPreview);
             Assert.IsFalse(msg.IsInternalPreview);
+        }
+
+        [Test]
+        public void TestGamestreamConfiguration()
+        {
+            byte[] data = TestData["gamestream_start_stream.json"];
+            string json = System.Text.Encoding.UTF8.GetString(data);
+
+            GamestreamConfiguration config = GamestreamConfiguration.GetStandardConfig();
+            var msg = new GamestreamStartMessage()
+            {
+                ReQueryPreviewStatus = false,
+                Configuration = config
+            };
+
+            var result = JsonConvert.SerializeObject(msg, _serializerSettings) + '\n';
+
+            Assert.AreEqual(json, result);
         }
     }
 }
