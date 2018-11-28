@@ -19,11 +19,11 @@ namespace SmartGlass.Channels.Broadcast
             Type objectType, object existingValue, JsonSerializer serializer)
         {
             var obj = JObject.Load(reader);
-            var messageType = (BroadcastMessageType)obj["type"].Value<long>();
+            var messageType = (BroadcastMessageType)obj["type"].Value<int>();
 
             if (messageType == BroadcastMessageType.GamestreamState)
             {
-                var stateMessageType = (GamestreamStateMessageType)obj["state"].Value<long>();
+                var stateMessageType = (GamestreamStateMessageType)obj["state"].Value<int>();
                 return obj.ToObject(GamestreamStateMessageTypeAttribute.GetTypeForMessageType(stateMessageType)
                     ?? typeof(GamestreamStateBaseMessage));
             }

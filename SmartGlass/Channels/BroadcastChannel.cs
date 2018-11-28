@@ -28,7 +28,7 @@ namespace SmartGlass.Channels
         internal BroadcastChannel(ChannelMessageTransport transport)
         {
             _baseTransport = transport;
-            _transport = new JsonMessageTransport<BroadcastBaseMessage>(_baseTransport, new BroadcastMessageJsonConverter());
+            _transport = new JsonMessageTransport<BroadcastBaseMessage>(_baseTransport, ChannelJsonSerializerSettings.GetBroadcastSettings());
             _transport.MessageReceived += OnMessageReceived;
         }
 

@@ -18,15 +18,9 @@ namespace SmartGlass.Channels
 
         public event EventHandler<MessageReceivedEventArgs<TMessage>> MessageReceived;
 
-        public JsonMessageTransport(IMessageTransport<SessionMessageBase> baseTransport, JsonConverter converter)
+        public JsonMessageTransport(IMessageTransport<SessionMessageBase> baseTransport, JsonSerializerSettings settings)
         {
-            _serializerSettings = new JsonSerializerSettings()
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
-            _serializerSettings.Converters.Add(new GuidConverter());
-            _serializerSettings.Converters.Add(converter);
+            _serializerSettings = settings;
 
             _baseTransport = baseTransport;
             _baseTransport.MessageReceived += TransportMessageReceived;
