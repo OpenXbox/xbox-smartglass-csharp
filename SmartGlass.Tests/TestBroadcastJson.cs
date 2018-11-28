@@ -33,7 +33,11 @@ namespace SmartGlass.Tests
             byte[] data = TestData["gamestream_state_invalid.json"];
             string json = System.Text.Encoding.UTF8.GetString(data);
 
-            var msg = DeserializeJson(json);
+            var msg = (GamestreamStateBaseMessage)DeserializeJson(json);
+
+            Assert.AreEqual(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.AreEqual(GamestreamStateMessageType.Invalid, msg.State);
+            Assert.AreEqual(System.Guid.Empty, msg.SessionId);
         }
 
         [Test]

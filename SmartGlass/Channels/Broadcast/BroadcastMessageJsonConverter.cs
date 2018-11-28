@@ -3,6 +3,7 @@ using SmartGlass.Channels.Broadcast.Messages;
 using SmartGlass.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SmartGlass.Json;
 
 namespace SmartGlass.Channels.Broadcast
 {
@@ -19,17 +20,22 @@ namespace SmartGlass.Channels.Broadcast
             Type objectType, object existingValue, JsonSerializer serializer)
         {
             var obj = JObject.Load(reader);
+
             var messageType = (BroadcastMessageType)obj["type"].Value<int>();
+            objectType = BroadcastMessageTypeAttribute.GetTypeForMessageType(messageType)
+                ?? typeof(BroadcastBaseMessage);
 
             if (messageType == BroadcastMessageType.GamestreamState)
             {
                 var stateMessageType = (GamestreamStateMessageType)obj["state"].Value<int>();
-                return obj.ToObject(GamestreamStateMessageTypeAttribute.GetTypeForMessageType(stateMessageType)
-                    ?? typeof(GamestreamStateBaseMessage));
+                objectType = GamestreamStateMessageTypeAttribute.GetTypeForMessageType(stateMessageType)
+                    ?? typeof(GamestreamStateBaseMessage);
             }
 
-            return obj.ToObject(BroadcastMessageTypeAttribute.GetTypeForMessageType(messageType)
-                ?? typeof(BroadcastBaseMessage));
+            var guidSerializer = new JsonSerializer();
+            guidSerializer.Converters.Add(new GuidConverter());
+
+            return obj.ToObject(objectType, guidSerializer);
         }
 
         public override void WriteJson(JsonWriter writer,
