@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using SmartGlass.Common;
 using SmartGlass.Connection;
+using Tests.Resources;
 using Xunit;
 
-namespace SmartGlass.Tests
+namespace Tests.SmartGlass
 {
     public class TestCertificate
     {
@@ -14,7 +15,7 @@ namespace SmartGlass.Tests
         [Fact]
         public void TestCertificateDeserialize()
         {
-            byte[] cert = TestData["selfsigned_cert.bin"];
+            byte[] cert = ResourcesProvider.GetContent("selfsigned_cert.bin");
             var x509 = CryptoExtensions.DeserializeCertificateAsn(cert);
             var publicKey = x509.GetPublicKey();
 

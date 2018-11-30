@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace SmartGlass.Cli.Tests
+namespace Tests.SmartGlass.Cli
 {
     public class Tests
     {
