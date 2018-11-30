@@ -8,11 +8,10 @@ using Xunit;
 
 namespace SmartGlass.Tests
 {
-    public class TestBroadcastJson : TestDataProvider
+    public class TestBroadcastJson
     {
         private JsonSerializerSettings _serializerSettings;
         public TestBroadcastJson()
-            : base("Json")
         {
             _serializerSettings = ChannelJsonSerializerSettings.GetBroadcastSettings();
         }

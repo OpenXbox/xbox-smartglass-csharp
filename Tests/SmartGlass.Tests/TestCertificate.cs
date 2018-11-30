@@ -5,10 +5,9 @@ using Xunit;
 
 namespace SmartGlass.Tests
 {
-    public class TestCertificate : TestDataProvider
+    public class TestCertificate
     {
         public TestCertificate()
-            : base("")
         {
         }
 

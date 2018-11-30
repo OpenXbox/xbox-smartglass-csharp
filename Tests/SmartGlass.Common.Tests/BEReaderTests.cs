@@ -154,7 +154,7 @@ namespace SmartGlass.Common.Tests
             };
             BEReader reader = new BEReader(data);
             string result = reader.ReadUInt16PrefixedString();
-            Assert.Equal<string>("ABCDZYXW", result);
+            Assert.Equal("ABCDZYXW", result);
         }
 
         [Fact]

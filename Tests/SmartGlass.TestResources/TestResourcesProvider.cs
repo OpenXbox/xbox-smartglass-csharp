@@ -3,12 +3,12 @@ using System.IO;
 using System.Collections.Generic;
 using Xunit;
 
-namespace SmartGlass.Tests
+namespace SmartGlass.TestResources
 {
-    public class TestDataProvider
+    public class TestResourcesProvider
     {
         public Dictionary<string, byte[]> TestData { get; internal set; }
-        public TestDataProvider(string path)
+        public TestResourcesProvider(string path)
         {
             TestData = new Dictionary<string, byte[]>();
             string rootPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(

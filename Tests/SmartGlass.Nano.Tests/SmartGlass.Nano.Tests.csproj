@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SmartGlass.Nano\SmartGlass.Nano.csproj" />
+    <ProjectReference Include="..\SmartGlass.TestResources\SmartGlass.TestResources.csproj" />
   </ItemGroup>
 
 </Project>
