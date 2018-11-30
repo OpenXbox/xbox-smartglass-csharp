@@ -19,7 +19,7 @@ namespace SmartGlass.Common.Tests
             _writer.Write((byte)0xFE);
             _writer.Write((byte)0xFA);
 
-            Assert.Equal(new byte[] { 0xFE, 0xFA }, _writer.ToBytes());
+            Assert.Equal<byte[]>(new byte[] { 0xFE, 0xFA }, _writer.ToBytes());
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace SmartGlass.Common.Tests
             byte[] data = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
             _writer.Write(data);
 
-            Assert.Equal(data, _writer.ToBytes());
+            Assert.Equal<byte[]>(data, _writer.ToBytes());
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace SmartGlass.Common.Tests
         {
             _writer.Write((ushort)0xFB42);
 
-            Assert.Equal(new byte[] { 0xFB, 0x42 }, _writer.ToBytes());
+            Assert.Equal<byte[]>(new byte[] { 0xFB, 0x42 }, _writer.ToBytes());
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace SmartGlass.Common.Tests
         {
             _writer.Write((uint)0x425112);
 
-            Assert.Equal(new byte[] { 0x00, 0x42, 0x51, 0x12 }, _writer.ToBytes());
+            Assert.Equal<byte[]>(new byte[] { 0x00, 0x42, 0x51, 0x12 }, _writer.ToBytes());
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace SmartGlass.Common.Tests
         {
             _writer.Write((ulong)0x425112);
 
-            Assert.Equal(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x51, 0x12 },
+            Assert.Equal<byte[]>(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x51, 0x12 },
                             _writer.ToBytes());
         }
 
@@ -61,7 +61,7 @@ namespace SmartGlass.Common.Tests
         {
             _writer.Write((short)-2);
 
-            Assert.Equal(new byte[] { 0xFF, 0xFE }, _writer.ToBytes());
+            Assert.Equal<byte[]>(new byte[] { 0xFF, 0xFE }, _writer.ToBytes());
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace SmartGlass.Common.Tests
         {
             _writer.Write((int)-2);
 
-            Assert.Equal(new byte[] { 0xFF, 0xFF, 0xFF, 0xFE }, _writer.ToBytes());
+            Assert.Equal<byte[]>(new byte[] { 0xFF, 0xFF, 0xFF, 0xFE }, _writer.ToBytes());
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace SmartGlass.Common.Tests
         {
             _writer.Write((long)-2);
 
-            Assert.Equal(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE },
+            Assert.Equal<byte[]>(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE },
                             _writer.ToBytes());
         }
 
@@ -86,7 +86,7 @@ namespace SmartGlass.Common.Tests
         {
             _writer.WriteUInt16Prefixed("ABCXYZ");
 
-            Assert.Equal(new byte[] { 0x00, 0x06, 0x41, 0x42, 0x43, 0x58, 0x59, 0x5A, 0x00 },
+            Assert.Equal<byte[]>(new byte[] { 0x00, 0x06, 0x41, 0x42, 0x43, 0x58, 0x59, 0x5A, 0x00 },
                             _writer.ToBytes());
         }
 
@@ -98,7 +98,7 @@ namespace SmartGlass.Common.Tests
             _writer.Write((byte)0xBE);
             _writer.Write((byte)0xEF);
 
-            Assert.Equal(new byte[] { 0xDE, 0xAD, 0xBE, 0xEF },
+            Assert.Equal<byte[]>(new byte[] { 0xDE, 0xAD, 0xBE, 0xEF },
                             _writer.ToBytes());
         }
     }

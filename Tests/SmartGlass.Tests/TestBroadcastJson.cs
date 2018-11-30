@@ -30,9 +30,9 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateBaseMessage)DeserializeJson(json);
 
-            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.Equal(GamestreamStateMessageType.Invalid, msg.State);
-            Assert.Equal(System.Guid.Empty, msg.SessionId);
+            Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Invalid, msg.State);
+            Assert.Equal<System.Guid>(System.Guid.Empty, msg.SessionId);
         }
 
         [Fact]
@@ -43,11 +43,11 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamEnabledMessage)DeserializeJson(json);
 
-            Assert.Equal(BroadcastMessageType.GamestreamEnabled, msg.Type);
+            Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamEnabled, msg.Type);
             Assert.True(msg.CanBeEnabled);
             Assert.True(msg.Enabled);
-            Assert.Equal(6, msg.MajorProtocolVersion);
-            Assert.Equal(0, msg.MinorProtocolVersion);
+            Assert.Equal<int>(6, msg.MajorProtocolVersion);
+            Assert.Equal<int>(0, msg.MinorProtocolVersion);
         }
 
         [Fact]
@@ -58,11 +58,11 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateInitializingMessage)DeserializeJson(json);
 
-            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.Equal(GamestreamStateMessageType.Initializing, msg.State);
-            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
-            Assert.Equal(53394, msg.TcpPort);
-            Assert.Equal(49665, msg.UdpPort);
+            Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Initializing, msg.State);
+            Assert.Equal<string>("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal<int>(53394, msg.TcpPort);
+            Assert.Equal<int>(49665, msg.UdpPort);
         }
 
         [Fact]
@@ -73,12 +73,12 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateStartedMessage)DeserializeJson(json);
 
-            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.Equal(GamestreamStateMessageType.Started, msg.State);
-            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Started, msg.State);
+            Assert.Equal<string>("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
             Assert.False(msg.IsWirelessConnection);
-            Assert.Equal(0, msg.WirelessChannel);
-            Assert.Equal(1000000000, msg.TransmitLinkSpeed);
+            Assert.Equal<int>(0, msg.WirelessChannel);
+            Assert.Equal<int>(1000000000, msg.TransmitLinkSpeed);
         }
 
         [Fact]
@@ -89,9 +89,9 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateStoppedMessage)DeserializeJson(json);
 
-            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.Equal(GamestreamStateMessageType.Stopped, msg.State);
-            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Stopped, msg.State);
+            Assert.Equal<string>("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamPreviewStatusMessage)DeserializeJson(json);
 
-            Assert.Equal(BroadcastMessageType.PreviewStatus, msg.Type);
+            Assert.Equal<BroadcastMessageType>(BroadcastMessageType.PreviewStatus, msg.Type);
             Assert.False(msg.IsPublicPreview);
             Assert.False(msg.IsInternalPreview);
         }
@@ -122,7 +122,7 @@ namespace SmartGlass.Tests
 
             var result = JsonConvert.SerializeObject(msg, _serializerSettings) + '\n';
 
-            Assert.Equal(json, result);
+            Assert.Equal<string>(json, result);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace SmartGlass.Tests
             CryptoContext context = new CryptoContext(x509);
 
             Assert.NotNull(context);
-            Assert.Equal(PublicKeyType.EC_DH_P256, context.PublicKeyType);
+            Assert.Equal<PublicKeyType>(PublicKeyType.EC_DH_P256, context.PublicKeyType);
         }
     }
 }

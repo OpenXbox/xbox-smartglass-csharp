@@ -16,11 +16,11 @@ namespace SmartGlass.Common.Tests
                 return Task<int>.Run(() => { tmpInt = 42; return tmpInt; });
             });
 
-            Assert.Equal(99, tmpInt);
+            Assert.Equal<int>(99, tmpInt);
             int result42 = cls.GetAsync().GetAwaiter().GetResult();
 
-            Assert.Equal(42, tmpInt);
-            Assert.Equal(42, result42);
+            Assert.Equal<int>(42, tmpInt);
+            Assert.Equal<int>(42, result42);
         }
 
         [Fact]

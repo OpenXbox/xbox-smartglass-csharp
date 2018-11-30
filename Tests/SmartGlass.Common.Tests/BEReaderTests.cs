@@ -21,11 +21,11 @@ namespace SmartGlass.Common.Tests
         [Fact]
         public void TestByte()
         {
-            Assert.Equal(4, _reader.ReadByte());
-            Assert.Equal(0, _reader.ReadByte());
-            Assert.Equal(0, _reader.ReadByte());
-            Assert.Equal(0, _reader.ReadByte());
-            Assert.Equal(0x41, _reader.ReadByte());
+            Assert.Equal<byte>(4, _reader.ReadByte());
+            Assert.Equal<byte>(0, _reader.ReadByte());
+            Assert.Equal<byte>(0, _reader.ReadByte());
+            Assert.Equal<byte>(0, _reader.ReadByte());
+            Assert.Equal<byte>(0x41, _reader.ReadByte());
         }
 
         [Fact]
@@ -35,60 +35,60 @@ namespace SmartGlass.Common.Tests
             {
                 0x04, 0x00, 0x00, 0x00, 0x41, 0x42, 0x43, 0x44
             };
-            Assert.Equal(expect, _reader.ReadBytes(8));
+            Assert.Equal<byte[]>(expect, _reader.ReadBytes(8));
         }
 
         [Fact]
         public void TestInt16()
         {
-            Assert.Equal(0x400, _reader.ReadInt16());
+            Assert.Equal<short>(0x400, _reader.ReadInt16());
         }
 
         [Fact]
         public void TestUInt16()
         {
-            Assert.Equal(0x400, _reader.ReadUInt16());
+            Assert.Equal<ushort>(0x400, _reader.ReadUInt16());
         }
 
         [Fact]
         public void TestInt32()
         {
-            Assert.Equal(0x4000000, _reader.ReadInt32());
+            Assert.Equal<int>(0x4000000, _reader.ReadInt32());
         }
 
         [Fact]
         public void TestUInt32()
         {
-            Assert.Equal(0x4000000, _reader.ReadUInt32());
+            Assert.Equal<uint>(0x4000000, _reader.ReadUInt32());
         }
 
         [Fact]
         public void TestInt64()
         {
-            Assert.Equal(0x400000041424344, _reader.ReadInt64());
+            Assert.Equal<long>(0x400000041424344, _reader.ReadInt64());
         }
 
         [Fact]
         public void TestUInt64()
         {
-            Assert.Equal(0x400000041424344, _reader.ReadUInt64());
+            Assert.Equal<ulong>(0x400000041424344, _reader.ReadUInt64());
         }
 
         [Fact]
         public void TestSingle()
         {
-            Assert.Equal(1.50463277E-36f, _reader.ReadSingle());
+            Assert.Equal<float>(1.50463277E-36f, _reader.ReadSingle());
         }
 
         [Fact]
         public void TestReadToEnd()
         {
             byte[] bytes = _reader.ReadToEnd();
-            Assert.Equal(16, bytes.Length);
-            Assert.Equal(0x04, bytes[0]);
-            Assert.Equal(0x00, bytes[3]);
-            Assert.Equal(0x44, bytes[7]);
-            Assert.Equal(0x4C, bytes[15]);
+            Assert.Equal<int>(16, bytes.Length);
+            Assert.Equal<byte>(0x04, bytes[0]);
+            Assert.Equal<byte>(0x00, bytes[3]);
+            Assert.Equal<byte>(0x44, bytes[7]);
+            Assert.Equal<byte>(0x4C, bytes[15]);
         }
 
         [Fact]
@@ -104,11 +104,11 @@ namespace SmartGlass.Common.Tests
             });
 
             uint[] array = reader.ReadUInt32Array();
-            Assert.Equal(4, array.Length);
-            Assert.Equal(0xDEADBEEF, array[0]);
-            Assert.Equal(0xBEEFDEAD, array[1]);
-            Assert.Equal(0xB00B4142, array[2]);
-            Assert.Equal(0x40414243, array[3]);
+            Assert.Equal<int>(4, array.Length);
+            Assert.Equal<uint>(0xDEADBEEF, array[0]);
+            Assert.Equal<uint>(0xBEEFDEAD, array[1]);
+            Assert.Equal<uint>(0xB00B4142, array[2]);
+            Assert.Equal<uint>(0x40414243, array[3]);
         }
 
         [Fact]
@@ -121,8 +121,8 @@ namespace SmartGlass.Common.Tests
             BEReader reader = new BEReader(data);
             byte[] result = reader.ReadUInt16PrefixedBlob();
 
-            Assert.Equal(3, result.Length);
-            Assert.Equal(new byte[] { 0xDE, 0xAD, 0xBE }, result);
+            Assert.Equal<int>(3, result.Length);
+            Assert.Equal<byte[]>(new byte[] { 0xDE, 0xAD, 0xBE }, result);
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace SmartGlass.Common.Tests
             };
             BEReader reader = new BEReader(data);
             string result = reader.ReadUInt16PrefixedString();
-            Assert.Equal("ABCDZYXW", result);
+            Assert.Equal<string>("ABCDZYXW", result);
         }
 
         [Fact]
@@ -162,19 +162,19 @@ namespace SmartGlass.Common.Tests
         {
             _reader.Seek(9, System.IO.SeekOrigin.Current);
 
-            Assert.Equal(_reader.Position, 9);
-            Assert.Equal(0x46, _reader.ReadByte());
-            Assert.Equal(10, _reader.Position);
+            Assert.Equal<long>(9, _reader.Position);
+            Assert.Equal<byte>(0x46, _reader.ReadByte());
+            Assert.Equal<long>(10, _reader.Position);
 
             _reader.Seek(0, System.IO.SeekOrigin.Begin);
             _reader.ReadBytes(4);
-            Assert.Equal(4, _reader.Position);
+            Assert.Equal<long>(4, _reader.Position);
 
             _reader.Seek(2, System.IO.SeekOrigin.Begin);
-            Assert.Equal(2, _reader.Position);
+            Assert.Equal<long>(2, _reader.Position);
 
             _reader.Seek(-2, System.IO.SeekOrigin.End);
-            Assert.Equal(14, _reader.Position);
+            Assert.Equal<long>(14, _reader.Position);
         }
 
         [Fact]
@@ -195,7 +195,7 @@ namespace SmartGlass.Common.Tests
             byte[] data = new byte[] { 0xBE, 0xEF, 0xDE, 0xAD };
             BEReader reader = new BEReader(data);
 
-            Assert.Equal(data, reader.ToBytes());
+            Assert.Equal<byte[]>(data, reader.ToBytes());
         }
     }
 }
