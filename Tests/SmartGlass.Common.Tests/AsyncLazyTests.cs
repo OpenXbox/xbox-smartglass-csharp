@@ -1,17 +1,12 @@
-using NUnit.Framework;
 using System.Threading.Tasks;
 using SmartGlass.Common;
+using Xunit;
 
 namespace SmartGlass.Common.Tests
 {
     public class AsyncLazyTests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
-        [Test]
+        [Fact]
         public void TestAsyncLazy()
         {
             int tmpInt = 99;
@@ -21,14 +16,14 @@ namespace SmartGlass.Common.Tests
                 return Task<int>.Run(() => { tmpInt = 42; return tmpInt; });
             });
 
-            Assert.AreEqual(99, tmpInt);
+            Assert.Equal(99, tmpInt);
             int result42 = cls.GetAsync().GetAwaiter().GetResult();
 
-            Assert.AreEqual(42, tmpInt);
-            Assert.AreEqual(42, result42);
+            Assert.Equal(42, tmpInt);
+            Assert.Equal(42, result42);
         }
 
-        [Test]
+        [Fact]
         public void TestAsyncLazyException()
         {
             AsyncLazy<int> cls = new AsyncLazy<int>(() =>

@@ -11,13 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Nano", "SmartGla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Common", "SmartGlass.Common\SmartGlass.Common.csproj", "{437CDF70-450D-4DCF-9CB5-E4E91DC94D3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Common.Tests", "SmartGlass.Common.Tests\SmartGlass.Common.Tests.csproj", "{8B66115F-9924-4C21-B4D6-EEAE7C1D709F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Common.Tests", "Tests\SmartGlass.Common.Tests\SmartGlass.Common.Tests.csproj", "{8B66115F-9924-4C21-B4D6-EEAE7C1D709F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Tests", "SmartGlass.Tests\SmartGlass.Tests.csproj", "{C4089F60-F348-4966-AE74-CD7A3E058DD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Tests", "Tests\SmartGlass.Tests\SmartGlass.Tests.csproj", "{C4089F60-F348-4966-AE74-CD7A3E058DD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Cli.Tests", "SmartGlass.Cli.Tests\SmartGlass.Cli.Tests.csproj", "{2CF4C38B-3326-4DCF-9DDA-140D94046778}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Cli.Tests", "Tests\SmartGlass.Cli.Tests\SmartGlass.Cli.Tests.csproj", "{2CF4C38B-3326-4DCF-9DDA-140D94046778}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Nano.Tests", "SmartGlass.Nano.Tests\SmartGlass.Nano.Tests.csproj", "{0600D08D-DF66-42C3-B141-3D46C61370CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartGlass.Nano.Tests", "Tests\SmartGlass.Nano.Tests\SmartGlass.Nano.Tests.csproj", "{0600D08D-DF66-42C3-B141-3D46C61370CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

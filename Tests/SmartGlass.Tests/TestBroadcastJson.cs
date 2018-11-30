@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 using Newtonsoft.Json;
 using SmartGlass.Common;
 using SmartGlass.Channels;
 using SmartGlass.Channels.Broadcast;
 using SmartGlass.Channels.Broadcast.Messages;
+using Xunit;
 
 namespace SmartGlass.Tests
 {
@@ -14,11 +14,6 @@ namespace SmartGlass.Tests
         public TestBroadcastJson()
             : base("Json")
         {
-        }
-
-        [SetUp]
-        public void Setup()
-        {
             _serializerSettings = ChannelJsonSerializerSettings.GetBroadcastSettings();
         }
 
@@ -27,7 +22,7 @@ namespace SmartGlass.Tests
             return JsonConvert.DeserializeObject<BroadcastBaseMessage>(json, _serializerSettings);
         }
 
-        [Test]
+        [Fact]
         public void TestGamestreamStateEmptyGuid()
         {
             byte[] data = TestData["gamestream_state_invalid.json"];
@@ -35,12 +30,12 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateBaseMessage)DeserializeJson(json);
 
-            Assert.AreEqual(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.AreEqual(GamestreamStateMessageType.Invalid, msg.State);
-            Assert.AreEqual(System.Guid.Empty, msg.SessionId);
+            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal(GamestreamStateMessageType.Invalid, msg.State);
+            Assert.Equal(System.Guid.Empty, msg.SessionId);
         }
 
-        [Test]
+        [Fact]
         public void TestGamestreamEnabled()
         {
             byte[] data = TestData["gamestream_enabled.json"];
@@ -48,14 +43,14 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamEnabledMessage)DeserializeJson(json);
 
-            Assert.AreEqual(BroadcastMessageType.GamestreamEnabled, msg.Type);
-            Assert.IsTrue(msg.CanBeEnabled);
-            Assert.IsTrue(msg.Enabled);
-            Assert.AreEqual(6, msg.MajorProtocolVersion);
-            Assert.AreEqual(0, msg.MinorProtocolVersion);
+            Assert.Equal(BroadcastMessageType.GamestreamEnabled, msg.Type);
+            Assert.True(msg.CanBeEnabled);
+            Assert.True(msg.Enabled);
+            Assert.Equal(6, msg.MajorProtocolVersion);
+            Assert.Equal(0, msg.MinorProtocolVersion);
         }
 
-        [Test]
+        [Fact]
         public void TestGamestreamStateInitializing()
         {
             byte[] data = TestData["gamestream_state_init.json"];
@@ -63,14 +58,14 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateInitializingMessage)DeserializeJson(json);
 
-            Assert.AreEqual(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.AreEqual(GamestreamStateMessageType.Initializing, msg.State);
-            Assert.AreEqual("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
-            Assert.AreEqual(53394, msg.TcpPort);
-            Assert.AreEqual(49665, msg.UdpPort);
+            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal(GamestreamStateMessageType.Initializing, msg.State);
+            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal(53394, msg.TcpPort);
+            Assert.Equal(49665, msg.UdpPort);
         }
 
-        [Test]
+        [Fact]
         public void TestGamestreamStateStarted()
         {
             byte[] data = TestData["gamestream_state_started.json"];
@@ -78,15 +73,15 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateStartedMessage)DeserializeJson(json);
 
-            Assert.AreEqual(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.AreEqual(GamestreamStateMessageType.Started, msg.State);
-            Assert.AreEqual("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
-            Assert.IsFalse(msg.IsWirelessConnection);
-            Assert.AreEqual(0, msg.WirelessChannel);
-            Assert.AreEqual(1000000000, msg.TransmitLinkSpeed);
+            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal(GamestreamStateMessageType.Started, msg.State);
+            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.False(msg.IsWirelessConnection);
+            Assert.Equal(0, msg.WirelessChannel);
+            Assert.Equal(1000000000, msg.TransmitLinkSpeed);
         }
 
-        [Test]
+        [Fact]
         public void TestGamestreamStateStopped()
         {
             byte[] data = TestData["gamestream_state_stopped.json"];
@@ -94,12 +89,12 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamStateStoppedMessage)DeserializeJson(json);
 
-            Assert.AreEqual(BroadcastMessageType.GamestreamState, msg.Type);
-            Assert.AreEqual(GamestreamStateMessageType.Stopped, msg.State);
-            Assert.AreEqual("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal(BroadcastMessageType.GamestreamState, msg.Type);
+            Assert.Equal(GamestreamStateMessageType.Stopped, msg.State);
+            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
         }
 
-        [Test]
+        [Fact]
         public void TestGamestreamPreviewStatus()
         {
             byte[] data = TestData["gamestream_preview_status.json"];
@@ -107,12 +102,12 @@ namespace SmartGlass.Tests
 
             var msg = (GamestreamPreviewStatusMessage)DeserializeJson(json);
 
-            Assert.AreEqual(BroadcastMessageType.PreviewStatus, msg.Type);
-            Assert.IsFalse(msg.IsPublicPreview);
-            Assert.IsFalse(msg.IsInternalPreview);
+            Assert.Equal(BroadcastMessageType.PreviewStatus, msg.Type);
+            Assert.False(msg.IsPublicPreview);
+            Assert.False(msg.IsInternalPreview);
         }
 
-        [Test]
+        [Fact]
         public void TestGamestreamConfiguration()
         {
             byte[] data = TestData["gamestream_start_stream.json"];
@@ -127,7 +122,7 @@ namespace SmartGlass.Tests
 
             var result = JsonConvert.SerializeObject(msg, _serializerSettings) + '\n';
 
-            Assert.AreEqual(json, result);
+            Assert.Equal(json, result);
         }
     }
 }

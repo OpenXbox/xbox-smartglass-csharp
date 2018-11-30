@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 using SmartGlass.Common;
 using SmartGlass.Connection;
+using Xunit;
 
 namespace SmartGlass.Tests
 {
@@ -12,12 +12,7 @@ namespace SmartGlass.Tests
         {
         }
 
-        [SetUp]
-        public void Setup()
-        {
-        }
-
-        [Test]
+        [Fact]
         public void TestCryptoSetup()
         {
             byte[] cert = TestData["selfsigned_cert.bin"];
@@ -25,8 +20,8 @@ namespace SmartGlass.Tests
 
             CryptoContext context = new CryptoContext(x509);
 
-            Assert.IsNotNull(context);
-            Assert.AreEqual(PublicKeyType.EC_DH_P256, context.PublicKeyType);
+            Assert.NotNull(context);
+            Assert.Equal(PublicKeyType.EC_DH_P256, context.PublicKeyType);
         }
     }
 }
