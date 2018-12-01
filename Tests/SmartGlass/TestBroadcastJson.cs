@@ -27,7 +27,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamStateEmptyGuid()
         {
-            byte[] data = ResourcesProvider.GetContent("gamestream_state_invalid.json");
+            byte[] data = ResourcesProvider.GetContent("gamestream_state_invalid.json", Type.Json);
             string json = System.Text.Encoding.UTF8.GetString(data);
 
             var msg = (GamestreamStateBaseMessage)DeserializeJson(json);
@@ -40,7 +40,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamEnabled()
         {
-            byte[] data = ResourcesProvider.GetContent("gamestream_enabled.json");
+            byte[] data = ResourcesProvider.GetContent("gamestream_enabled.json", Type.Json);
             string json = System.Text.Encoding.UTF8.GetString(data);
 
             var msg = (GamestreamEnabledMessage)DeserializeJson(json);
@@ -55,7 +55,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamStateInitializing()
         {
-            byte[] data = ResourcesProvider.GetContent("gamestream_state_init.json");
+            byte[] data = ResourcesProvider.GetContent("gamestream_state_init.json", Type.Json);
             string json = System.Text.Encoding.UTF8.GetString(data);
 
             var msg = (GamestreamStateInitializingMessage)DeserializeJson(json);
@@ -70,7 +70,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamStateStarted()
         {
-            byte[] data = ResourcesProvider.GetContent("gamestream_state_started.json");
+            byte[] data = ResourcesProvider.GetContent("gamestream_state_started.json", Type.Json);
             string json = System.Text.Encoding.UTF8.GetString(data);
 
             var msg = (GamestreamStateStartedMessage)DeserializeJson(json);
@@ -86,7 +86,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamStateStopped()
         {
-            byte[] data = ResourcesProvider.GetContent("gamestream_state_stopped.json");
+            byte[] data = ResourcesProvider.GetContent("gamestream_state_stopped.json", Type.Json);
             string json = System.Text.Encoding.UTF8.GetString(data);
 
             var msg = (GamestreamStateStoppedMessage)DeserializeJson(json);
@@ -99,7 +99,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamPreviewStatus()
         {
-            byte[] data = ResourcesProvider.GetContent("gamestream_preview_status.json");
+            byte[] data = ResourcesProvider.GetContent("gamestream_preview_status.json", Type.Json);
             string json = System.Text.Encoding.UTF8.GetString(data);
 
             var msg = (GamestreamPreviewStatusMessage)DeserializeJson(json);
@@ -112,19 +112,18 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamConfiguration()
         {
-            byte[] data = ResourcesProvider.GetContent("gamestream_start_stream.json");
-            string json = System.Text.Encoding.UTF8.GetString(data);
+            var origMsg = JsonConvert.DeserializeObject<GamestreamStartMessage>(
+                System.Text.Encoding.UTF8.GetString(ResourcesProvider.GetContent("gamestream_start_stream.json", Type.Json))
+            );
 
-            GamestreamConfiguration config = GamestreamConfiguration.GetStandardConfig();
             var msg = new GamestreamStartMessage()
             {
                 ReQueryPreviewStatus = false,
-                Configuration = config
+                Configuration = GamestreamConfiguration.GetStandardConfig()
             };
 
-            var result = JsonConvert.SerializeObject(msg, _serializerSettings) + '\n';
-
-            Assert.Equal<string>(json, result);
+            // TODO: check why this isn't working like expected
+            Assert.Equal<GamestreamStartMessage>(origMsg, msg);
         }
     }
 }

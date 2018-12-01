@@ -16,7 +16,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestCryptoSetup()
         {
-            byte[] cert = ResourcesProvider.GetContent("selfsigned_cert.bin");
+            byte[] cert = ResourcesProvider.GetContent("selfsigned_cert.bin", Type.Misc);
             var x509 = CryptoExtensions.DeserializeCertificateAsn(cert);
 
             CryptoContext context = new CryptoContext(x509);
