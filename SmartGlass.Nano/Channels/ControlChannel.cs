@@ -73,6 +73,8 @@ namespace SmartGlass.Nano.Channels
         {
             packet.ControlHeader.Unknown1 = 1;
             packet.ControlHeader.Unknown2 = 1406;
+            packet.ControlHeader.PreviousSequence = SequenceNumber;
+
             await SendAsync(packet);
         }
 
