@@ -19,17 +19,16 @@ namespace Tests.SmartGlass
             _serializerSettings = ChannelJsonSerializerSettings.GetBroadcastSettings();
         }
 
-        BroadcastBaseMessage DeserializeJson(string json)
+        T DeserializeJson<T>(string json)
         {
-            return JsonConvert.DeserializeObject<BroadcastBaseMessage>(json, _serializerSettings);
+            return JsonConvert.DeserializeObject<T>(json, _serializerSettings);
         }
 
         [Fact]
         public void TestGamestreamStateEmptyGuid()
         {
-            string json = ResourcesProvider.GetString("gamestream_state_invalid.json", Type.Json);
-
-            var msg = (GamestreamStateBaseMessage)DeserializeJson(json);
+            string json = ResourcesProvider.GetString("gamestream_state_invalid.json", ResourceType.Json);
+            var msg = DeserializeJson<GamestreamStateBaseMessage>(json);
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
             Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Invalid, msg.State);
@@ -39,9 +38,8 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamEnabled()
         {
-            string json = ResourcesProvider.GetString("gamestream_enabled.json", Type.Json);
-
-            var msg = (GamestreamEnabledMessage)DeserializeJson(json);
+            string json = ResourcesProvider.GetString("gamestream_enabled.json", ResourceType.Json);
+            var msg = DeserializeJson<GamestreamEnabledMessage>(json);
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamEnabled, msg.Type);
             Assert.True(msg.CanBeEnabled);
@@ -53,9 +51,8 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamStateInitializing()
         {
-            string json = ResourcesProvider.GetString("gamestream_state_init.json", Type.Json);
-
-            var msg = (GamestreamStateInitializingMessage)DeserializeJson(json);
+            string json = ResourcesProvider.GetString("gamestream_state_init.json", ResourceType.Json);
+            var msg = DeserializeJson<GamestreamStateInitializingMessage>(json);
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
             Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Initializing, msg.State);
@@ -67,9 +64,8 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamStateStarted()
         {
-            string json = ResourcesProvider.GetString("gamestream_state_started.json", Type.Json);
-
-            var msg = (GamestreamStateStartedMessage)DeserializeJson(json);
+            string json = ResourcesProvider.GetString("gamestream_state_started.json", ResourceType.Json);
+            var msg = DeserializeJson<GamestreamStateStartedMessage>(json);
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
             Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Started, msg.State);
@@ -82,9 +78,9 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamStateStopped()
         {
-            string json = ResourcesProvider.GetString("gamestream_state_stopped.json", Type.Json);
+            string json = ResourcesProvider.GetString("gamestream_state_stopped.json", ResourceType.Json);
 
-            var msg = (GamestreamStateStoppedMessage)DeserializeJson(json);
+            var msg = DeserializeJson<GamestreamStateStoppedMessage>(json);
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
             Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Stopped, msg.State);
@@ -94,9 +90,8 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestGamestreamPreviewStatus()
         {
-            string json = ResourcesProvider.GetString("gamestream_preview_status.json", Type.Json);
-
-            var msg = (GamestreamPreviewStatusMessage)DeserializeJson(json);
+            string json = ResourcesProvider.GetString("gamestream_preview_status.json", ResourceType.Json);
+            var msg = DeserializeJson<GamestreamPreviewStatusMessage>(json);
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.PreviewStatus, msg.Type);
             Assert.False(msg.IsPublicPreview);
@@ -104,11 +99,10 @@ namespace Tests.SmartGlass
         }
 
         [Fact]
-        public void TestGamestreamConfiguration()
+        public void TestGamestreamStart()
         {
-            var origMsg = JsonConvert.DeserializeObject<GamestreamStartMessage>(
-                ResourcesProvider.GetString("gamestream_start_stream.json", Type.Json)
-            );
+            string json = ResourcesProvider.GetString("gamestream_start_stream.json", ResourceType.Json);
+            var origMsg = DeserializeJson<GamestreamStartMessage>(json);
 
             var msg = new GamestreamStartMessage()
             {
@@ -117,7 +111,7 @@ namespace Tests.SmartGlass
             };
 
             // TODO: check why this isn't working like expected
-            Assert.Equal<GamestreamStartMessage>(origMsg, msg);
+            Assert.Equal(JsonConvert.SerializeObject(origMsg), JsonConvert.SerializeObject(msg));
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tests.Resources
 {
-    public enum Type
+    public enum ResourceType
     {
         Json,
         Misc,
@@ -18,7 +18,7 @@ namespace Tests.Resources
     {
         static readonly string ResourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Resources/Resources");
 
-        public static byte[] GetBytes(string fileName, Type type = Type.Misc)
+        public static byte[] GetBytes(string fileName, ResourceType type = ResourceType.Misc)
         {
             var file = $"{ResourcePath}/{type}/{fileName}";
             if (File.Exists(file))
@@ -28,7 +28,7 @@ namespace Tests.Resources
             throw new FileNotFoundException(file);
         }
 
-        public static async Task<byte[]> GetBytesAsync(string fileName, Type type = Type.Misc)
+        public static async Task<byte[]> GetBytesAsync(string fileName, ResourceType type = ResourceType.Misc)
         {
             var file = $"{ResourcePath}/{type}/{fileName}";
             if (File.Exists(file))
@@ -37,7 +37,7 @@ namespace Tests.Resources
             }
             throw new FileNotFoundException(file);
         }
-        public static string GetString(string fileName, Type type = Type.Misc)
+        public static string GetString(string fileName, ResourceType type = ResourceType.Misc)
         {
             var file = $"{ResourcePath}/{type}/{fileName}";
             if (File.Exists(file))
