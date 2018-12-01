@@ -11,3 +11,13 @@
 Project originally developed by [Joel Day](https://github.com/joelday)
 Special thanks to [Team OpenXbox](https://github.com/openxbox) for their
 contribution of documentation, tools and samples for the SmartGlass protocol.
+
+### CLI - Configuration
+
+Before starting local testing in a "development" environment, make sure to override the default settings by doing the following:
+
+```Bash
+cp SmartGlass.Cli/SmartGlass.Cli.json SmartGlass.Cli/SmartGlass.Cli.Development.json
+```
+
+Local settings can now be made at "SmartGlass.Cli/SmartGlass.Cli.Development.json" (CommandName can be overridden!).

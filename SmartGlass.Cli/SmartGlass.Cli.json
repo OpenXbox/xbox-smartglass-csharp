@@ -1,0 +1,12 @@
+{
+    "RunParameters": {
+        "CommandName": "connect",
+        "HostName": "127.0.0.1",
+        "TokenPath": "./Token"
+    },
+    "PcapParameters": {
+        "CaptureFile": "./dump/raw.pcap",
+        "SharedSecret": "SHARED_SECRET",
+        "Port": 5050
+    }
+}

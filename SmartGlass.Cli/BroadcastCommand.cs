@@ -20,7 +20,7 @@ namespace SmartGlass.Cli
 
         public override async Task<CommandResult> ExecuteAsync(CancellationToken cancel)
         {
-            Console.WriteLine($"Connecting to {Hostname}...");
+            Console.WriteLine($"Connecting to {Hostname}(broadcast)...");
 
             GamestreamSession session = null;
             SmartGlassClient Client = null;

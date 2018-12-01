@@ -1,15 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\SmartGlass\SmartGlass.csproj" />
     <ProjectReference Include="..\SmartGlass.Nano\SmartGlass.Nano.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="NClap" Version="2.3.6" />
     <PackageReference Include="Tx.Network" Version="2.1.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="SmartGlass.Cli.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="SmartGlass.Cli.Development.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

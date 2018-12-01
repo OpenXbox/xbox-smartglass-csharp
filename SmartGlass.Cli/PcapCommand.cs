@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using SmartGlass.Analysis;
 using NClap.Metadata;
 using Tx.Network;
+using System.IO;
 
 namespace SmartGlass.Cli
 {
@@ -21,6 +22,11 @@ namespace SmartGlass.Cli
 
         public override CommandResult Execute()
         {
+            if (!Directory.Exists(Path.GetDirectoryName(PcapFile)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(PcapFile));
+            }
+
             var datagrams = Pcap.ReadFile(PcapFile).
                 TrySelect(record =>
                     Tx.Network.PacketParser.Parse(record.Data.Skip(14).ToArray())).
