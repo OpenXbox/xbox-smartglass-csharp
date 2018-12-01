@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace SmartGlass.Channels.Broadcast.Messages
 {
+    [BroadcastMessageType(BroadcastMessageType.StartGamestream)]
     class GamestreamStartMessage : BroadcastBaseMessage
     {
         public GamestreamConfiguration Configuration { get; set; }

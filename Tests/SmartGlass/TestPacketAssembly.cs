@@ -1,17 +1,22 @@
 using System.Collections.Generic;
-using NUnit.Framework;
+using SmartGlass;
 using SmartGlass.Common;
 using SmartGlass.Messaging;
 using SmartGlass.Messaging.Session;
+using Xunit;
 
-namespace SmartGlass.Tests
+using Tests.Resources;
+using Msgn = SmartGlass.Messaging;
+using Msgs = SmartGlass.Messaging.Session;
+using Conn = SmartGlass.Connection;
+
+namespace Tests.SmartGlass
 {
-    public class TestPacketAssembly : TestDataProvider
+    public class TestPacketAssembly
     {
-        private Connection.CryptoContext _crypto;
+        private Conn.CryptoContext _crypto;
 
         public TestPacketAssembly()
-            : base("Packets")
         {
             byte[] sharedSecretBlob = new byte[]
             {
@@ -30,15 +35,10 @@ namespace SmartGlass.Tests
                 dummyPublicKey[i] = 0xFF;
             }
 
-            _crypto = new Connection.CryptoContext(
+            _crypto = new Conn.CryptoContext(
                 sharedSecretBlob,
                 dummyPublicKey
             );
-        }
-
-        [SetUp]
-        public void Setup()
-        {
         }
 
         private byte[] AssembleSessionMessage(SessionMessageBase message,
@@ -77,21 +77,21 @@ namespace SmartGlass.Tests
         }
 
 
-        [Test]
+        [Fact]
         public void TestPresenceRequest()
         {
-            var message = new Messaging.Discovery.PresenceRequestMessage()
+            var message = new Msgn.Discovery.PresenceRequestMessage()
             {
                 DeviceType = DeviceType.WindowsStore
             };
             var packet = AssembleMessage(message);
-            Assert.AreEqual(TestData["presence_request.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("presence_request.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestConnectRequest()
         {
-            var message = new Messaging.Connection.ConnectRequestMessage()
+            var message = new Msgn.Connection.ConnectRequestMessage()
             {
                 Authorization = "dummy_token",
                 UserHash = "deadbeefdeadbeefde",
@@ -108,26 +108,25 @@ namespace SmartGlass.Tests
             };
 
             var packet = AssembleMessage(message);
-            Assert.AreEqual(TestData["connect_request.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("connect_request.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestPowerOn()
         {
-            var message = new Messaging.Power.PowerOnMessage()
+            var message = new Msgn.Power.PowerOnMessage()
             {
                 LiveId = "FD00112233FFEE66"
             };
 
             var packet = AssembleMessage(message);
-            Assert.AreEqual(TestData["poweron.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("poweron.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("No real-world test data available")]
+        [Fact(Skip = "No real-world test data available")]
         public void TestAccelerometerMessage()
         {
-            var message = new Messaging.Session.Messages.AccelerometerMessage()
+            var message = new Msgs.Messages.AccelerometerMessage()
             {
                 Timestamp = 0,
                 AccelerationX = 1.0f,
@@ -136,13 +135,13 @@ namespace SmartGlass.Tests
             };
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["accelerometer.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("accelerometer.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestAckMessage()
         {
-            var message = new Messaging.Session.Messages.AckMessage
+            var message = new Msgs.Messages.AckMessage
             {
                 LowWatermark = 0,
                 ProcessedList = new HashSet<uint>(new uint[] { 1 }),
@@ -153,14 +152,13 @@ namespace SmartGlass.Tests
             message.Header.ChannelId = 0x1000000000000000;
 
             var packet = AssembleSessionMessage(message, 1, 0, targetParticipantId: 31);
-            Assert.AreEqual(TestData["acknowledge.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("acknowledge.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("No real-world test data available")]
+        [Fact(Skip = "No real-world test data available")]
         public void TestCompassMessage()
         {
-            var message = new Messaging.Session.Messages.CompassMessage()
+            var message = new Msgs.Messages.CompassMessage()
             {
                 Timestamp = 0,
                 MagneticNorth = 0,
@@ -168,23 +166,23 @@ namespace SmartGlass.Tests
             };
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["compass.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("compass.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestDisconnectMessage()
         {
-            var message = new Messaging.Session.Messages.DisconnectMessage()
+            var message = new Msgs.Messages.DisconnectMessage()
             {
                 ErrorCode = 0,
                 Reason = DisconnectReason.Unspecified
             };
 
             var packet = AssembleSessionMessage(message, 57, 31);
-            Assert.AreEqual(TestData["disconnect.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("disconnect.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestFragmentMessage()
         {
             byte[] fragment = new byte[]
@@ -211,7 +209,7 @@ namespace SmartGlass.Tests
                 0x74, 0x69, 0x74, 0x6c, 0x65, 0x00, 0x00, 0x00, 0x00
             };
 
-            var message = new Messaging.Session.Messages.FragmentMessage()
+            var message = new Msgs.Messages.FragmentMessage()
             {
                 SequenceBegin = 22,
                 SequenceEnd = 25,
@@ -223,13 +221,13 @@ namespace SmartGlass.Tests
             message.Header.SessionMessageType = SessionMessageType.MediaState;
             var packet = AssembleSessionMessage(message, 24, 0, targetParticipantId: 31);
 
-            Assert.AreEqual(TestData["fragment_media_state_2.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("fragment_media_state_2.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestGameDvrRecordMessage()
         {
-            var message = new Messaging.Session.Messages.GameDvrRecordMessage()
+            var message = new Msgs.Messages.GameDvrRecordMessage()
             {
                 StartTimeDelta = -60,
                 EndTimeDelta = 0
@@ -238,13 +236,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 70, 1);
-            Assert.AreEqual(TestData["gamedvr_record.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("gamedvr_record.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestGamepadMessage()
         {
-            var message = new Messaging.Session.Messages.GamepadMessage()
+            var message = new Msgs.Messages.GamepadMessage()
             {
                 State = new GamepadState()
                 {
@@ -263,14 +261,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = false;
 
             var packet = AssembleSessionMessage(message, 79, 41);
-            Assert.AreEqual(TestData["gamepad.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("gamepad.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("No real-world test data available")]
+        [Fact(Skip = "No real-world test data available")]
         public void TestGyrometerMessage()
         {
-            var message = new Messaging.Session.Messages.GyrometerMessage()
+            var message = new Msgs.Messages.GyrometerMessage()
             {
                 Timestamp = 0,
                 AngularVelocityX = 0,
@@ -282,14 +279,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = false;
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["gyrometer.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("gyrometer.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("No real-world test data available")]
+        [Fact(Skip = "No real-world test data available")]
         public void TestInclinometerMessage()
         {
-            var message = new Messaging.Session.Messages.InclinometerMessage()
+            var message = new Msgs.Messages.InclinometerMessage()
             {
                 Timestamp = 0,
                 Roll = 0,
@@ -301,13 +297,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = false;
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["inclinometer.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("inclinometer.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestJsonMessage()
         {
-            var message = new Messaging.Session.Messages.JsonMessage()
+            var message = new Msgs.Messages.JsonMessage()
             {
                 Json = "{\"msgid\":\"2ed6c0fd.2\",\"request\":\"GetConfiguration\"}"
             };
@@ -316,13 +312,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 11, 31);
-            Assert.AreEqual(TestData["json.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("json.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestLocalJoinMessage()
         {
-            var message = new Messaging.Session.Messages.LocalJoinMessage()
+            var message = new Msgs.Messages.LocalJoinMessage()
             {
                 DeviceType = DeviceType.Android,
                 NativeWidth = 600,
@@ -342,13 +338,13 @@ namespace SmartGlass.Tests
             message.Header.Version = 0;
 
             var packet = AssembleSessionMessage(message, 1, 31);
-            Assert.AreEqual(TestData["local_join.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("local_join.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestMediaCommandMessage()
         {
-            var message = new Messaging.Session.Messages.MediaCommandMessage()
+            var message = new Msgs.Messages.MediaCommandMessage()
             {
                 State = new MediaCommandState()
                 {
@@ -361,14 +357,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 597, 32);
-            Assert.AreEqual(TestData["media_command.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("media_command.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("No real-world test data available")]
+        [Fact(Skip = "No real-world test data available")]
         public void TestOrientationMessage()
         {
-            var message = new Messaging.Session.Messages.OrientationMessage()
+            var message = new Msgs.Messages.OrientationMessage()
             {
                 Timestamp = 0,
                 RotationMatrixValue = 0,
@@ -382,13 +377,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = false;
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["orientation.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("orientation.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestPowerOffMessage()
         {
-            var message = new Messaging.Session.Messages.PowerOffMessage()
+            var message = new Msgs.Messages.PowerOffMessage()
             {
                 LiveId = "FD00112233FFEE66"
             };
@@ -397,13 +392,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 1882, 2);
-            Assert.AreEqual(TestData["power_off.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("power_off.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestStartChannelRequestMessage()
         {
-            var message = new Messaging.Session.Messages.StartChannelRequestMessage()
+            var message = new Msgs.Messages.StartChannelRequestMessage()
             {
                 ActivityId = 0,
                 ChannelRequestId = 1,
@@ -415,14 +410,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 2, 31);
-            Assert.AreEqual(TestData["start_channel_request.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("start_channel_request.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("No real-world test data available")]
+        [Fact(Skip = "No real-world test data available")]
         public void TestStopChannelMessage()
         {
-            var message = new Messaging.Session.Messages.StopChannelMessage()
+            var message = new Msgs.Messages.StopChannelMessage()
             {
                 ChannelIdToStop = 2
             };
@@ -431,13 +425,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = false;
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["stop_channel.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("stop_channel.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestSystemTextAcknowledgeMessage()
         {
-            var message = new Messaging.Session.Messages.SystemTextAcknowledgeMessage()
+            var message = new Msgs.Messages.SystemTextAcknowledgeMessage()
             {
                 TextSessionId = 8,
                 TextVersionAck = 2
@@ -447,13 +441,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 0x2e, 0, targetParticipantId: 32);
-            Assert.AreEqual(TestData["system_text_acknowledge.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("system_text_acknowledge.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestSystemTextDoneMessage()
         {
-            var message = new Messaging.Session.Messages.SystemTextDoneMessage()
+            var message = new Msgs.Messages.SystemTextDoneMessage()
             {
                 Flags = 0,
                 Result = TextResult.Cancel,
@@ -465,13 +459,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 0x5a, 0, targetParticipantId: 32);
-            Assert.AreEqual(TestData["system_text_done.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("system_text_done.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestSystemTextInputMessage()
         {
-            var message = new Messaging.Session.Messages.SystemTextInputMessage()
+            var message = new Msgs.Messages.SystemTextInputMessage()
             {
                 BaseVersion = 1,
                 Delta = new TextDelta[0],
@@ -489,13 +483,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 0x97, 32);
-            Assert.AreEqual(TestData["system_text_input.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("system_text_input.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestSystemTouchMessage()
         {
-            var message = new Messaging.Session.Messages.SystemTouchMessage()
+            var message = new Msgs.Messages.SystemTouchMessage()
             {
                 Timestamp = 182459592,
                 Touchpoints = new TouchPoint[]
@@ -514,13 +508,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 26, 32);
-            Assert.AreEqual(TestData["system_touch.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("system_touch.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
+        [Fact]
         public void TestTitleLaunchMessage()
         {
-            var message = new Messaging.Session.Messages.TitleLaunchMessage()
+            var message = new Msgs.Messages.TitleLaunchMessage()
             {
                 Location = ActiveTitleLocation.Fill,
                 Uri = "ms-xbl-0D174C79://default/"
@@ -530,14 +524,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = true;
 
             var packet = AssembleSessionMessage(message, 685, 32);
-            Assert.AreEqual(TestData["title_launch.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("title_launch.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("No real-world test data available")]
+        [Fact(Skip = "No real-world test data available")]
         public void TestTitleTouchMessage()
         {
-            var message = new Messaging.Session.Messages.TitleTouchMessage()
+            var message = new Msgs.Messages.TitleTouchMessage()
             {
 
             };
@@ -546,14 +539,13 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = false;
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["title_touch.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("title_touch.bin", ResourceType.SmartGlass), packet);
         }
 
-        [Test]
-        [Ignore("Un/snap functionality is deprecated")]
+        [Fact(Skip = "Un/snap functionality is deprecated")]
         public void TestUnsnapMessage()
         {
-            var message = new Messaging.Session.Messages.UnsnapMessage()
+            var message = new Msgs.Messages.UnsnapMessage()
             {
                 Unknown = 1
             };
@@ -562,7 +554,7 @@ namespace SmartGlass.Tests
             message.Header.RequestAcknowledge = false;
 
             var packet = AssembleSessionMessage(message, 0, 0);
-            Assert.AreEqual(TestData["unsnap.bin"], packet);
+            Assert.Equal<byte[]>(ResourcesProvider.GetBytes("unsnap.bin", ResourceType.SmartGlass), packet);
         }
     }
 }

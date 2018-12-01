@@ -1,17 +1,12 @@
-using NUnit.Framework;
 using System.Threading.Tasks;
 using SmartGlass.Common;
+using Xunit;
 
-namespace SmartGlass.Common.Tests
+namespace Tests.SmartGlass.Common
 {
     public class AttributeTypeMappingTests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
-        [Test]
+        [Fact]
         public void Test()
         {
         }
