@@ -18,22 +18,35 @@ namespace Tests.Resources
     {
         static readonly string ResourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Resources/Resources");
 
-        public static byte[] GetContent(string file, Type type = Type.Misc)
+        public static byte[] GetBytes(string fileName, Type type = Type.Misc)
         {
-            if (File.Exists($"{ResourcePath}/{type}/{file}"))
+            var file = $"{ResourcePath}/{type}/{fileName}";
+            if (File.Exists(file))
             {
-                return File.ReadAllBytes($"{ResourcePath}/{type}/{file}");
+                return File.ReadAllBytes(file);
             }
-            throw new FileNotFoundException($"{ResourcePath}/{type}/{file}");
+            throw new FileNotFoundException(file);
         }
 
-        public static async Task<byte[]> GetContentAsync(string file, Type type = Type.Misc)
+        public static async Task<byte[]> GetBytesAsync(string fileName, Type type = Type.Misc)
         {
-            if (File.Exists($"{ResourcePath}/{type}/{file}"))
+            var file = $"{ResourcePath}/{type}/{fileName}";
+            if (File.Exists(file))
             {
-                return await File.ReadAllBytesAsync($"{ResourcePath}/{type}/{file}");
+                return await File.ReadAllBytesAsync(file);
             }
-            throw new FileNotFoundException($"{ResourcePath}/{type}/{file}");
+            throw new FileNotFoundException(file);
+        }
+        public static string GetString(string fileName, Type type = Type.Misc)
+        {
+            var file = $"{ResourcePath}/{type}/{fileName}";
+            if (File.Exists(file))
+            {
+                return System.Text.Encoding.UTF8.GetString(
+                    File.ReadAllBytes(file)
+                );
+            }
+            throw new FileNotFoundException(file);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Tests.SmartGlass
         [Fact]
         public void TestCertificateDeserialize()
         {
-            byte[] cert = ResourcesProvider.GetContent("selfsigned_cert.bin", Type.Misc);
+            byte[] cert = ResourcesProvider.GetBytes("selfsigned_cert.bin", Type.Misc);
             var x509 = CryptoExtensions.DeserializeCertificateAsn(cert);
             var publicKey = x509.GetPublicKey();
 
