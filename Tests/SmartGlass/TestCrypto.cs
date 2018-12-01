@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using SmartGlass;
 using SmartGlass.Common;
 using SmartGlass.Connection;
+using Tests.Resources;
 using Xunit;
 
-namespace SmartGlass.Tests
+namespace Tests.SmartGlass
 {
     public class TestCrypto
     {
@@ -14,7 +16,7 @@ namespace SmartGlass.Tests
         [Fact]
         public void TestCryptoSetup()
         {
-            byte[] cert = TestData["selfsigned_cert.bin"];
+            byte[] cert = ResourcesProvider.GetBytes("selfsigned_cert.bin", ResourceType.Misc);
             var x509 = CryptoExtensions.DeserializeCertificateAsn(cert);
 
             CryptoContext context = new CryptoContext(x509);

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using SmartGlass.Common;
 using Xunit;
 
-namespace SmartGlass.Common.Tests
+namespace Tests.SmartGlass.Common
 {
     public class AsyncLazyTests
     {

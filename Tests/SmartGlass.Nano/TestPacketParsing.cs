@@ -1,11 +1,13 @@
-using System;
 using System.IO;
 using System.Collections.Generic;
-using SmartGlass.Common;
-using SmartGlass.Nano.Packets;
 using Xunit;
 
-namespace SmartGlass.Nano.Tests
+using SmartGlass.Nano;
+using SmartGlass.Common;
+using SmartGlass.Nano.Packets;
+using Tests.Resources;
+
+namespace Tests.SmartGlass.Nano
 {
     public class TestPacketParsing
     {
@@ -25,7 +27,7 @@ namespace SmartGlass.Nano.Tests
         [Fact]
         public void TestRtpHeader()
         {
-            BEReader reader = new BEReader(TestData["tcp_control_handshake.bin"]);
+            BEReader reader = new BEReader(ResourcesProvider.GetBytes("tcp_control_handshake.bin", ResourceType.Nano));
             RtpHeader header = new RtpHeader();
             header.Deserialize(reader);
 
@@ -47,7 +49,7 @@ namespace SmartGlass.Nano.Tests
             // Create channel context without any registered channels
             NanoChannelContext localContext = new NanoChannelContext();
 
-            byte[] packetData = TestData["tcp_channel_open_no_flags.bin"];
+            byte[] packetData = ResourcesProvider.GetBytes("tcp_channel_open_no_flags.bin", ResourceType.Nano);
             Assert.Throws<NanoPackingException>(() =>
             {
                 NanoPacketFactory
@@ -59,7 +61,7 @@ namespace SmartGlass.Nano.Tests
         public void TestControlHandshake()
         {
             ControlHandshake packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_control_handshake.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_control_handshake.bin", ResourceType.Nano), _context)
                     as ControlHandshake;
 
             Assert.NotNull(packet);
@@ -73,14 +75,14 @@ namespace SmartGlass.Nano.Tests
         public void TestChannelCreate()
         {
             ChannelCreate packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_channel_create.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_channel_create.bin", ResourceType.Nano), _context)
                     as ChannelCreate;
 
             Assert.NotNull(packet);
             Assert.NotNull(packet.Header);
             Assert.Equal<NanoChannel>(NanoChannel.Video, packet.Channel);
             Assert.Equal<ChannelControlType>(ChannelControlType.Create, packet.Type);
-            Assert.Equal<string>(NanoChannelClass.Video, packet.Name);
+            Assert.Equal(NanoChannelClass.Video, packet.Name);
             Assert.Equal<uint>(0, packet.Flags);
         }
 
@@ -88,7 +90,7 @@ namespace SmartGlass.Nano.Tests
         public void TestChannelOpenNoFlags()
         {
             ChannelOpen packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_channel_open_no_flags.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_channel_open_no_flags.bin", ResourceType.Nano), _context)
                     as ChannelOpen;
 
             Assert.NotNull(packet);
@@ -102,7 +104,7 @@ namespace SmartGlass.Nano.Tests
         public void TestChannelOpenWithFlags()
         {
             ChannelOpen packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_channel_open_with_flags.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_channel_open_with_flags.bin", ResourceType.Nano), _context)
                     as ChannelOpen;
 
             Assert.NotNull(packet);
@@ -116,7 +118,7 @@ namespace SmartGlass.Nano.Tests
         public void TestChannelClose()
         {
             ChannelClose packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_channel_close.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_channel_close.bin", ResourceType.Nano), _context)
                     as ChannelClose;
 
             Assert.NotNull(packet);
@@ -130,7 +132,7 @@ namespace SmartGlass.Nano.Tests
         public void TestUdpHandshake()
         {
             UdpHandshake packet = NanoPacketFactory
-                .ParsePacket(TestData["udp_handshake.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("udp_handshake.bin", ResourceType.Nano), _context)
                     as UdpHandshake;
 
             Assert.NotNull(packet);
@@ -143,7 +145,7 @@ namespace SmartGlass.Nano.Tests
         public void TestStreamerControlHeader()
         {
             RealtimeTelemetry packet = NanoPacketFactory
-               .ParsePacket(TestData["tcp_control_msg_with_header_realtime_telemetry.bin"], _context)
+               .ParsePacket(ResourcesProvider.GetBytes("tcp_control_msg_with_header_realtime_telemetry.bin", ResourceType.Nano), _context)
                    as RealtimeTelemetry;
 
             Assert.NotNull(packet);
@@ -168,7 +170,7 @@ namespace SmartGlass.Nano.Tests
         public void TestStreamerControlChangeVideoQuality()
         {
             ChangeVideoQuality packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_control_msg_with_header_change_video_quality.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_control_msg_with_header_change_video_quality.bin", ResourceType.Nano), _context)
                     as ChangeVideoQuality;
 
             Assert.NotNull(packet);
@@ -193,7 +195,7 @@ namespace SmartGlass.Nano.Tests
         public void TestAudioClientHandshake()
         {
             AudioClientHandshake packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_audio_client_handshake.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_audio_client_handshake.bin", ResourceType.Nano), _context)
                     as AudioClientHandshake;
 
             Assert.NotNull(packet);
@@ -219,7 +221,7 @@ namespace SmartGlass.Nano.Tests
         public void TestAudioServerHandshake()
         {
             AudioServerHandshake packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_audio_server_handshake.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_audio_server_handshake.bin", ResourceType.Nano), _context)
                     as AudioServerHandshake;
 
             Assert.NotNull(packet);
@@ -237,7 +239,7 @@ namespace SmartGlass.Nano.Tests
 
             Assert.Equal<uint>(4, packet.ProtocolVersion);
             Assert.Equal<ulong>(1495315092424, packet.ReferenceTimestamp);
-            Assert.Equal<int>(1, packet.Formats.Length);
+            Assert.Single(packet.Formats);
 
             Assert.Equal<uint>(2, packet.Formats[0].Channels);
             Assert.Equal<uint>(48000, packet.Formats[0].SampleRate);
@@ -248,7 +250,7 @@ namespace SmartGlass.Nano.Tests
         public void TestAudioControl()
         {
             AudioControl packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_audio_control.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_audio_control.bin", ResourceType.Nano), _context)
                     as AudioControl;
 
             Assert.NotNull(packet);
@@ -271,7 +273,7 @@ namespace SmartGlass.Nano.Tests
         public void TestAudioData()
         {
             AudioData packet = NanoPacketFactory
-                .ParsePacket(TestData["udp_audio_data.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("udp_audio_data.bin", ResourceType.Nano), _context)
                     as AudioData;
 
             Assert.NotNull(packet);
@@ -294,7 +296,7 @@ namespace SmartGlass.Nano.Tests
         public void TestInputClientHandshake()
         {
             InputClientHandshake packet = NanoPacketFactory
-               .ParsePacket(TestData["tcp_input_client_handshake.bin"], _context)
+               .ParsePacket(ResourcesProvider.GetBytes("tcp_input_client_handshake.bin", ResourceType.Nano), _context)
                    as InputClientHandshake;
 
             Assert.NotNull(packet);
@@ -318,7 +320,7 @@ namespace SmartGlass.Nano.Tests
         public void TestInputServerHandshake()
         {
             InputServerHandshake packet = NanoPacketFactory
-               .ParsePacket(TestData["tcp_input_server_handshake.bin"], _context)
+               .ParsePacket(ResourcesProvider.GetBytes("tcp_input_server_handshake.bin", ResourceType.Nano), _context)
                    as InputServerHandshake;
 
             Assert.NotNull(packet);
@@ -345,7 +347,7 @@ namespace SmartGlass.Nano.Tests
         public void TestInputFrame()
         {
             InputFrame packet = NanoPacketFactory
-                .ParsePacket(TestData["udp_input_frame.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("udp_input_frame.bin", ResourceType.Nano), _context)
                     as InputFrame;
 
             Assert.NotNull(packet);
@@ -367,7 +369,7 @@ namespace SmartGlass.Nano.Tests
         public void TestInputFrameAck()
         {
             InputFrameAck packet = NanoPacketFactory
-                .ParsePacket(TestData["udp_input_frame_ack.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("udp_input_frame_ack.bin", ResourceType.Nano), _context)
                     as InputFrameAck;
 
             Assert.NotNull(packet);
@@ -387,7 +389,7 @@ namespace SmartGlass.Nano.Tests
         public void TestVideoClientHandshake()
         {
             VideoClientHandshake packet = NanoPacketFactory
-               .ParsePacket(TestData["tcp_video_client_handshake.bin"], _context)
+               .ParsePacket(ResourcesProvider.GetBytes("tcp_video_client_handshake.bin", ResourceType.Nano), _context)
                    as VideoClientHandshake;
 
             Assert.NotNull(packet);
@@ -414,7 +416,7 @@ namespace SmartGlass.Nano.Tests
         public void TestVideoServerHandshake()
         {
             VideoServerHandshake packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_video_server_handshake.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_video_server_handshake.bin", ResourceType.Nano), _context)
                     as VideoServerHandshake;
 
             Assert.NotNull(packet);
@@ -462,7 +464,7 @@ namespace SmartGlass.Nano.Tests
         public void TestVideoControl()
         {
             VideoControl packet = NanoPacketFactory
-                .ParsePacket(TestData["tcp_video_control.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("tcp_video_control.bin", ResourceType.Nano), _context)
                     as VideoControl;
 
             Assert.NotNull(packet);
@@ -486,7 +488,7 @@ namespace SmartGlass.Nano.Tests
         public void TestVideoData()
         {
             VideoData packet = NanoPacketFactory
-                .ParsePacket(TestData["udp_video_data.bin"], _context)
+                .ParsePacket(ResourcesProvider.GetBytes("udp_video_data.bin", ResourceType.Nano), _context)
                     as VideoData;
 
             Assert.NotNull(packet);

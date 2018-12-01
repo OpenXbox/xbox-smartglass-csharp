@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SmartGlass.Cli\SmartGlass.Cli.csproj" />
+    <ProjectReference Include="..\Resources\Resources.csproj" />
+    <ProjectReference Include="..\..\SmartGlass\SmartGlass.csproj" />
+    <ProjectReference Include="..\..\SmartGlass.Common\SmartGlass.Common.csproj" />
   </ItemGroup>
 
 </Project>
