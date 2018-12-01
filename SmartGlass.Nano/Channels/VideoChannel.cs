@@ -78,7 +78,9 @@ namespace SmartGlass.Nano.Channels
                 ReportLostFramesAsync(base.FrameId + 1, data.FrameId - 1)
                     .GetAwaiter().GetResult();
             }
-            FrameId = data.FrameId;
+
+            if (data.FrameId > FrameId)
+                base.FrameId = data.FrameId;
 
             FeedVideoData?.Invoke(this,
                 new VideoDataEventArgs(data));
