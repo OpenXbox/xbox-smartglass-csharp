@@ -32,8 +32,7 @@ namespace SmartGlass.Cli
                 WindowsLiveResponse response = AuthenticationService
                     .ParseWindowsLiveResponse(redirectUrl);
 
-                AuthenticationService authService =
-                    new AuthenticationService(new AccessToken(response), new RefreshToken(response));
+                AuthenticationService authService = new AuthenticationService(response);
 
                 authService.Authenticate();
 
