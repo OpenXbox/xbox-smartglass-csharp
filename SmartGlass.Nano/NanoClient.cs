@@ -123,7 +123,7 @@ namespace SmartGlass.Nano
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task OpenInputChannel(uint desktopWidth, uint desktopHeight)
+        public async Task OpenInputChannelAsync(uint desktopWidth, uint desktopHeight)
         {
             if (!ProtocolInitialized)
             {
@@ -150,7 +150,7 @@ namespace SmartGlass.Nano
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task OpenChatAudioChannel(AudioFormat audioFormat)
+        public async Task OpenChatAudioChannelAsync(AudioFormat audioFormat)
         {
             if (!ProtocolInitialized)
             {
