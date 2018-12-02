@@ -30,6 +30,12 @@ namespace SmartGlass.Nano.Channels
         public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)
         {
             IStreamerMessage packet = args.Message as IStreamerMessage;
+            if (packet == null)
+            {
+                logger.LogTrace($"Not handling packet {args.Message.Header.PayloadType}");
+                return;
+            }
+
             switch ((VideoPayloadType)packet.StreamerHeader.PacketType)
             {
                 case VideoPayloadType.Control:
