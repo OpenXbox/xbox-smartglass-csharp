@@ -6,32 +6,34 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [AudioPayloadType(AudioPayloadType.ClientHandshake)]
-    internal class AudioClientHandshake : ISerializableLE
+    public class AudioClientHandshake : StreamerMessage
     {
         public uint InitialFrameID { get; private set; }
         public AudioFormat RequestedFormat { get; private set; }
 
         public AudioClientHandshake()
+            : base((uint)AudioPayloadType.ClientHandshake)
         {
             RequestedFormat = new AudioFormat();
         }
 
         public AudioClientHandshake(uint initialFrameID, AudioFormat requestedFormat)
+            : base((uint)AudioPayloadType.ClientHandshake)
         {
             InitialFrameID = initialFrameID;
             RequestedFormat = requestedFormat;
         }
 
-        public void Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            InitialFrameID = br.ReadUInt32();
-            ((ISerializableLE)RequestedFormat).Deserialize(br);
+            InitialFrameID = reader.ReadUInt32();
+            ((ISerializableLE)RequestedFormat).Deserialize(reader);
         }
 
-        public void Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(InitialFrameID);
-            ((ISerializableLE)RequestedFormat).Serialize(bw);
+            writer.Write(InitialFrameID);
+            ((ISerializableLE)RequestedFormat).Serialize(writer);
         }
     }
 }

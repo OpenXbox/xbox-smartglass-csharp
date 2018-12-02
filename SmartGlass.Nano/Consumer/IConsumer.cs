@@ -3,50 +3,19 @@ using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Consumer
 {
-    public interface IAudioFormatConsumer
-    {
-        void ConsumeAudioFormat(object sender, AudioFormatEventArgs args);
-    }
-
-    public interface IAudioDataConsumer
+    public interface IAudioConsumer
     {
         void ConsumeAudioData(object sender, AudioDataEventArgs args);
     }
 
-    public interface IAudioConsumer : IAudioFormatConsumer, IAudioDataConsumer
-    {
-
-    }
-
-    public interface IVideoFormatConsumer
-    {
-        void ConsumeVideoFormat(object sender, VideoFormatEventArgs args);
-    }
-
-    public interface IVideoDataConsumer
+    public interface IVideoConsumer
     {
         void ConsumeVideoData(object sender, VideoDataEventArgs args);
     }
 
-    public interface IVideoConsumer : IVideoFormatConsumer, IVideoDataConsumer
-    {
-
-    }
-
-    public interface IInputFeedbackConfigConsumer
-    {
-        void ConsumeInputFeedbackConfig(object sender, InputConfigEventArgs args);
-    }
-
-    public interface IInputFeedbackFrameConsumer
+    public interface IInputFeedbackConsumer
     {
         void ConsumeInputFeedbackFrame(object sender, InputFrameEventArgs args);
-    }
-
-    public interface IInputFeedbackConsumer
-        : IInputFeedbackConfigConsumer, IInputFeedbackFrameConsumer
-    {
-
     }
 
     public interface IConsumer

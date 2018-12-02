@@ -6,32 +6,34 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [VideoPayloadType(VideoPayloadType.ClientHandshake)]
-    internal class VideoClientHandshake : ISerializableLE
+    public class VideoClientHandshake : StreamerMessage
     {
         public uint InitialFrameId { get; private set; }
         public VideoFormat RequestedFormat { get; private set; }
 
         public VideoClientHandshake()
+            : base((uint)VideoPayloadType.ClientHandshake)
         {
             RequestedFormat = new VideoFormat();
         }
 
         public VideoClientHandshake(uint initialFrameId, VideoFormat requestedFormat)
+            : base((uint)VideoPayloadType.ClientHandshake)
         {
             InitialFrameId = initialFrameId;
             RequestedFormat = requestedFormat;
         }
 
-        public void Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            InitialFrameId = br.ReadUInt32();
-            ((ISerializableLE)RequestedFormat).Deserialize(br);
+            InitialFrameId = reader.ReadUInt32();
+            ((ISerializableLE)RequestedFormat).Deserialize(reader);
         }
 
-        public void Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(InitialFrameId);
-            ((ISerializableLE)RequestedFormat).Serialize(bw);
+            writer.Write(InitialFrameId);
+            ((ISerializableLE)RequestedFormat).Serialize(writer);
         }
     }
 }

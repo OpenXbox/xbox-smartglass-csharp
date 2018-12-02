@@ -3,196 +3,280 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SmartGlass.Common;
+using SmartGlass.Nano.Channels;
+using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano
 {
     public class NanoClient : IDisposable
     {
+        private static readonly ILogger logger = Logging.Factory.CreateLogger<NanoClient>();
         private readonly NanoRdpTransport _transport;
-        private readonly Channels.ChannelManager _channelManager;
+
+        private static TimeSpan[] UdpHandshakeRetries = new TimeSpan[]
+        {
+            TimeSpan.FromMilliseconds(100),
+            TimeSpan.FromMilliseconds(200),
+            TimeSpan.FromMilliseconds(400),
+            TimeSpan.FromMilliseconds(800)
+        };
+
+        public AudioChannel Audio { get; private set; }
+        public ChatAudioChannel ChatAudio { get; private set; }
+        public ControlChannel Control { get; private set; }
+        public InputChannel Input { get; private set; }
+        public InputFeedbackChannel InputFeedback { get; private set; }
+        public VideoChannel Video { get; private set; }
 
         internal List<Consumer.IConsumer> _consumers { get; set; }
-        internal Provider.IProvider _provider { get; set; }
 
+        public GamestreamConfiguration Configuration { get; private set; }
+        public bool ProtocolInitialized { get; private set; }
+        public bool StreamInitialized { get; private set; }
         public Guid SessionId { get; internal set; }
         public ushort ConnectionId { get; private set; }
-        public ushort RemoteConnectionId { get; private set; }
+        public ushort RemoteConnectionId => _transport.RemoteConnectionId;
+        public VideoFormat[] VideoFormats => Video == null ? null : Video.AvailableFormats;
+        public AudioFormat[] AudioFormats => Audio == null ? null : Audio.AvailableFormats;
 
-        public bool ControlHandshakeDone { get; internal set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="session"></param>
+        public NanoClient(string address, GamestreamSession session)
+            : this(address, session.TcpPort, session.UdpPort, session.Config, session.SessionId)
+        {
+        }
 
-        public NanoClient(string address, int tcpPort, int udpPort, Guid sessionId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="tcpPort"></param>
+        /// <param name="udpPort"></param>
+        /// <param name="configuration"></param>
+        /// <param name="sessionId"></param>
+        public NanoClient(string address, int tcpPort, int udpPort,
+                          GamestreamConfiguration configuration, Guid sessionId)
         {
             _transport = new NanoRdpTransport(address, tcpPort, udpPort);
-            _transport.MessageReceived += MessageReceived;
-            _channelManager = new Channels.ChannelManager(this);
+
             _consumers = new List<Consumer.IConsumer>();
-            _provider = null;
-            ControlHandshakeDone = false;
+            ProtocolInitialized = false;
+            StreamInitialized = false;
+            Configuration = configuration;
             SessionId = sessionId;
             ConnectionId = (ushort)new Random().Next(5000);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task InitializeProtocolAsync()
+        {
+            if (ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is already initialized");
+            }
+
+            Task awaitChannels = WaitForChannelsAsync();
+
+            ControlHandshake response = await SendControlHandshakeAsync(ConnectionId);
+            if (response.Type != ControlHandshakeType.ACK)
+            {
+                throw new NotSupportedException(
+                    $"Invalid ControlHandshake type received {response.Type}");
+            }
+
+            await awaitChannels;
+            await OpenChannelsAsync();
+            ProtocolInitialized = true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="audioFormat"></param>
+        /// <param name="videoFormat"></param>
+        /// <returns></returns>
+        public async Task InitializeStreamAsync(AudioFormat audioFormat, VideoFormat videoFormat)
+        {
+            if (!ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is not initialized");
+            }
+            else if (StreamInitialized)
+            {
+                throw new NanoException("Stream is already initialized");
+            }
+
+            await Audio.SendClientHandshakeAsync(audioFormat);
+            await Video.SendClientHandshakeAsync(videoFormat);
+            StreamInitialized = true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task OpenInputChannel(uint desktopWidth, uint desktopHeight)
+        {
+            if (!ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is not initialized");
+            }
+
+            // Send ControllerEvent.Added
+            await _transport.WaitForMessageAsync<ChannelCreate>(
+                TimeSpan.FromSeconds(3),
+                async () => await Control.SendControllerEventAsync(
+                    ControllerEventType.Added, 0),
+                p => p.Channel == NanoChannel.Input);
+
+            await Task.WhenAll(
+                Input.OpenAsync(),
+                InputFeedback.OpenAsync(desktopWidth, desktopHeight)
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task OpenChatAudioChannel(AudioFormat audioFormat)
+        {
+            if (!ProtocolInitialized)
+            {
+                throw new NanoException("Protocol is not initialized");
+            }
+
+            await ChatAudio.OpenAsync(audioFormat);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartStreamAsync()
+        {
+            if (!StreamInitialized)
+            {
+                throw new NanoException("Stream is not initialized");
+            }
+            Task handshakeTask = SendUdpHandshakeAsync();
+
+            await Video.StartStreamAsync();
+            await Audio.StartStreamAsync();
+
+            await handshakeTask;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private async Task WaitForChannelsAsync()
+        {
+            Task<ChannelOpen> video = WaitForChannelOpenAsync(NanoChannel.Video);
+            Task<ChannelOpen> audio = WaitForChannelOpenAsync(NanoChannel.Audio);
+            Task<ChannelOpen> chatAudio = WaitForChannelOpenAsync(NanoChannel.ChatAudio);
+            Task<ChannelOpen> control = WaitForChannelOpenAsync(NanoChannel.Control);
+
+            await Task.WhenAll(video, audio, chatAudio, control);
+
+            Video = new VideoChannel(_transport, video.Result.Flags);
+            Audio = new AudioChannel(_transport, audio.Result.Flags);
+            ChatAudio = new ChatAudioChannel(_transport, audio.Result.Flags);
+            Control = new ControlChannel(_transport, audio.Result.Flags);
+
+            // Already create Input/InputFeedback channels
+            // it will get opened via "OpenInputChannel" later
+            Input = new InputChannel(_transport, new byte[] { });
+            InputFeedback = new InputFeedbackChannel(_transport, new byte[] { });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private async Task OpenChannelsAsync()
+        {
+            Task video = Video.OpenAsync();
+            Task audio = Audio.OpenAsync();
+            Task control = Control.OpenAsync();
+
+            await Task.WhenAll(video, audio, control);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TChannel"></typeparam>
+        /// <returns></returns>
+        private async Task<ChannelOpen> WaitForChannelOpenAsync(NanoChannel channel)
+        {
+            return await _transport.WaitForMessageAsync<ChannelOpen>(
+                TimeSpan.FromSeconds(3),
+                startAction: null,
+                filter: open => open.Channel == channel);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private async Task<ControlHandshake> SendControlHandshakeAsync(ushort connectionId,
+            ControlHandshakeType type = ControlHandshakeType.SYN)
+        {
+            var packet = new Packets.ControlHandshake(type, connectionId)
+            {
+                Channel = NanoChannel.TcpBase
+            };
+
+            return await _transport.WaitForMessageAsync<ControlHandshake>(
+                TimeSpan.FromSeconds(5),
+                async () => await _transport.SendAsync(packet));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private async Task SendUdpHandshakeAsync(
+            ControlHandshakeType type = ControlHandshakeType.ACK)
+        {
+            var packet = new Packets.UdpHandshake(type)
+            {
+                Channel = NanoChannel.TcpBase
+            };
+
+            // FIXME: Wait for first VideoPacket
+            // Currently WaitForMessage is broken and blocks VideoData
+            // populating to MessageReceived events
+            await _transport.SendAsync(packet);
+        }
+
         public void AddConsumer(Consumer.IConsumer consumer)
         {
-            _channelManager.Audio.FeedAudioFormat += consumer.ConsumeAudioFormat;
-            _channelManager.Audio.FeedAudioData += consumer.ConsumeAudioData;
-            _channelManager.Video.FeedVideoFormat += consumer.ConsumeVideoFormat;
-            _channelManager.Video.FeedVideoData += consumer.ConsumeVideoData;
-
-            _channelManager.InputFeedback.FeedInputFeedbackConfig += consumer.ConsumeInputFeedbackConfig;
-            _channelManager.InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
+            Audio.FeedAudioData += consumer.ConsumeAudioData;
+            Video.FeedVideoData += consumer.ConsumeVideoData;
+            InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
             _consumers.Add(consumer);
         }
 
         public bool RemoveConsumer(Consumer.IConsumer consumer)
         {
-            _channelManager.Audio.FeedAudioFormat -= consumer.ConsumeAudioFormat;
-            _channelManager.Audio.FeedAudioData -= consumer.ConsumeAudioData;
-            _channelManager.Video.FeedVideoFormat -= consumer.ConsumeVideoFormat;
-            _channelManager.Video.FeedVideoData -= consumer.ConsumeVideoData;
-
-            _channelManager.InputFeedback.FeedInputFeedbackConfig -= consumer.ConsumeInputFeedbackConfig;
-            _channelManager.InputFeedback.FeedInputFeedbackFrame -= consumer.ConsumeInputFeedbackFrame;
+            Audio.FeedAudioData -= consumer.ConsumeAudioData;
+            Video.FeedVideoData -= consumer.ConsumeVideoData;
+            InputFeedback.FeedInputFeedbackFrame -= consumer.ConsumeInputFeedbackFrame;
             return _consumers.Remove(consumer);
-        }
-
-        public bool AddProvider(Provider.IProvider provider)
-        {
-            if (_provider != null)
-            {
-                Debug.WriteLine("Already got a provider!");
-                return false;
-            }
-            _provider = provider;
-
-            _provider.FeedInputConfig += _channelManager.Input.OnInputConfigReceived;
-            _provider.FeedInputFrame += _channelManager.Input.OnInputFrameReceived;
-            _provider.FeedChatAudioFormat += _channelManager.ChatAudio.OnChatAudioConfigReceived;
-            _provider.FeedChatAudioData += _channelManager.ChatAudio.OnChatAudioDataReceived;
-            return true;
-        }
-
-        public bool RemoveProvider()
-        {
-            if (_provider == null)
-            {
-                Debug.WriteLine("Got no provider to remove!");
-                return false;
-            }
-
-            _provider.FeedInputConfig -= _channelManager.Input.OnInputConfigReceived;
-            _provider.FeedInputFrame -= _channelManager.Input.OnInputFrameReceived;
-            _provider.FeedChatAudioFormat -= _channelManager.ChatAudio.OnChatAudioConfigReceived;
-            _provider.FeedChatAudioData -= _channelManager.ChatAudio.OnChatAudioDataReceived;
-
-            _provider = null;
-            return true;
-        }
-
-        // TODO: Need to improve the robustness of this (async await on both handshakes, create client with an async static method?)
-        public async Task Initialize()
-        {
-            SendControlHandshake();
-
-            await Task.Run(() =>
-            {
-                while (!ControlHandshakeDone ||
-                       !_channelManager.Video.HandshakeDone ||
-                       !_channelManager.Audio.HandshakeDone)
-                {
-                    Thread.Sleep(250);
-                }
-            });
-        }
-
-        public async Task StartStream()
-        {
-            if (!_channelManager.Video.HandshakeDone || !_channelManager.Audio.HandshakeDone)
-            {
-                Console.WriteLine("Audio or Video handshake not done yet, cant start stream");
-            }
-
-            var udpHandshakeTask = Task.Run(() =>
-            {
-                while (!_transport.udpDataActive)
-                {
-                    SendUdpHandshake();
-                    Thread.Sleep(250);
-                }
-            });
-
-            _channelManager.Video.StartStream();
-            _channelManager.Audio.StartStream();
-
-            await udpHandshakeTask;
-        }
-
-        internal void MessageReceived(object sender, MessageReceivedEventArgs<RtpPacket> message)
-        {
-            var packet = message.Message;
-            RtpPayloadType ptype = packet.Header.PayloadType;
-
-            if (ptype != RtpPayloadType.Streamer)
-            {
-                Debug.WriteLine($"Received {ptype}");
-            }
-
-            switch (ptype)
-            {
-                case RtpPayloadType.Control:
-                    OnControlHandshake(packet);
-                    break;
-                case RtpPayloadType.ChannelControl:
-                    var controlMsg = packet.Payload as Packets.ChannelControl;
-                    _channelManager.HandleChannelControl(controlMsg, packet.Header.ChannelId);
-                    break;
-                case RtpPayloadType.Streamer:
-                    var streamer = packet.Payload as Packets.Streamer;
-                    _channelManager.HandleStreamer(streamer, packet.Header.ChannelId);
-                    break;
-                case RtpPayloadType.UDPHandshake:
-                    throw new NotSupportedException($"UDP HandshakeType from server received");
-                default:
-                    throw new NotSupportedException($"Unsupported payload type: {ptype}");
-            }
-        }
-
-        internal void OnControlHandshake(RtpPacket packet)
-        {
-            var handshake = packet.Payload as Packets.ControlHandshake;
-            if (handshake.Type != ControlHandshakeType.ACK)
-            {
-                throw new NotSupportedException($"Invalid Control HandshakeType received {handshake.Type}");
-            }
-            RemoteConnectionId = handshake.ConnectionId;
-            ControlHandshakeDone = true;
-        }
-
-        internal void SendControlHandshake()
-        {
-            var payload = new Packets.ControlHandshake(ControlHandshakeType.SYN,
-                                                            ConnectionId);
-            var packet = new RtpPacket(RtpPayloadType.Control, payload);
-            SendOnControlSocket(packet);
-        }
-
-        internal void SendUdpHandshake()
-        {
-            var payload = new Packets.UdpHandshake(ControlHandshakeType.ACK);
-            var packet = new RtpPacket(RtpPayloadType.UDPHandshake, payload);
-            SendOnStreamingSocket(packet);
-        }
-
-        internal async void SendOnStreamingSocket(RtpPacket packet)
-        {
-            packet.Header.ConnectionId = RemoteConnectionId;
-            await _transport.SendAsyncStreaming(packet);
-        }
-
-        internal async void SendOnControlSocket(RtpPacket packet)
-        {
-            await _transport.SendAsyncControl(packet);
         }
 
         public void Dispose()

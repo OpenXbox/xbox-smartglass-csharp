@@ -5,18 +5,28 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    [RtpPayloadType(RtpPayloadType.Control)]
-    internal class ControlHandshake : ISerializableLE
+    [NanoPayloadType(NanoPayloadType.ControlHandshake)]
+    public class ControlHandshake : INanoPacket
     {
+        public NanoChannel Channel { get; set; }
+        public RtpHeader Header { get; set; }
         public ControlHandshakeType Type { get; internal set; }
         public ushort ConnectionId { get; internal set; }
 
         public ControlHandshake()
         {
+            Header = new RtpHeader()
+            {
+                PayloadType = NanoPayloadType.ControlHandshake
+            };
         }
 
         public ControlHandshake(ControlHandshakeType type, ushort connectionId)
         {
+            Header = new RtpHeader()
+            {
+                PayloadType = NanoPayloadType.ControlHandshake
+            };
             Type = type;
             ConnectionId = connectionId;
         }

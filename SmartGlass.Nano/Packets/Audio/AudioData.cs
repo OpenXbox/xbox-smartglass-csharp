@@ -6,19 +6,21 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [AudioPayloadType(AudioPayloadType.Data)]
-    public class AudioData : ISerializableLE
+    public class AudioData : StreamerMessage
     {
         public uint Flags { get; private set; }
         public uint FrameId { get; private set; }
-        public long Timestamp { get; private set; }
+        public ulong Timestamp { get; private set; }
         public byte[] Data { get; private set; }
 
         public AudioData()
+            : base((uint)AudioPayloadType.Data)
         {
         }
 
         public AudioData(uint flags, uint frameId,
-                         long timestamp, byte[] data)
+                         ulong timestamp, byte[] data)
+            : base((uint)AudioPayloadType.Data)
         {
             Flags = flags;
             FrameId = frameId;
@@ -26,20 +28,20 @@ namespace SmartGlass.Nano.Packets
             Data = data;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            Flags = br.ReadUInt32();
-            FrameId = br.ReadUInt32();
-            Timestamp = br.ReadInt64();
-            Data = br.ReadUInt32PrefixedBlob();
+            Flags = reader.ReadUInt32();
+            FrameId = reader.ReadUInt32();
+            Timestamp = reader.ReadUInt64();
+            Data = reader.ReadUInt32PrefixedBlob();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(Flags);
-            bw.Write(FrameId);
-            bw.Write(Timestamp);
-            bw.WriteUInt32PrefixedBlob(Data);
+            writer.Write(Flags);
+            writer.Write(FrameId);
+            writer.Write(Timestamp);
+            writer.WriteUInt32PrefixedBlob(Data);
         }
     }
 }

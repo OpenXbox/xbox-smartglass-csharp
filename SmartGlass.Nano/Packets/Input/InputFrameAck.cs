@@ -6,27 +6,29 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [InputPayloadType(InputPayloadType.FrameAck)]
-    public class InputFrameAck : ISerializableLE
+    public class InputFrameAck : StreamerMessage
     {
         public uint AckedFrame { get; private set; }
 
         public InputFrameAck()
+            : base((uint)InputPayloadType.FrameAck)
         {
         }
 
         public InputFrameAck(uint ackedFrame)
+            : base((uint)InputPayloadType.FrameAck)
         {
             AckedFrame = ackedFrame;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            AckedFrame = br.ReadUInt32();
+            AckedFrame = reader.ReadUInt32();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(AckedFrame);
+            writer.Write(AckedFrame);
         }
     }
 }

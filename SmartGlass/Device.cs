@@ -56,9 +56,10 @@ namespace SmartGlass
             }
         }
 
-        public static async Task<Device> PowerOnAsync(string liveId, int times = 5, int delay = 1000)
+        public static async Task<Device> PowerOnAsync(string liveId, int times = 5, int delay = 1000,
+                                                      string addressOrHostname = null)
         {
-            using (var messageTransport = new MessageTransport())
+            using (var messageTransport = new MessageTransport(addressOrHostname))
             {
                 var poweronRequestMessage = new PowerOnMessage { LiveId = liveId };
 

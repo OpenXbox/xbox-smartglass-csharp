@@ -32,32 +32,32 @@ namespace SmartGlass.Nano.Packets
             RumbleHandleR = 0;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        void ISerializableLE.Deserialize(BinaryReader reader)
         {
-            LeftTrigger = br.ReadByte();
-            RightTrigger = br.ReadByte();
-            LeftThumbX = br.ReadByte();
-            LeftThumbY = br.ReadByte();
-            RightThumbX = br.ReadByte();
-            RightThumbY = br.ReadByte();
-            RumbleTriggerL = br.ReadByte();
-            RumbleTriggerR = br.ReadByte();
-            RumbleHandleL = br.ReadByte();
-            RumbleHandleR = br.ReadByte();
+            LeftTrigger = reader.ReadByte();
+            RightTrigger = reader.ReadByte();
+            LeftThumbX = reader.ReadByte();
+            LeftThumbY = reader.ReadByte();
+            RightThumbX = reader.ReadByte();
+            RightThumbY = reader.ReadByte();
+            RumbleTriggerL = reader.ReadByte();
+            RumbleTriggerR = reader.ReadByte();
+            RumbleHandleL = reader.ReadByte();
+            RumbleHandleR = reader.ReadByte();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter writer)
         {
-            bw.Write(LeftTrigger);
-            bw.Write(RightTrigger);
-            bw.Write(LeftThumbX);
-            bw.Write(LeftThumbY);
-            bw.Write(RightThumbX);
-            bw.Write(RightThumbY);
-            bw.Write(RumbleTriggerL);
-            bw.Write(RumbleTriggerR);
-            bw.Write(RumbleHandleL);
-            bw.Write(RumbleHandleR);
+            writer.Write(LeftTrigger);
+            writer.Write(RightTrigger);
+            writer.Write(LeftThumbX);
+            writer.Write(LeftThumbY);
+            writer.Write(RightThumbX);
+            writer.Write(RightThumbY);
+            writer.Write(RumbleTriggerL);
+            writer.Write(RumbleTriggerR);
+            writer.Write(RumbleHandleL);
+            writer.Write(RumbleHandleR);
         }
     }
 }

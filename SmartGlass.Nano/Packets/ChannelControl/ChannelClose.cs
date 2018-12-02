@@ -6,27 +6,29 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ChannelControlType(ChannelControlType.Close)]
-    internal class ChannelClose : ISerializableLE
+    public class ChannelClose : ChannelControlMessage
     {
         public uint Flags { get; private set; }
 
         public ChannelClose()
+            : base(ChannelControlType.Close)
         {
         }
-        
+
         public ChannelClose(uint flags)
+            : base(ChannelControlType.Close)
         {
             Flags = flags;
         }
 
-        public void Deserialize(BinaryReader br)
+        internal override void DeserializeData(BinaryReader reader)
         {
-            Flags = br.ReadUInt32();
+            Flags = reader.ReadUInt32();
         }
 
-        public void Serialize(BinaryWriter bw)
+        internal override void SerializeData(BinaryWriter writer)
         {
-            bw.Write(Flags);
+            writer.Write(Flags);
         }
     }
 }

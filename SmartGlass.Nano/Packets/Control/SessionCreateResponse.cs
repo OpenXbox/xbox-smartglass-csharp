@@ -6,18 +6,21 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ControlOpCode(ControlOpCode.SessionCreateResponse)]
-    internal class SessionCreateResponse : ISerializableLE
+    public class SessionCreateResponse : StreamerMessageWithHeader
     {
         public SessionCreateResponse()
+            : base(ControlOpCode.SessionCreateResponse)
         {
         }
 
-        public void Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
+            throw new NotImplementedException();
         }
 
-        public void Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
+            throw new NotImplementedException();
         }
     }
 }

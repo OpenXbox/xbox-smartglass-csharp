@@ -51,7 +51,7 @@ namespace SmartGlass.Nano.Consumer
         private byte[] _frameData;
 
         public byte[] RawData { get; private set; }
-        public long TimeStamp { get; private set; }
+        public ulong TimeStamp { get; private set; }
         public uint FrameId { get; private set; }
         public List<NalUnitType> NalUnitTypes { get; private set; }
 
@@ -105,7 +105,7 @@ namespace SmartGlass.Nano.Consumer
 
         // Parsing is not done on initialization to save computation time,
         // in case of dropped frame
-        public H264Frame(byte[] data, uint frameId, long timeStamp)
+        public H264Frame(byte[] data, uint frameId, ulong timeStamp)
         {
             _isParsed = false;
             RawData = data;
@@ -272,7 +272,7 @@ namespace SmartGlass.Nano.Consumer
                 _spsData = new byte[_spsSize - 4];
 
                 // copy in the actual sps and pps values, again ignoring the 4 byte header
-                Array.Copy(frameData,            4, _spsData, 0, _spsSize - 4);
+                Array.Copy(frameData, 4, _spsData, 0, _spsSize - 4);
                 Array.Copy(frameData, _spsSize + 4, _ppsData, 0, _ppsSize - 4);
 
                 // now lets handle the IDR frame that (should) come after the parameter sets

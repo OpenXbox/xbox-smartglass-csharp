@@ -7,44 +7,27 @@ using SmartGlass.Nano.Consumer;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal class AudioChannel : AudioChannelBase
+    public class AudioChannel : AudioChannelBase, IStreamingChannel
     {
-        public bool HandshakeDone { get; internal set; }
+        public override NanoChannel Channel => NanoChannel.Audio;
+        public override int ProtocolVersion => 4;
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
-        public Packets.AudioFormat ActiveFormat { get; internal set; }
-        public event EventHandler<AudioFormatEventArgs> FeedAudioFormat;
+
         public event EventHandler<AudioDataEventArgs> FeedAudioData;
 
-        public AudioChannel(NanoClient client)
-            : base(client, NanoChannelId.Audio)
+        internal AudioChannel(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            HandshakeDone = false;
         }
 
-        public void StartStream()
+        public async Task StartStreamAsync()
         {
-            SendControl(AudioControlFlags.StartStream);
+            await SendControlAsync(AudioControlFlags.StartStream);
         }
 
-        public void StopStream()
+        public async Task StopStreamAsync()
         {
-            SendControl(AudioControlFlags.StopStream);
-        }
-
-        public override void OnClientHandshake(AudioClientHandshake handshake)
-        {
-            throw new NotSupportedException("Client handshake on client side");
-        }
-
-        public override void OnServerHandshake(AudioServerHandshake handshake)
-        {
-            AvailableFormats = handshake.Formats;
-            ActiveFormat = AvailableFormats[0];
-            SendClientHandshake(ActiveFormat);
-            HandshakeDone = true;
-
-            FeedAudioFormat?.Invoke(this,
-                new AudioFormatEventArgs(ActiveFormat));
+            await SendControlAsync(AudioControlFlags.StopStream);
         }
 
         public override void OnControl(AudioControl control)
@@ -58,25 +41,29 @@ namespace SmartGlass.Nano.Channels
                 new AudioDataEventArgs(data));
         }
 
-        private void SendClientHandshake(AudioFormat format)
+        public async Task SendClientHandshakeAsync(AudioFormat format)
         {
-            uint initialFrameId = GenerateInitialFrameId();
-            var payload = new Streamer((uint)AudioPayloadType.ClientHandshake)
-            {
-                Data = new AudioClientHandshake(initialFrameId, format)
-            };
+            var packet = new AudioClientHandshake(FrameId, format);
 
-            SendStreamerOnControlSocket(payload);
+            await SendAsync(packet);
         }
 
-        private void SendControl(AudioControlFlags flags)
+        private async Task SendControlAsync(AudioControlFlags flags)
         {
-            var payload = new Streamer((uint)AudioPayloadType.Control)
-            {
-                Data = new AudioControl(flags)
-            };
+            var packet = new AudioControl(flags);
+            await SendAsync(packet);
+        }
 
-            SendStreamerOnControlSocket(payload);
+        public async Task OpenAsync()
+        {
+            var handshake = await WaitForMessageAsync<AudioServerHandshake>(
+                TimeSpan.FromSeconds(1),
+                async () => await _transport.SendChannelOpen(Channel, Flags),
+                p => p.Channel == NanoChannel.Audio
+            );
+
+            ReferenceTimestamp = handshake.ReferenceTimestamp;
+            AvailableFormats = handshake.Formats;
         }
     }
 }

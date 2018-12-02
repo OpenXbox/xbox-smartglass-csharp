@@ -1,39 +1,33 @@
 using System;
+using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal abstract class InputChannelBase : StreamingChannelBase, IStreamingChannel
+    public abstract class InputChannelBase : StreamingChannel, IStreamingChannel
     {
-        public InputChannelBase(NanoClient client, NanoChannelId id)
-            : base(client, id)
-        {
-        }
-
-        public abstract void OnClientHandshake(InputClientHandshake handshake);
-        public abstract void OnServerHandshake(InputServerHandshake handshake);
+        public uint MaxTouches { get; internal set; }
+        public uint DesktopWidth { get; internal set; }
+        public uint DesktopHeight { get; internal set; }
         public abstract void OnFrame(InputFrame frame);
         public abstract void OnFrameAck(InputFrameAck ack);
 
-        public void OnStreamer(Streamer streamer)
+        internal InputChannelBase(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            switch ((InputPayloadType)streamer.PacketType)
+            MessageReceived += OnMessage;
+        }
+
+        public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)
+        {
+            IStreamerMessage packet = args.Message as IStreamerMessage;
+            switch ((InputPayloadType)packet.StreamerHeader.PacketType)
             {
-                case InputPayloadType.ClientHandshake:
-                    streamer.DeserializeData(new InputClientHandshake());
-                    OnClientHandshake((InputClientHandshake)streamer.Data);
-                    break;
-                case InputPayloadType.ServerHandshake:
-                    streamer.DeserializeData(new InputServerHandshake());
-                    OnServerHandshake((InputServerHandshake)streamer.Data);
-                    break;
                 case InputPayloadType.Frame:
-                    streamer.DeserializeData(new InputFrame());
-                    OnFrame((InputFrame)streamer.Data);
+                    OnFrame((InputFrame)packet);
                     break;
                 case InputPayloadType.FrameAck:
-                    streamer.DeserializeData(new InputFrameAck());
-                    OnFrameAck((InputFrameAck)streamer.Data);
+                    OnFrameAck((InputFrameAck)packet);
                     break;
             }
         }

@@ -17,8 +17,7 @@ namespace SmartGlass
         {
             TimeSpan.FromMilliseconds(500),
             TimeSpan.FromMilliseconds(500),
-            TimeSpan.FromMilliseconds(1500),
-            TimeSpan.FromSeconds(5)
+            TimeSpan.FromMilliseconds(1000)
         };
 
         public static Task<SmartGlassClient> ConnectAsync(string addressOrHostname)
@@ -103,8 +102,10 @@ namespace SmartGlass
             _sessionMessageTransport.MessageReceived += (s, e) =>
             {
                 var consoleStatusMessage = e.Message as ConsoleStatusMessage;
-                if (consoleStatusMessage != null) {
-                    CurrentConsoleStatus = new ConsoleStatus() {
+                if (consoleStatusMessage != null)
+                {
+                    CurrentConsoleStatus = new ConsoleStatus()
+                    {
                         Configuration = consoleStatusMessage.Configuration,
                         ActiveTitles = consoleStatusMessage.ActiveTitles
                     };
@@ -218,7 +219,7 @@ namespace SmartGlass
 
             try
             {
-                await channel.WaitForMessageAsync<AuxiliaryStreamMessage>(TimeSpan.FromSeconds(1), () => {});
+                await channel.WaitForMessageAsync<AuxiliaryStreamMessage>(TimeSpan.FromSeconds(1), () => { });
             }
             catch (TimeoutException)
             {

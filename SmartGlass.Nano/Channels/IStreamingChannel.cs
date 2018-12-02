@@ -1,10 +1,11 @@
 using System;
+using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal interface IStreamingChannel
+    public interface IStreamingChannel
     {
-        void OnStreamer(Streamer streamer);
+        void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args);
     }
 }

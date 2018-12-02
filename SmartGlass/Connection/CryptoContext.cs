@@ -67,6 +67,7 @@ namespace SmartGlass.Connection
         private byte[] _derivationKey;
         private byte[] _hmacSecret;
 
+        public PublicKeyType PublicKeyType { get; private set; }
         public byte[] PublicKey => _publicKey;
 
         public byte[] CryptoBlob
@@ -89,15 +90,18 @@ namespace SmartGlass.Connection
         public CryptoContext(X509Certificate serverCertificate)
         {
             var keyPair = GenerateKeyPair(serverCertificate);
+            PublicKeyType = ((ECPublicKeyParameters)keyPair.Public).ToPubKeyType();
             _publicKey = ((ECPublicKeyParameters)keyPair.Public).ToXYBlob();
 
             var sharedSecret = GenerateSharedSecret(keyPair.Private, serverCertificate.GetPublicKey());
             CryptoBlob = CreateCryptoBlob(sharedSecret);
         }
 
-        public CryptoContext(byte[] cryptoBlob)
+        public CryptoContext(byte[] cryptoBlob, byte[] publicKey = null)
         {
             CryptoBlob = cryptoBlob;
+            PublicKeyType = PublicKeyType.EC_DH_P256;
+            _publicKey = publicKey ?? new byte[64];
         }
 
         public byte[] CreateDerivedInitVector(byte[] data)

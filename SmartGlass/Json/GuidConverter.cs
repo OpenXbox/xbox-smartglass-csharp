@@ -18,6 +18,7 @@ namespace SmartGlass.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            // TODO: check why Guid.empty is casueing bad issues afterwards..
             switch (reader.TokenType)
             {
                 case JsonToken.Null:

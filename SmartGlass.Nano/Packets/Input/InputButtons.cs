@@ -44,44 +44,44 @@ namespace SmartGlass.Nano.Packets
             Y = 0;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        void ISerializableLE.Deserialize(BinaryReader reader)
         {
-            DPadUp = br.ReadByte();
-            DPadDown = br.ReadByte();
-            DPadLeft = br.ReadByte();
-            DPadRight = br.ReadByte();
-            Start = br.ReadByte();
-            Back = br.ReadByte();
-            LeftThumbstick = br.ReadByte();
-            RightThumbstick = br.ReadByte();
-            LeftShoulder = br.ReadByte();
-            RightShoulder = br.ReadByte();
-            Guide = br.ReadByte();
-            Unknown = br.ReadByte();
-            A = br.ReadByte();
-            B = br.ReadByte();
-            X = br.ReadByte();
-            Y = br.ReadByte();
+            DPadUp = reader.ReadByte();
+            DPadDown = reader.ReadByte();
+            DPadLeft = reader.ReadByte();
+            DPadRight = reader.ReadByte();
+            Start = reader.ReadByte();
+            Back = reader.ReadByte();
+            LeftThumbstick = reader.ReadByte();
+            RightThumbstick = reader.ReadByte();
+            LeftShoulder = reader.ReadByte();
+            RightShoulder = reader.ReadByte();
+            Guide = reader.ReadByte();
+            Unknown = reader.ReadByte();
+            A = reader.ReadByte();
+            B = reader.ReadByte();
+            X = reader.ReadByte();
+            Y = reader.ReadByte();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter writer)
         {
-            bw.Write(DPadUp);
-            bw.Write(DPadDown);
-            bw.Write(DPadLeft);
-            bw.Write(DPadRight);
-            bw.Write(Start);
-            bw.Write(Back);
-            bw.Write(LeftThumbstick);
-            bw.Write(RightThumbstick);
-            bw.Write(LeftShoulder);
-            bw.Write(RightShoulder);
-            bw.Write(Guide);
-            bw.Write(Unknown);
-            bw.Write(A);
-            bw.Write(B);
-            bw.Write(X);
-            bw.Write(Y);
+            writer.Write(DPadUp);
+            writer.Write(DPadDown);
+            writer.Write(DPadLeft);
+            writer.Write(DPadRight);
+            writer.Write(Start);
+            writer.Write(Back);
+            writer.Write(LeftThumbstick);
+            writer.Write(RightThumbstick);
+            writer.Write(LeftShoulder);
+            writer.Write(RightShoulder);
+            writer.Write(Guide);
+            writer.Write(Unknown);
+            writer.Write(A);
+            writer.Write(B);
+            writer.Write(X);
+            writer.Write(Y);
         }
     }
 }
