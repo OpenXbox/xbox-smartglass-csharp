@@ -19,7 +19,8 @@ namespace SmartGlass.Nano
                 case NanoChannelClass.Audio: return NanoChannel.Audio;
                 case NanoChannelClass.ChatAudio: return NanoChannel.ChatAudio;
                 case NanoChannelClass.Control: return NanoChannel.Control;
-                case NanoChannelClass.Input: return NanoChannel.InputFeedback;
+                case NanoChannelClass.Input: return NanoChannel.Input;
+                case NanoChannelClass.InputFeedback: return NanoChannel.InputFeedback;
                 case NanoChannelClass.TCPBase: return NanoChannel.TcpBase;
                 default:
                     return NanoChannel.Unknown;
