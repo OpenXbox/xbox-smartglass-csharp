@@ -22,9 +22,8 @@ namespace SmartGlass.Nano
                 case NanoChannelClass.Input: return NanoChannel.Input;
                 case NanoChannelClass.InputFeedback: return NanoChannel.InputFeedback;
                 case NanoChannelClass.TCPBase: return NanoChannel.TcpBase;
-                default:
-                    return NanoChannel.Unknown;
             }
+            throw new NotSupportedException($"Unsupported ChannelClass {cls}");
         }
     }
 }
