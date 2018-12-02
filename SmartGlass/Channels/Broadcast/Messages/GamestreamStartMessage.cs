@@ -1,9 +1,11 @@
 ﻿using System;
+using SmartGlass.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace SmartGlass.Channels.Broadcast.Messages
 {
+    [BroadcastMessageType(BroadcastMessageType.StartGamestream)]
     class GamestreamStartMessage : BroadcastBaseMessage
     {
         public GamestreamConfiguration Configuration { get; set; }

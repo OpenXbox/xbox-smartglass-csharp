@@ -3,12 +3,24 @@ using System.Linq;
 
 namespace SmartGlass.Common
 {
+    /// <summary>
+    /// Type of padding
+    /// </summary>
     public enum PaddingType
     {
+        /// <summary>
+        /// Padding according to PKCS#7
+        /// </summary>
         PKCS7,
+        /// <summary>
+        /// Padding according to ANSI.X923
+        /// </summary>
         ANSI_X923
     }
 
+    /// <summary>
+    /// Calculate and assemble padding data
+    /// </summary>
     public static class Padding
     {
         /// <summary>

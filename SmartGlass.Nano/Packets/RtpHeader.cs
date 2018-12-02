@@ -3,14 +3,14 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Nano.Packets
 {
-    internal class RtpHeader : ISerializable
+    public class RtpHeader : ISerializable
     {
         public int Version { get; set; }
         public bool Padding { get; set; }
         public bool Extension { get; set; }
         public int CsrcCount { get; set; }
         public bool Marker { get; set; }
-        public RtpPayloadType PayloadType { get; set; }
+        public NanoPayloadType PayloadType { get; set; }
 
         public ushort SequenceNumber { get; set; }
         public uint Timestamp { get; set; }
@@ -24,7 +24,7 @@ namespace SmartGlass.Nano.Packets
             Extension = false;
             CsrcCount = 0;
             Marker = false;
-            PayloadType = (RtpPayloadType)0;
+            PayloadType = (NanoPayloadType)0;
             SequenceNumber = 0;
             Timestamp = 0;
             ConnectionId = 0;
@@ -39,7 +39,7 @@ namespace SmartGlass.Nano.Packets
             Extension = (flags & 0x1000) != 0;
             CsrcCount = (flags & 0xF00) >> 8;
             Marker = (flags & 0x80) != 0;
-            PayloadType = (RtpPayloadType)((flags) & 0x7F);
+            PayloadType = (NanoPayloadType)((flags) & 0x7F);
 
             SequenceNumber = reader.ReadUInt16();
             Timestamp = reader.ReadUInt32();

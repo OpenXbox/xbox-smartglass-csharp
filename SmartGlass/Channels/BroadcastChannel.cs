@@ -28,7 +28,7 @@ namespace SmartGlass.Channels
         internal BroadcastChannel(ChannelMessageTransport transport)
         {
             _baseTransport = transport;
-            _transport = new JsonMessageTransport<BroadcastBaseMessage>(_baseTransport, new BroadcastMessageJsonConverter());
+            _transport = new JsonMessageTransport<BroadcastBaseMessage>(_baseTransport, ChannelJsonSerializerSettings.GetBroadcastSettings());
             _transport.MessageReceived += OnMessageReceived;
         }
 
@@ -50,18 +50,18 @@ namespace SmartGlass.Channels
                 JsonConvert.SerializeObject(e.Message, Formatting.Indented));
         }
 
-        public async Task<GamestreamSession> StartGamestreamAsync()
+        public async Task<GamestreamSession> StartGamestreamAsync(GamestreamConfiguration configuration)
         {
             var startMessage = new GamestreamStartMessage()
             {
-                Configuration = GamestreamConfiguration.GetStandardConfig(),
+                Configuration = configuration,
                 ReQueryPreviewStatus = false
             };
 
             var startedMessageTask = MessageExtensions.WaitForMessageAsync<GamestreamStateStartedMessage, BroadcastErrorMessage, BroadcastBaseMessage>(
                 _transport,
-                TimeSpan.FromSeconds(2),
-                () => _transport.SendAsync(startMessage));
+                TimeSpan.FromSeconds(10),
+                async () => await _transport.SendAsync(startMessage));
 
             var initializingMessageTask = MessageExtensions.WaitForMessageAsync
                 <GamestreamStateInitializingMessage, BroadcastErrorMessage, BroadcastBaseMessage>(_transport, TimeSpan.FromSeconds(10));
@@ -76,7 +76,7 @@ namespace SmartGlass.Channels
                 throw new GamestreamException("Invalid session received.", GamestreamError.General);
             }
 
-            return new GamestreamSession(initializingMessage.TcpPort, initializingMessage.UdpPort);
+            return new GamestreamSession(initializingMessage.TcpPort, initializingMessage.UdpPort, configuration, initializingMessage.SessionId);
         }
 
         public void Dispose()

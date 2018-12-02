@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [InputPayloadType(InputPayloadType.Frame)]
-    public class InputFrame : ISerializableLE
+    public class InputFrame : StreamerMessage
     {
         public uint FrameId { get; private set; }
         public ulong Timestamp { get; private set; }
@@ -16,11 +16,16 @@ namespace SmartGlass.Nano.Packets
         public InputExtension Extension { get; private set; }
 
         public InputFrame()
+            : base((uint)InputPayloadType.Frame)
         {
+            Buttons = new InputButtons();
+            Analog = new InputAnalogue();
+            Extension = new InputExtension();
         }
 
         public InputFrame(uint frameId, ulong timestamp, ulong createdTimestamp,
                           InputButtons buttons, InputAnalogue analog, InputExtension extension)
+            : base((uint)InputPayloadType.Frame)
         {
             FrameId = frameId;
             Timestamp = timestamp;
@@ -30,26 +35,26 @@ namespace SmartGlass.Nano.Packets
             Extension = extension;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            FrameId = br.ReadUInt32();
-            Timestamp = br.ReadUInt64();
-            CreatedTimestamp = br.ReadUInt64();
+            FrameId = reader.ReadUInt32();
+            Timestamp = reader.ReadUInt64();
+            CreatedTimestamp = reader.ReadUInt64();
 
-            ((ISerializableLE)Buttons).Deserialize(br);
-            ((ISerializableLE)Analog).Deserialize(br);
-            ((ISerializableLE)Extension).Deserialize(br);
+            ((ISerializableLE)Buttons).Deserialize(reader);
+            ((ISerializableLE)Analog).Deserialize(reader);
+            ((ISerializableLE)Extension).Deserialize(reader);
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(FrameId);
-            bw.Write(Timestamp);
-            bw.Write(CreatedTimestamp);
+            writer.Write(FrameId);
+            writer.Write(Timestamp);
+            writer.Write(CreatedTimestamp);
 
-            ((ISerializableLE)Buttons).Serialize(bw);
-            ((ISerializableLE)Analog).Serialize(bw);
-            ((ISerializableLE)Extension).Serialize(bw);
+            ((ISerializableLE)Buttons).Serialize(writer);
+            ((ISerializableLE)Analog).Serialize(writer);
+            ((ISerializableLE)Extension).Serialize(writer);
         }
     }
 }

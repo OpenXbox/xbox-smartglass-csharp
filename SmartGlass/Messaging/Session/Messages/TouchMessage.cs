@@ -16,7 +16,10 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public override void Serialize(BEWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write(Timestamp);
+            writer.Write((ushort)Touchpoints.Length);
+            foreach (TouchPoint p in Touchpoints)
+                ((ISerializable)p).Serialize(writer);
         }
     }
 }

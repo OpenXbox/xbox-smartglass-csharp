@@ -35,35 +35,35 @@ namespace SmartGlass.Nano.Packets
             BlueMask = blueMask;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        void ISerializableLE.Deserialize(BinaryReader reader)
         {
-            FPS = br.ReadUInt32();
-            Width = br.ReadUInt32();
-            Height = br.ReadUInt32();
-            Codec = (VideoCodec)br.ReadUInt32();
+            FPS = reader.ReadUInt32();
+            Width = reader.ReadUInt32();
+            Height = reader.ReadUInt32();
+            Codec = (VideoCodec)reader.ReadUInt32();
             if (Codec == VideoCodec.RGB)
             {
-                Bpp = br.ReadUInt32();
-                Bytes = br.ReadUInt32();
-                RedMask = br.ReadUInt32();
-                GreenMask = br.ReadUInt32();
-                BlueMask = br.ReadUInt32();
+                Bpp = reader.ReadUInt32();
+                Bytes = reader.ReadUInt32();
+                RedMask = reader.ReadUInt32();
+                GreenMask = reader.ReadUInt32();
+                BlueMask = reader.ReadUInt32();
             }
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter writer)
         {
-            bw.Write(FPS);
-            bw.Write(Width);
-            bw.Write(Height);
-            bw.Write((uint)Codec);
+            writer.Write(FPS);
+            writer.Write(Width);
+            writer.Write(Height);
+            writer.Write((uint)Codec);
             if (Codec == VideoCodec.RGB)
             {
-                bw.Write(Bpp);
-                bw.Write(Bytes);
-                bw.Write(RedMask);
-                bw.Write(GreenMask);
-                bw.Write(BlueMask);
+                writer.Write(Bpp);
+                writer.Write(Bytes);
+                writer.Write(RedMask);
+                writer.Write(GreenMask);
+                writer.Write(BlueMask);
             }
         }
     }

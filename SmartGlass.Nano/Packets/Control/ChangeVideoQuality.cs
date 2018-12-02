@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [ControlOpCode(ControlOpCode.ChangeVideoQuality)]
-    internal class ChangeVideoQuality : ISerializableLE
+    public class ChangeVideoQuality : StreamerMessageWithHeader
     {
         public uint Unknown1 { get; private set; }
         public uint Unknown2 { get; private set; }
@@ -15,8 +15,14 @@ namespace SmartGlass.Nano.Packets
         public uint Unknown5 { get; private set; }
         public uint Unknown6 { get; private set; }
 
+        public ChangeVideoQuality()
+            : base(ControlOpCode.ChangeVideoQuality)
+        {
+        }
+
         public ChangeVideoQuality(uint unk1, uint unk2, uint unk3,
                                   uint unk4, uint unk5, uint unk6)
+            : base(ControlOpCode.ChangeVideoQuality)
         {
             Unknown1 = unk1;
             Unknown2 = unk2;
@@ -26,24 +32,25 @@ namespace SmartGlass.Nano.Packets
             Unknown6 = unk6;
         }
 
-        public void Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            Unknown1 = br.ReadUInt32();
-            Unknown2 = br.ReadUInt32();
-            Unknown3 = br.ReadUInt32();
-            Unknown4 = br.ReadUInt32();
-            Unknown5 = br.ReadUInt32();
-            Unknown6 = br.ReadUInt32();
+            Unknown1 = reader.ReadUInt32();
+            Unknown2 = reader.ReadUInt32();
+            Unknown3 = reader.ReadUInt32();
+            Unknown4 = reader.ReadUInt32();
+            Unknown5 = reader.ReadUInt32();
+            Unknown6 = reader.ReadUInt32();
         }
 
-        public void Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(Unknown1);
-            bw.Write(Unknown2);
-            bw.Write(Unknown3);
-            bw.Write(Unknown4);
-            bw.Write(Unknown5);
-            bw.Write(Unknown6);
+            writer.Write(Unknown1);
+            writer.Write(Unknown2);
+            writer.Write(Unknown3);
+            writer.Write(Unknown4);
+            writer.Write(Unknown5);
+            writer.Write(Unknown6);
         }
+
     }
 }

@@ -6,27 +6,29 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [AudioPayloadType(AudioPayloadType.Control)]
-    internal class AudioControl : ISerializableLE
+    public class AudioControl : StreamerMessage
     {
         public AudioControlFlags Flags { get; private set; }
 
         public AudioControl()
+            : base((uint)AudioPayloadType.Control)
         {
         }
-        
+
         public AudioControl(AudioControlFlags flags)
+            : base((uint)AudioPayloadType.Control)
         {
             Flags = flags;
         }
 
-        public void Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            Flags = (AudioControlFlags)br.ReadUInt32();
+            Flags = (AudioControlFlags)reader.ReadUInt32();
         }
 
-        public void Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write((uint)Flags);
+            writer.Write((uint)Flags);
         }
     }
 }

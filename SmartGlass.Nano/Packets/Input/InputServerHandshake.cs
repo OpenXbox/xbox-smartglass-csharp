@@ -6,7 +6,7 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [InputPayloadType(InputPayloadType.ServerHandshake)]
-    public class InputServerHandshake : ISerializableLE
+    public class InputServerHandshake : StreamerMessage
     {
         public uint ProtocolVersion { get; private set; }
         public uint DesktopWidth { get; private set; }
@@ -15,11 +15,13 @@ namespace SmartGlass.Nano.Packets
         public uint InitialFrameId { get; private set; }
 
         public InputServerHandshake()
+            : base((uint)InputPayloadType.ServerHandshake)
         {
         }
 
         public InputServerHandshake(uint protocolVersion, uint desktopWidth, uint desktopHeight,
                                     uint maxTouches, uint initialFrameId)
+            : base((uint)InputPayloadType.ServerHandshake)
         {
             ProtocolVersion = protocolVersion;
             DesktopWidth = desktopWidth;
@@ -28,22 +30,22 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = initialFrameId;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            ProtocolVersion = br.ReadUInt32();
-            DesktopWidth = br.ReadUInt32();
-            DesktopHeight = br.ReadUInt32();
-            MaxTouches = br.ReadUInt32();
-            InitialFrameId = br.ReadUInt32();
+            ProtocolVersion = reader.ReadUInt32();
+            DesktopWidth = reader.ReadUInt32();
+            DesktopHeight = reader.ReadUInt32();
+            MaxTouches = reader.ReadUInt32();
+            InitialFrameId = reader.ReadUInt32();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(ProtocolVersion);
-            bw.Write(DesktopWidth);
-            bw.Write(DesktopHeight);
-            bw.Write(MaxTouches);
-            bw.Write(InitialFrameId);
+            writer.Write(ProtocolVersion);
+            writer.Write(DesktopWidth);
+            writer.Write(DesktopHeight);
+            writer.Write(MaxTouches);
+            writer.Write(InitialFrameId);
         }
     }
 }

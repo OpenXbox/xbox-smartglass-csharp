@@ -17,12 +17,8 @@ namespace SmartGlass.Messaging.Session
 
         private static readonly TimeSpan[] messageRetries = new TimeSpan[]
         {
-            TimeSpan.FromMilliseconds(500),
-            TimeSpan.FromMilliseconds(500),
-            TimeSpan.FromMilliseconds(1500),
-            TimeSpan.FromMilliseconds(1500),
-            TimeSpan.FromMilliseconds(3500),
-            TimeSpan.FromMilliseconds(5000)
+            TimeSpan.FromMilliseconds(300),
+            TimeSpan.FromMilliseconds(500)
         };
 
         public static SessionMessageBase CreateFromMessageType(SessionMessageType messageType)
@@ -193,6 +189,7 @@ namespace SmartGlass.Messaging.Session
 
             message.Header.ChannelId = fragment.Header.ChannelId;
             message.Header.RequestAcknowledge = fragment.Header.RequestAcknowledge;
+            message.Header.IsFragment = fragment.Header.IsFragment;
             message.Header.SessionMessageType = fragment.Header.SessionMessageType;
             message.Header.Version = fragment.Header.Version;
 
@@ -237,7 +234,7 @@ namespace SmartGlass.Messaging.Session
                     {
                         var ackMessage = await WaitForMessageAsync<AckMessage>(
                             TimeSpan.FromSeconds(1),
-                            () => SendFragmentAsync(message, sequenceNumber),
+                            async () => await SendFragmentAsync(message, sequenceNumber),
                             ack => ack.ProcessedList.Contains(sequenceNumber) ||
                                    ack.RejectedList.Contains(sequenceNumber));
 

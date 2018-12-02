@@ -31,11 +31,7 @@ namespace SmartGlass.Nano.Consumer
             }
         }
 
-        void IVideoFormatConsumer.ConsumeVideoFormat(object sender, VideoFormatEventArgs args)
-        {
-        }
-
-        void IVideoDataConsumer.ConsumeVideoData(object sender, VideoDataEventArgs args)
+        void IVideoConsumer.ConsumeVideoData(object sender, VideoDataEventArgs args)
         {
             H264Frame frame = _videoAssembler.AssembleVideoFrame(args.VideoData);
             if (frame == null)
@@ -57,11 +53,7 @@ namespace SmartGlass.Nano.Consumer
             }
         }
 
-        void IAudioFormatConsumer.ConsumeAudioFormat(object sender, AudioFormatEventArgs args)
-        {
-        }
-
-        void IAudioDataConsumer.ConsumeAudioData(object sender, AudioDataEventArgs args)
+        void IAudioConsumer.ConsumeAudioData(object sender, AudioDataEventArgs args)
         {
             AACFrame frame = AudioAssembler.AssembleAudioFrame(
                 args.AudioData, AACProfile.LC, 48000, 2);
@@ -90,11 +82,6 @@ namespace SmartGlass.Nano.Consumer
         {
             _audioFile.Dispose();
             _videoFile.Dispose();
-        }
-
-        public void ConsumeInputFeedbackConfig(object sender, InputConfigEventArgs args)
-        {
-            throw new NotImplementedException();
         }
 
         public void ConsumeInputFeedbackFrame(object sender, InputFrameEventArgs args)

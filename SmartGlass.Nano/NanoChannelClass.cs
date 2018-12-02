@@ -11,18 +11,18 @@ namespace SmartGlass.Nano
         public const string InputFeedback = "Microsoft::Rdp::Dct::Channel::Class::Input Feedback";
         public const string TCPBase = "Microsoft::Rdp::Dct::Channel::Class::TcpBase";
 
-        public static NanoChannelId GetIdByClassName(string cls)
+        public static NanoChannel GetIdByClassName(string cls)
         {
-            switch(cls)
+            switch (cls)
             {
-                case NanoChannelClass.Video: return NanoChannelId.Video;
-                case NanoChannelClass.Audio: return NanoChannelId.Audio;
-                case NanoChannelClass.ChatAudio: return NanoChannelId.ChatAudio;
-                case NanoChannelClass.Control: return NanoChannelId.Control;
-                case NanoChannelClass.Input: return NanoChannelId.InputFeedback;
-                case NanoChannelClass.TCPBase: return NanoChannelId.TcpBase;
+                case NanoChannelClass.Video: return NanoChannel.Video;
+                case NanoChannelClass.Audio: return NanoChannel.Audio;
+                case NanoChannelClass.ChatAudio: return NanoChannel.ChatAudio;
+                case NanoChannelClass.Control: return NanoChannel.Control;
+                case NanoChannelClass.Input: return NanoChannel.InputFeedback;
+                case NanoChannelClass.TCPBase: return NanoChannel.TcpBase;
                 default:
-                    return NanoChannelId.Unknown;
+                    return NanoChannel.Unknown;
             }
         }
     }

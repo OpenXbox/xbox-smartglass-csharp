@@ -10,8 +10,8 @@ namespace SmartGlass.Messaging.Session.Messages
         public uint BaseVersion { get; set; }
         public uint SubmittedVersion { get; set; }
         public uint TotalTextBytelength { get; set; }
-        public uint SelectionStart { get; set; }
-        public uint SelectionLength { get; set; }
+        public int SelectionStart { get; set; }
+        public int SelectionLength { get; set; }
         public ushort Flags { get; set; }
         public uint TextChunkByteStart { get; set; }
         public string TextChunk { get; set; }
@@ -28,8 +28,8 @@ namespace SmartGlass.Messaging.Session.Messages
             BaseVersion = reader.ReadUInt32();
             SubmittedVersion = reader.ReadUInt32();
             TotalTextBytelength = reader.ReadUInt32();
-            SelectionStart = reader.ReadUInt32();
-            SelectionLength = reader.ReadUInt32();
+            SelectionStart = reader.ReadInt32();
+            SelectionLength = reader.ReadInt32();
             Flags = reader.ReadUInt16();
             TextChunkByteStart = reader.ReadUInt32();
             TextChunk = reader.ReadUInt16PrefixedString();

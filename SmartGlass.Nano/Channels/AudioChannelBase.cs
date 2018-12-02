@@ -1,39 +1,30 @@
 using System;
+using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Channels
 {
-    internal abstract class AudioChannelBase : StreamingChannelBase, IStreamingChannel
+    public abstract class AudioChannelBase : StreamingChannel, IStreamingChannel
     {
-        public AudioChannelBase(NanoClient client, NanoChannelId id)
-            : base(client, id)
-        {
-        }
-
-        public abstract void OnClientHandshake(AudioClientHandshake handshake);
-        public abstract void OnServerHandshake(AudioServerHandshake handshake);
         public abstract void OnControl(AudioControl control);
         public abstract void OnData(AudioData data);
 
-        public void OnStreamer(Streamer streamer)
+        internal AudioChannelBase(NanoRdpTransport transport, byte[] flags)
+            : base(transport, flags)
         {
-            switch((AudioPayloadType)streamer.PacketType)
+            MessageReceived += OnMessage;
+        }
+
+        public void OnMessage(object sender, MessageReceivedEventArgs<INanoPacket> args)
+        {
+            IStreamerMessage packet = args.Message as IStreamerMessage;
+            switch ((AudioPayloadType)packet.StreamerHeader.PacketType)
             {
-                case AudioPayloadType.ClientHandshake:
-                    streamer.DeserializeData(new AudioClientHandshake());
-                    OnClientHandshake((AudioClientHandshake)streamer.Data);
-                    break;
-                case AudioPayloadType.ServerHandshake:
-                    streamer.DeserializeData(new AudioServerHandshake());
-                    OnServerHandshake((AudioServerHandshake)streamer.Data);
-                    break;
                 case AudioPayloadType.Control:
-                    streamer.DeserializeData(new AudioControl());
-                    OnControl((AudioControl)streamer.Data);
+                    OnControl((AudioControl)packet);
                     break;
                 case AudioPayloadType.Data:
-                    streamer.DeserializeData(new AudioData());
-                    OnData((AudioData)streamer.Data);
+                    OnData((AudioData)packet);
                     break;
             }
         }

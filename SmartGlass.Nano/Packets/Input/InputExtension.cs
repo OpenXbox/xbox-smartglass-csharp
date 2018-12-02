@@ -30,30 +30,30 @@ namespace SmartGlass.Nano.Packets
             Unknown5 = 0;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        void ISerializableLE.Deserialize(BinaryReader reader)
         {
-            Unknown1 = br.ReadByte();
-            Unknown2 = br.ReadByte();
-            RumbleTriggerL = br.ReadByte();
-            RumbleTriggerR = br.ReadByte();
-            RumbleHandleL = br.ReadByte();
-            RumbleHandleR = br.ReadByte();
-            Unknown3 = br.ReadByte();
-            Unknown4 = br.ReadByte();
-            Unknown5 = br.ReadByte();
+            Unknown1 = reader.ReadByte();
+            Unknown2 = reader.ReadByte();
+            RumbleTriggerL = reader.ReadByte();
+            RumbleTriggerR = reader.ReadByte();
+            RumbleHandleL = reader.ReadByte();
+            RumbleHandleR = reader.ReadByte();
+            Unknown3 = reader.ReadByte();
+            Unknown4 = reader.ReadByte();
+            Unknown5 = reader.ReadByte();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter writer)
         {
-            bw.Write(Unknown1);
-            bw.Write(Unknown2);
-            bw.Write(RumbleTriggerL);
-            bw.Write(RumbleTriggerR);
-            bw.Write(RumbleHandleL);
-            bw.Write(RumbleHandleR);
-            bw.Write(Unknown3);
-            bw.Write(Unknown4);
-            bw.Write(Unknown5);
+            writer.Write(Unknown1);
+            writer.Write(Unknown2);
+            writer.Write(RumbleTriggerL);
+            writer.Write(RumbleTriggerR);
+            writer.Write(RumbleHandleL);
+            writer.Write(RumbleHandleR);
+            writer.Write(Unknown3);
+            writer.Write(Unknown4);
+            writer.Write(Unknown5);
         }
     }
 }

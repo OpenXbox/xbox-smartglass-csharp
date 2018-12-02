@@ -6,23 +6,25 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [VideoPayloadType(VideoPayloadType.Data)]
-    public class VideoData : ISerializableLE
+    public class VideoData : StreamerMessage
     {
         public uint Flags { get; private set; }
         public uint FrameId { get; private set; }
-        public long Timestamp { get; private set; }
+        public ulong Timestamp { get; private set; }
         public uint TotalSize { get; private set; }
         public uint PacketCount { get; private set; }
         public uint Offset { get; private set; }
         public byte[] Data { get; private set; }
 
         public VideoData()
+            : base((uint)VideoPayloadType.Data)
         {
         }
 
-        public VideoData(uint flags, uint frameId, long timestamp,
+        public VideoData(uint flags, uint frameId, ulong timestamp,
                          uint totalSize, uint packetCount,
                          uint offset, byte[] data)
+            : base((uint)VideoPayloadType.Data)
         {
             Flags = flags;
             FrameId = frameId;
@@ -33,28 +35,26 @@ namespace SmartGlass.Nano.Packets
             Data = data;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            Flags = br.ReadUInt32();
-            FrameId = br.ReadUInt32();
-            Timestamp = br.ReadInt64();
-            TotalSize = br.ReadUInt32();
-            PacketCount = br.ReadUInt32();
-            Offset = br.ReadUInt32();
-            Data = br.ReadUInt32PrefixedBlob();
+            Flags = reader.ReadUInt32();
+            FrameId = reader.ReadUInt32();
+            Timestamp = reader.ReadUInt64();
+            TotalSize = reader.ReadUInt32();
+            PacketCount = reader.ReadUInt32();
+            Offset = reader.ReadUInt32();
+            Data = reader.ReadUInt32PrefixedBlob();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(Flags);
-            bw.Write(FrameId);
-            bw.Write(Timestamp);
-            bw.Write(TotalSize);
-            bw.Write(PacketCount);
-            bw.Write(Offset);
-
-            bw.Write((uint)Data.Length);
-            bw.Write(Data);
+            writer.Write(Flags);
+            writer.Write(FrameId);
+            writer.Write(Timestamp);
+            writer.Write(TotalSize);
+            writer.Write(PacketCount);
+            writer.Write(Offset);
+            writer.WriteUInt32PrefixedBlob(Data);
         }
     }
 }

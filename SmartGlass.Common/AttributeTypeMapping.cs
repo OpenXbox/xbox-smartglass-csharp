@@ -27,7 +27,7 @@ namespace SmartGlass.Common
                     _messageTypeToType = new Dictionary<TKey, Type>();
                     _typeToMessageType = new Dictionary<Type, TKey>();
 
-                    var assembly = Assembly.GetExecutingAssembly();
+                    var assembly = typeof(T).Assembly;
                     foreach (var type in assembly.GetTypes())
                     {
                         var attribute = type.GetCustomAttribute<T>();

@@ -6,36 +6,38 @@ using SmartGlass.Nano;
 namespace SmartGlass.Nano.Packets
 {
     [AudioPayloadType(AudioPayloadType.ServerHandshake)]
-    internal class AudioServerHandshake : ISerializableLE
+    public class AudioServerHandshake : StreamerMessage
     {
         public uint ProtocolVersion { get; private set; }
         public ulong ReferenceTimestamp { get; private set; }
         public AudioFormat[] Formats { get; private set; }
 
         public AudioServerHandshake()
+            : base((uint)AudioPayloadType.ServerHandshake)
         {
         }
 
         public AudioServerHandshake(uint protocolVersion, ulong refTimestamp,
                                     AudioFormat[] formats)
+            : base((uint)AudioPayloadType.ServerHandshake)
         {
             ProtocolVersion = protocolVersion;
             ReferenceTimestamp = refTimestamp;
             Formats = formats;
         }
 
-        public void Deserialize(BinaryReader br)
+        internal override void DeserializeStreamer(BinaryReader reader)
         {
-            ProtocolVersion = br.ReadUInt32();
-            ReferenceTimestamp = br.ReadUInt64();
-            Formats = br.ReadUInt32PrefixedArray<AudioFormat>();
+            ProtocolVersion = reader.ReadUInt32();
+            ReferenceTimestamp = reader.ReadUInt64();
+            Formats = reader.ReadUInt32PrefixedArray<AudioFormat>();
         }
 
-        public void Serialize(BinaryWriter bw)
+        internal override void SerializeStreamer(BinaryWriter writer)
         {
-            bw.Write(ProtocolVersion);
-            bw.Write(ReferenceTimestamp);
-            bw.WriteUInt32PrefixedArray(Formats);
+            writer.Write(ProtocolVersion);
+            writer.Write(ReferenceTimestamp);
+            writer.WriteUInt32PrefixedArray(Formats);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SmartGlass.Nano.Packets
         public AudioFormat()
         {
         }
-        
+
         public AudioFormat(uint channels, uint sampleRate, AudioCodec codec,
                            uint sampleSize = 0, uint sampleType = 0)
         {
@@ -27,27 +27,27 @@ namespace SmartGlass.Nano.Packets
             SampleType = sampleType;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader br)
+        void ISerializableLE.Deserialize(BinaryReader reader)
         {
-            Channels = br.ReadUInt32();
-            SampleRate = br.ReadUInt32();
-            Codec = (AudioCodec)br.ReadUInt32();
+            Channels = reader.ReadUInt32();
+            SampleRate = reader.ReadUInt32();
+            Codec = (AudioCodec)reader.ReadUInt32();
             if (Codec == AudioCodec.PCM)
             {
-                SampleSize = br.ReadUInt32();
-                SampleType = br.ReadUInt32();
+                SampleSize = reader.ReadUInt32();
+                SampleType = reader.ReadUInt32();
             }
         }
 
-        void ISerializableLE.Serialize(BinaryWriter bw)
+        void ISerializableLE.Serialize(BinaryWriter writer)
         {
-            bw.Write(Channels);
-            bw.Write(SampleRate);
-            bw.Write((uint)Codec);
+            writer.Write(Channels);
+            writer.Write(SampleRate);
+            writer.Write((uint)Codec);
             if (Codec == AudioCodec.PCM)
             {
-                bw.Write(SampleSize);
-                bw.Write(SampleType);
+                writer.Write(SampleSize);
+                writer.Write(SampleType);
             }
         }
     }

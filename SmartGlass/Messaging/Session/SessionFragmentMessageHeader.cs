@@ -14,8 +14,6 @@ namespace SmartGlass.Messaging.Session
 
         public uint SourceParticipantId { get; set; }
 
-        public bool IsFragment { get; set; }
-
         public void Deserialize(BEReader reader)
         {
             Type = (MessageType)reader.ReadUInt16();

@@ -7,6 +7,7 @@ namespace SmartGlass.Messaging.Connection
     internal class ConnectRequestMessage : ProtectedMessageBase<ConnectionMessageHeader>
     {
         public Guid DeviceId { get; set; }
+        public PublicKeyType PublicKeyType => Crypto.PublicKeyType;
         public byte[] PublicKey => Crypto.PublicKey;
         public string UserHash { get; set; }
         public string Authorization { get; set; }
@@ -28,9 +29,9 @@ namespace SmartGlass.Messaging.Connection
         {
             writer.Write(DeviceId.ToByteArray());
 
-            writer.Write(new byte[2]);
-
+            writer.Write((ushort)PublicKeyType);
             writer.Write(PublicKey);
+
             writer.Write(InitVector);
         }
 
