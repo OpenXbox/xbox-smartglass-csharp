@@ -5,6 +5,11 @@ namespace SmartGlass.Cli
     internal enum MainCommandType
     {
         [Command(
+            typeof(AuthenticateCommand),
+            Description = "Authenticate to Xbox Live via Microsoft Account.")]
+        Authenticate,
+
+        [Command(
             typeof(ConnectCommand),
             Description = "Opens a connection to an Xbox One console.")]
         Connect,

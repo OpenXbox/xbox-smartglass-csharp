@@ -11,5 +11,6 @@
   <ItemGroup>
     <PackageReference Include="NClap" Version="2.3.6" />
     <PackageReference Include="Tx.Network" Version="2.1.1" />
+    <PackageReference Include="OpenXbox.XboxWebApi" Version="0.2.3" />
   </ItemGroup>
 </Project>
