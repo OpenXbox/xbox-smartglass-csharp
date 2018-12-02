@@ -119,5 +119,6 @@ await nano.OpenInputChannel(1280, 720);
 ---
 
 Project originally developed by [Joel Day](https://github.com/joelday)
+
 Special thanks to [Team OpenXbox](https://github.com/openxbox) for their
 contribution of documentation, tools and samples for the SmartGlass protocol.
