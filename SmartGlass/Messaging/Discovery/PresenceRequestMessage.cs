@@ -6,7 +6,7 @@ namespace SmartGlass.Messaging.Discovery
     internal class PresenceRequestMessage : MessageBase<DiscoveryMessageHeader>
     {
         public uint Flags { get; set; }
-        public DeviceType DeviceType { get; set; } = DeviceType.WindowsDesktop;
+        public DeviceType DeviceType { get; set; } = DeviceType.WindowsStore;
         public ushort MinVersion { get; set; } = 0;
         public ushort MaxVersion { get; set; } = 2;
 
