@@ -21,14 +21,14 @@ namespace SmartGlass.Nano.Channels
                                         uint u4, uint u5, uint u6)
         {
             var packet = new ChangeVideoQuality(u1, u2, u3, u4, u5, u6);
-            await SendControlPacketAsync(packet);
+            await SendControlPacket(packet);
         }
 
         public async Task SendControllerEventAsync(ControllerEventType controllerType,
                                                     byte controllerIndex)
         {
             var packet = new ControllerEvent(controllerType, controllerIndex);
-            await SendControlPacketAsync(packet);
+            await SendControlPacket(packet);
         }
 
         public void InitiateNetworkTest()
@@ -69,13 +69,14 @@ namespace SmartGlass.Nano.Channels
             }
         }
 
-        public async Task SendControlPacketAsync(StreamerMessageWithHeader packet)
+        private Task SendControlPacket(StreamerMessageWithHeader packet,
+            ushort unknown1 = 1, ushort unknown2 = 1406)
         {
-            packet.ControlHeader.Unknown1 = 1;
-            packet.ControlHeader.Unknown2 = 1406;
+            packet.ControlHeader.Unknown1 = unknown1;
+            packet.ControlHeader.Unknown2 = unknown2;
             packet.ControlHeader.PreviousSequence = SequenceNumber;
 
-            await SendAsync(packet);
+            return SendAsync(packet);
         }
 
         public async Task OpenAsync()

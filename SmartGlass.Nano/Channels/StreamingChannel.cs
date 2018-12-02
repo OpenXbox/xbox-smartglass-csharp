@@ -76,7 +76,7 @@ namespace SmartGlass.Nano.Channels
             }
         }
 
-        public async Task SendAsync(INanoPacket packet)
+        public Task SendAsync(INanoPacket packet)
         {
             var message = packet as IStreamerMessage;
             if (message.StreamerHeader.PacketType == 4)
@@ -86,7 +86,7 @@ namespace SmartGlass.Nano.Channels
                 message.Header.SequenceNumber = NextSequenceNumber;
                 message.StreamerHeader.Flags = 0;
 
-                await _transport.SendAsync(message);
+                return _transport.SendAsync(message);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace SmartGlass.Nano.Channels
                 message.StreamerHeader.SequenceNumber = NextSequenceNumber;
                 message.StreamerHeader.Flags = StreamerFlags.GotSeqAndPrev | StreamerFlags.Unknown1;
 
-                await _transport.SendAsync(message);
+                return _transport.SendAsync(message);
             }
         }
 
