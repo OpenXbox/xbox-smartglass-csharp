@@ -130,6 +130,9 @@ namespace SmartGlass.Nano
                 throw new NanoException("Protocol is not initialized");
             }
 
+            Input = new InputChannel(_transport, new byte[] { });
+            InputFeedback = new InputFeedbackChannel(_transport, new byte[] { });
+
             // Send ControllerEvent.Added
             await _transport.WaitForMessageAsync<ChannelCreate>(
                 TimeSpan.FromSeconds(3),
@@ -192,11 +195,6 @@ namespace SmartGlass.Nano
             Audio = new AudioChannel(_transport, audio.Result.Flags);
             ChatAudio = new ChatAudioChannel(_transport, chatAudio.Result.Flags);
             Control = new ControlChannel(_transport, control.Result.Flags);
-
-            // Already create Input/InputFeedback channels
-            // it will get opened via "OpenInputChannel" later
-            Input = new InputChannel(_transport, new byte[] { });
-            InputFeedback = new InputFeedbackChannel(_transport, new byte[] { });
         }
 
         /// <summary>
