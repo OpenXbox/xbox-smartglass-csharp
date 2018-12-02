@@ -190,8 +190,8 @@ namespace SmartGlass.Nano
 
             Video = new VideoChannel(_transport, video.Result.Flags);
             Audio = new AudioChannel(_transport, audio.Result.Flags);
-            ChatAudio = new ChatAudioChannel(_transport, audio.Result.Flags);
-            Control = new ControlChannel(_transport, audio.Result.Flags);
+            ChatAudio = new ChatAudioChannel(_transport, chatAudio.Result.Flags);
+            Control = new ControlChannel(_transport, control.Result.Flags);
 
             // Already create Input/InputFeedback channels
             // it will get opened via "OpenInputChannel" later
