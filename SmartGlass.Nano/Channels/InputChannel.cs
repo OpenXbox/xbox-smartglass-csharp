@@ -15,14 +15,31 @@ namespace SmartGlass.Nano.Channels
         {
         }
 
-        public async Task SendInputFrame(ulong createdTimestamp, InputButtons buttons,
+        private ulong TimestampFromMillisecondsSinceEpoch(ulong millisecondsSinceEpoch)
+        {
+            return millisecondsSinceEpoch - ReferenceTimestamp;
+        }
+
+        /// <summary>
+        /// Send controller input frame
+        /// </summary>
+        /// <param name="createdTimestampMs">Timestamp since epoch, in milliseconds.</param>
+        /// <param name="buttons">Input button data.</param>
+        /// <param name="analogue">Input analog axis data.</param>
+        /// <param name="extension">Input extension data.</param>
+        /// <returns></returns>
+        public async Task SendInputFrame(ulong createdTimestampMs, InputButtons buttons,
                                    InputAnalogue analogue, InputExtension extension)
         {
-            InputFrame frame = new InputFrame(FrameId, Timestamp, createdTimestamp,
+            // Convert absolute timestamp (milliseconds since epoch) to relative timestamp
+            // e.g. milliseconds since reference timestamp
+            createdTimestampMs = TimestampFromMillisecondsSinceEpoch(createdTimestampMs);
+
+            InputFrame frame = new InputFrame(FrameId, Timestamp, createdTimestampMs,
                                               buttons, analogue, extension);
 
             await WaitForMessageAsync<InputFrameAck>(
-                TimeSpan.FromMilliseconds(100),
+                TimeSpan.FromMilliseconds(10),
                 async () => await SendAsync(frame)
             );
         }
