@@ -99,7 +99,7 @@ await nano.InitializeStreamAsync(audioFormat, videoFormat);
 
 // Start ChatAudio channel
 AudioFormat chatAudioFormat = new AudioFormat(1, 24000, AudioCodec.Opus);
-await nano.OpenChatAudioChannel(chatAudioFormat);
+await nano.OpenChatAudioChannelAsync(chatAudioFormat);
 
 IConsumer consumer = /* initialize consumer */;
 nano.AddConsumer(consumer);
@@ -111,7 +111,7 @@ consumer.Start();
 await nano.StartStreamAsync();
 
 // Start Controller input channel
-await nano.OpenInputChannel(1280, 720);
+await nano.OpenInputChannelAsync(1280, 720);
 
 /* Run a mainloop, to gather controller input events or similar */
 ```
