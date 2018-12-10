@@ -38,10 +38,13 @@ namespace SmartGlass.Nano.Channels
             InputFrame frame = new InputFrame(FrameId, Timestamp, createdTimestampMs,
                                               buttons, analogue, extension);
 
+            /*
             await WaitForMessageAsync<InputFrameAck>(
                 TimeSpan.FromMilliseconds(10),
                 async () => await SendAsync(frame)
             );
+            */
+            await SendAsync(frame);
         }
 
         public override void OnFrame(InputFrame frame)
