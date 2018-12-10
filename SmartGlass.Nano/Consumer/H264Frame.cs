@@ -198,6 +198,41 @@ namespace SmartGlass.Nano.Consumer
             return prefixedData;
         }
 
+        public byte[] GetCodecSpecificDataAvcc()
+        {
+            // ContainsPPS / ContainsSPS will parse the data, if not done yet
+            if (!ContainsSPS || !ContainsPPS)
+                throw new InvalidDataException("No SPS/PPS data");
+
+            int extradata_size = 6 + 2 + _spsData.Length + 3 + _ppsData.Length;
+            byte[] extradata = new byte[extradata_size];
+
+            // Create AVCC extradata
+            extradata[0] = 1; /* version */
+            extradata[1] = _spsData[0]; /* profile */
+            extradata[2] = _spsData[1]; /* profile compat */
+            extradata[3] = _spsData[2]; /* level */
+            extradata[4] = 0xff; /* 6 bits reserved (111111) + 2 bits nal size length - 3 (11) */
+            extradata[5] = 0xe1; /* 3 bits reserved (111) + 5 bits number of sps (00001) */
+            extradata[6] = (byte)((_spsData.Length - 1) & 0x00FF);
+            extradata[7] = (byte)((_spsData.Length - 1) & 0xFF00);
+            // NAL Unit is already included in buffer
+            // extradata[8] = (NAL_SPS | (3 << 5)); // NAL unit header
+            // Array.Copy(sps, 0, extradata, 9, sps.Length);
+            Array.Copy(_spsData, 0, extradata, 8, _spsData.Length);
+
+            int idx = 8 + _spsData.Length;
+            extradata[idx] = 1; /* number of pps */
+            extradata[idx + 1] = (byte)((_ppsData.Length - 1) & 0x00FF);
+            extradata[idx + 2] = (byte)((_ppsData.Length - 1) & 0xFF00);
+            // NAL Unit is already included in buffer
+            // extradata[idx + 3] = (NAL_SPS | (3 << 5));
+            // Array.Copy(pps, 0, extradata, idx + 4, pps.Length);
+            Array.Copy(_ppsData, 0, extradata, idx + 3, _ppsData.Length);
+
+            return extradata;
+        }
+
         private void ParseData()
         {
             byte[] frameData = RawData;
