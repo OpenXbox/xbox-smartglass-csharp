@@ -111,7 +111,7 @@ namespace SmartGlass.Nano.Channels
             FPS = handshake.FPS;
             Width = handshake.Width;
             Height = handshake.Height;
-            ReferenceTimestamp = handshake.ReferenceTimestamp;
+            ReferenceTimestampUlong = handshake.ReferenceTimestamp;
             AvailableFormats = handshake.Formats;
         }
     }
