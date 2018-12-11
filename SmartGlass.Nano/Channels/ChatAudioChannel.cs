@@ -33,7 +33,7 @@ namespace SmartGlass.Nano.Channels
         private async Task SendServerHandshakeAsync()
         {
             var packet = new AudioServerHandshake((uint)ProtocolVersion,
-                                                    ReferenceTimestamp,
+                                                    ReferenceTimestampUlong,
                                                     AvailableFormats);
             await SendAsync(packet);
         }

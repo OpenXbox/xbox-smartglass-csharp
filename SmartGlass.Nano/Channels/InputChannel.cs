@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using SmartGlass.Common;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 
@@ -15,27 +16,21 @@ namespace SmartGlass.Nano.Channels
         {
         }
 
-        private ulong TimestampFromMillisecondsSinceEpoch(ulong millisecondsSinceEpoch)
-        {
-            return millisecondsSinceEpoch - ReferenceTimestamp;
-        }
-
         /// <summary>
         /// Send controller input frame
         /// </summary>
-        /// <param name="createdTimestampMs">Timestamp since epoch, in milliseconds.</param>
+        /// <param name="createdTime">Creation timestamp of input data.</param>
         /// <param name="buttons">Input button data.</param>
         /// <param name="analogue">Input analog axis data.</param>
         /// <param name="extension">Input extension data.</param>
         /// <returns></returns>
-        public async Task SendInputFrame(ulong createdTimestampMs, InputButtons buttons,
+        public async Task SendInputFrame(DateTime createdTime, InputButtons buttons,
                                    InputAnalogue analogue, InputExtension extension)
         {
-            // Convert absolute timestamp (milliseconds since epoch) to relative timestamp
-            // e.g. milliseconds since reference timestamp
-            createdTimestampMs = TimestampFromMillisecondsSinceEpoch(createdTimestampMs);
-
-            InputFrame frame = new InputFrame(FrameId, Timestamp, createdTimestampMs,
+            // Convert DateTime to relative timestamp
+            // e.g. microSeconds since reference timestamp
+            ulong createdTimestampMicroS = DateTimeHelper.ToTimestampMicroseconds(createdTime, ReferenceTimestamp);
+            InputFrame frame = new InputFrame(FrameId, Timestamp, createdTimestampMicroS,
                                               buttons, analogue, extension);
 
             /*
@@ -58,7 +53,7 @@ namespace SmartGlass.Nano.Channels
 
         private async Task SendClientHandshakeAsync()
         {
-            InputClientHandshake packet = new InputClientHandshake(10, ReferenceTimestamp);
+            InputClientHandshake packet = new InputClientHandshake(10, ReferenceTimestampUlong);
             await SendAsync(packet);
         }
 
