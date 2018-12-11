@@ -74,7 +74,7 @@ namespace SmartGlass.Nano.Channels
             );
 
             MaxTouches = handshake.MaxTouches;
-            ReferenceTimestamp = handshake.ReferenceTimestamp;
+            ReferenceTimestampUlong = handshake.ReferenceTimestamp;
         }
     }
 }
