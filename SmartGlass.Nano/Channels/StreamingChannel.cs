@@ -13,40 +13,47 @@ namespace SmartGlass.Nano.Channels
         internal NanoRdpTransport _transport;
 
         /// <summary>
-        /// Set by ReferenceTimestamp property
-        /// </summary>
-        private DateTime _referenceTimestamp;
-
-        /// <summary>
         /// Set by FrameId property
         /// </summary>
         private uint _frameId;
         public ushort SequenceNumber { get; private set; }
 
         /// <summary>
-        /// Representation of reference timestamp DateTime as ulong
+        /// Set by ReferenceTimestampUlong property.
+        /// </summary>
+        public DateTime ReferenceTimestamp { get; private set; }
+
+        /// <summary>
+        /// Representation of reference timestamp DateTime as ulong.
+        /// Reference Timestamp is given in following format:
+        /// - Milliseconds since Unix Epoch (01.01.1970 00:00:00)
         /// </summary>
         /// <value></value>
-        public ulong ReferenceTimestamp
+        public ulong ReferenceTimestampUlong
         {
             get
             {
                 // Only generate Timestamp on first call
-                if (_referenceTimestamp == null)
+                if (ReferenceTimestamp.Ticks == 0)
                 {
-                    _referenceTimestamp = DateTime.UtcNow;
+                    ReferenceTimestamp = DateTime.Now;
                 }
-                return (ulong)(_referenceTimestamp - new DateTime(1970, 1, 1)).TotalMilliseconds;
+                return DateTimeHelper.ToEpochMilliseconds(ReferenceTimestamp);
             }
             internal set
             {
-                _referenceTimestamp = new DateTime().FromEpochMillisecondsUtc(value);
+                ReferenceTimestamp = DateTimeHelper.FromEpochMilliseconds(value);
             }
         }
 
+        /// <summary>
+        /// Timestamp used by Streamer messages.
+        /// Format: Microseconds elapsed since reference timestamp.
+        /// </summary>
+        /// <value></value>
         public ulong Timestamp
         {
-            get => (ulong)(DateTime.UtcNow - _referenceTimestamp).TotalMilliseconds;
+            get => DateTimeHelper.ToTimestampMicroseconds(DateTime.Now, ReferenceTimestamp);
         }
 
         public uint FrameId

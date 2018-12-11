@@ -62,7 +62,7 @@ namespace SmartGlass.Nano.Channels
                 p => p.Channel == NanoChannel.Audio
             );
 
-            ReferenceTimestamp = handshake.ReferenceTimestamp;
+            ReferenceTimestampUlong = handshake.ReferenceTimestamp;
             AvailableFormats = handshake.Formats;
         }
     }
