@@ -11,47 +11,19 @@ namespace SmartGlass.Nano.Channels
     public abstract class StreamingChannel : IMessageTransport<INanoPacket>, IDisposable
     {
         internal NanoRdpTransport _transport;
-
-        /// <summary>
-        /// Set to Datetime.Utc whenever _referenceTimestamp is set or (initially) got.
-        /// Used to calculate local difference.
-        /// Console uses bootup-DateTime as reference timestamp.
-        /// This library uses DateTime.Now (UTC).
-        /// </summary>
-        /// <value></value>
-        public DateTime OwnReferenceTimestamp { get; private set; }
-
-        /// <summary>
-        /// Set by ReferenceTimestamp property
-        /// </summary>
         private DateTime _referenceTimestamp;
-
-        /// <summary>
-        /// Set by FrameId property
-        /// </summary>
         private uint _frameId;
         public ushort SequenceNumber { get; private set; }
 
-        /// <summary>
-        /// Representation of reference timestamp DateTime as ulong
-        /// </summary>
-        /// <value></value>
         public ulong ReferenceTimestamp
         {
             get
             {
-                // Only generate Timestamp on first call
-                if (_referenceTimestamp == null)
-                {
-                    OwnReferenceTimestamp = DateTime.UtcNow;
-                    _referenceTimestamp = OwnReferenceTimestamp;
-                }
-
+                _referenceTimestamp = DateTime.UtcNow;
                 return (ulong)(_referenceTimestamp - new DateTime(1970, 1, 1)).TotalMilliseconds;
             }
             internal set
             {
-                OwnReferenceTimestamp = DateTime.UtcNow;
                 _referenceTimestamp = new DateTime(1970, 1, 1).AddMilliseconds(value).ToUniversalTime();
             }
         }
