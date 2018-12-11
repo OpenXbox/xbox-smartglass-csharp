@@ -11,20 +11,36 @@ namespace SmartGlass.Nano.Channels
     public abstract class StreamingChannel : IMessageTransport<INanoPacket>, IDisposable
     {
         internal NanoRdpTransport _transport;
+
+        /// <summary>
+        /// Set by ReferenceTimestamp property
+        /// </summary>
         private DateTime _referenceTimestamp;
+
+        /// <summary>
+        /// Set by FrameId property
+        /// </summary>
         private uint _frameId;
         public ushort SequenceNumber { get; private set; }
 
+        /// <summary>
+        /// Representation of reference timestamp DateTime as ulong
+        /// </summary>
+        /// <value></value>
         public ulong ReferenceTimestamp
         {
             get
             {
-                _referenceTimestamp = DateTime.UtcNow;
+                // Only generate Timestamp on first call
+                if (_referenceTimestamp == null)
+                {
+                    _referenceTimestamp = DateTime.UtcNow;
+                }
                 return (ulong)(_referenceTimestamp - new DateTime(1970, 1, 1)).TotalMilliseconds;
             }
             internal set
             {
-                _referenceTimestamp = new DateTime(1970, 1, 1).AddMilliseconds(value).ToUniversalTime();
+                _referenceTimestamp = new DateTime().FromEpochMillisecondsUtc(value);
             }
         }
 
