@@ -1,18 +1,41 @@
 version: 1.0.{build}
-branches:
-  only:
-    - master
 image: Visual Studio 2017
-nuget:
-  account_feed: true
-  project_feed: true
+
+configuration:
+  - Release
+
 before_build:
   - cmd: nuget restore
+
 build:
   publish_nuget: true
   verbosity: minimal
+
+after_build:
+  - cmd: dotnet publish -c Release -r win-x64 -o win-x64 SmartGlass.Cli
+  - cmd: 7z a SmartGlassCli-%APPVEYOR_REPO_TAG_NAME%-windows.zip %APPVEYOR_BUILD_FOLDER%\SmartGlass.Cli\win-x64\*
+
+after_test:
+  - cmd: cd && dir
+
+artifacts:
+  - path: '*.zip'
+    name: cli
+    type: Zip
+
 deploy:
   - provider: NuGet
     api_key:
       secure: wIdVJb80C4XWefa1hpb3XYrsOjoEjzZQ/pR+N/89qOoOH4elogXFPZabqNtdv72h
     skip_symbols: false
+    on:
+      APPVEYOR_REPO_TAG: true       # deploy on tag push only
+  - provider: GitHub
+    description: 'SmartGlass Cli'
+    artifact: cli
+    auth_token:
+      secure: qglMtUCbrzIn+36s7qWOPEj0HmJgs99bnzi4K8uYNPoxGW0qmJdOD1lmsa3TzGPn
+    draft: false
+    prerelease: false
+    on:
+      APPVEYOR_REPO_TAG: true       # deploy on tag push only
