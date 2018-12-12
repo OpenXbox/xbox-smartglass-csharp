@@ -1,6 +1,10 @@
 version: 1.0.{build}
 image: Visual Studio 2017
 
+platform:
+  - x86
+  - x64
+
 configuration:
   - Release
 
@@ -12,11 +16,9 @@ build:
   verbosity: minimal
 
 after_build:
-  - cmd: dotnet publish -c Release -r win-x64 -o win-x64 SmartGlass.Cli
-  - cmd: 7z a SmartGlassCli-%APPVEYOR_REPO_TAG_NAME%-windows.zip %APPVEYOR_BUILD_FOLDER%\SmartGlass.Cli\win-x64\*
-
-after_test:
-  - cmd: cd && dir
+  - cmd: echo "Building publishable package for Windows %PLATFORM%"
+  - cmd: dotnet publish -c Release -r win-%PLATFORM% -o win-%PLATFORM% SmartGlass.Cli
+  - cmd: 7z a SmartGlassCli-%APPVEYOR_REPO_TAG_NAME%-windows-%PLATFORM%.zip %APPVEYOR_BUILD_FOLDER%\SmartGlass.Cli\win-%PLATFORM%\*
 
 artifacts:
   - path: '*.zip'
