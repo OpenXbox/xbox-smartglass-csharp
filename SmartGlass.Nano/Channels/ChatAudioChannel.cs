@@ -21,7 +21,7 @@ namespace SmartGlass.Nano.Channels
 
         public async Task SendChatAudioData(byte[] sampleData)
         {
-            AudioData data = new AudioData(0, FrameId, Timestamp, sampleData);
+            AudioData data = new AudioData(0, NextFrameId, Timestamp, sampleData);
             await SendAsync(data);
         }
 
