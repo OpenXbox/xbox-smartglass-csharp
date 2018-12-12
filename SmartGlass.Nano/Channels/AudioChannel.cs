@@ -38,10 +38,8 @@ namespace SmartGlass.Nano.Channels
 
         public override void OnData(AudioData data)
         {
-            FeedAudioData?.Invoke(this,
-                new AudioDataEventArgs(
-                    DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp),
-                    data));
+            DateTime frameTime = DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp);
+            FeedAudioData?.Invoke(this, new AudioDataEventArgs(frameTime, data));
         }
 
         public async Task SendClientHandshakeAsync(AudioFormat format)
