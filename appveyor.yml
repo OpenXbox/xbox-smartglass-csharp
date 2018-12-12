@@ -29,8 +29,9 @@ deploy:
     api_key:
       secure: wIdVJb80C4XWefa1hpb3XYrsOjoEjzZQ/pR+N/89qOoOH4elogXFPZabqNtdv72h
     skip_symbols: false
+    tag: $(APPVEYOR_REPO_TAG_NAME)
     on:
-      APPVEYOR_REPO_TAG: true       # deploy on tag push only
+      appveyor_repo_tag: true        # deploy on tag push only
   - provider: GitHub
     description: 'SmartGlass Cli'
     artifact: cli
@@ -38,5 +39,6 @@ deploy:
       secure: qglMtUCbrzIn+36s7qWOPEj0HmJgs99bnzi4K8uYNPoxGW0qmJdOD1lmsa3TzGPn
     draft: false
     prerelease: false
+    tag: $(APPVEYOR_REPO_TAG_NAME)
     on:
-      APPVEYOR_REPO_TAG: true       # deploy on tag push only
+      appveyor_repo_tag: true        # deploy on tag push only
