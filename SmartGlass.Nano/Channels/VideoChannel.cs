@@ -89,7 +89,9 @@ namespace SmartGlass.Nano.Channels
                 base.FrameId = data.FrameId;
 
             FeedVideoData?.Invoke(this,
-                new VideoDataEventArgs(data));
+                new VideoDataEventArgs(
+                    DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp),
+                    data));
         }
 
         public async Task SendClientHandshakeAsync(VideoFormat format)

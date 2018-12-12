@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using SmartGlass.Common;
 using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 using SmartGlass.Nano.Consumer;
@@ -38,7 +39,9 @@ namespace SmartGlass.Nano.Channels
         public override void OnData(AudioData data)
         {
             FeedAudioData?.Invoke(this,
-                new AudioDataEventArgs(data));
+                new AudioDataEventArgs(
+                    DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp),
+                    data));
         }
 
         public async Task SendClientHandshakeAsync(AudioFormat format)

@@ -14,9 +14,11 @@ namespace SmartGlass.Nano
 
     public class VideoDataEventArgs : EventArgs
     {
+        public DateTime Timestamp { get; private set; }
         public Packets.VideoData VideoData { get; private set; }
-        public VideoDataEventArgs(Packets.VideoData data)
+        public VideoDataEventArgs(DateTime timestamp, Packets.VideoData data)
         {
+            Timestamp = timestamp;
             VideoData = data;
         }
     }
@@ -32,9 +34,11 @@ namespace SmartGlass.Nano
 
     public class AudioDataEventArgs : EventArgs
     {
+        public DateTime Timestamp { get; private set; }
         public Packets.AudioData AudioData { get; private set; }
-        public AudioDataEventArgs(Packets.AudioData data)
+        public AudioDataEventArgs(DateTime timestamp, Packets.AudioData data)
         {
+            Timestamp = timestamp;
             AudioData = data;
         }
     }
