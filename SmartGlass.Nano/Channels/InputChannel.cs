@@ -30,7 +30,7 @@ namespace SmartGlass.Nano.Channels
             // Convert DateTime to relative timestamp
             // e.g. microSeconds since reference timestamp
             ulong createdTimestampMicroS = DateTimeHelper.ToTimestampMicroseconds(createdTime, ReferenceTimestamp);
-            InputFrame frame = new InputFrame(FrameId, Timestamp, createdTimestampMicroS,
+            InputFrame frame = new InputFrame(NextFrameId, Timestamp, createdTimestampMicroS,
                                               buttons, analogue, extension);
 
             /*
