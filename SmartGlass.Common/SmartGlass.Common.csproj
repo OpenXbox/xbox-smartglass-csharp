@@ -2,13 +2,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>OpenXbox.SmartGlass.Common</PackageId>
-    <PackageVersion>1.0.3</PackageVersion>
+    <PackageVersion>1.0.4</PackageVersion>
     <Authors>Joel Day, Team OpenXbox</Authors>
     <Description>Common dependencies / helpers</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright 2018 (c) Joel Day, Team OpenXbox</Copyright>
     <PackageTags>xbox smartglass common</PackageTags>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <PackageProjectUrl>https://github.com/OpenXbox/xbox-smartglass-csharp</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/OpenXbox/xbox-smartglass-csharp/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>

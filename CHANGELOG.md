@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.4 (2018-12-12)
+- Correct timestamping
+- Generate codec specific data in H264Frame
+
 ## v1.0.3 (2018-12-08)
 - Update input structs
 
