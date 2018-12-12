@@ -56,9 +56,11 @@ namespace SmartGlass.Nano
 
     public class InputFrameEventArgs : EventArgs
     {
+        public DateTime Timestamp { get; private set; }
         public Packets.InputFrame InputFrame { get; private set; }
-        public InputFrameEventArgs(Packets.InputFrame frame)
+        public InputFrameEventArgs(DateTime timestamp, Packets.InputFrame frame)
         {
+            Timestamp = timestamp;
             InputFrame = frame;
         }
     }

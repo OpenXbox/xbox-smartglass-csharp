@@ -77,6 +77,8 @@ namespace SmartGlass.Nano.Channels
 
         public void OnData(VideoData data)
         {
+            var frameTime = DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp);
+
             if (data.FrameId > (base.FrameId + 1))
             {
                 uint lostFrameCount = data.FrameId - base.FrameId;
@@ -88,10 +90,7 @@ namespace SmartGlass.Nano.Channels
             if (data.FrameId > FrameId)
                 base.FrameId = data.FrameId;
 
-            FeedVideoData?.Invoke(this,
-                new VideoDataEventArgs(
-                    DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp),
-                    data));
+            FeedVideoData?.Invoke(this, new VideoDataEventArgs(frameTime, data));
         }
 
         public async Task SendClientHandshakeAsync(VideoFormat format)

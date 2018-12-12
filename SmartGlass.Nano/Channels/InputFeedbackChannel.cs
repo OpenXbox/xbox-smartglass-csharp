@@ -3,6 +3,7 @@ using SmartGlass.Nano;
 using SmartGlass.Nano.Packets;
 using SmartGlass.Nano.Consumer;
 using System.Threading.Tasks;
+using SmartGlass.Common;
 
 namespace SmartGlass.Nano.Channels
 {
@@ -19,8 +20,9 @@ namespace SmartGlass.Nano.Channels
 
         public override void OnFrame(InputFrame frame)
         {
+            DateTime frameTime = DateTimeHelper.FromTimestampMicroseconds(frame.CreatedTimestamp, ReferenceTimestamp);
             SendAsync(new InputFrameAck(frame.FrameId)).GetAwaiter().GetResult();
-            FeedInputFeedbackFrame?.Invoke(this, new InputFrameEventArgs(frame));
+            FeedInputFeedbackFrame?.Invoke(this, new InputFrameEventArgs(frameTime, frame));
         }
 
         public override void OnFrameAck(InputFrameAck ack)
