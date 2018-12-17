@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using SmartGlass.Common;
+using SmartGlass.Connection;
 using SmartGlass.Messaging;
 using SmartGlass.Messaging.Discovery;
 using SmartGlass.Messaging.Power;
@@ -84,6 +85,7 @@ namespace SmartGlass
         public DeviceFlags Flags { get; private set; }
         public DeviceType DeviceType { get; private set; }
         public string Name { get; private set; }
+        public string LiveId { get; private set; }
         public Guid HardwareId { get; private set; }
         public X509Certificate Certificate { get; private set; }
 
@@ -95,6 +97,7 @@ namespace SmartGlass
             Name = message.Name;
             HardwareId = message.HardwareId;
             Certificate = message.Certificate;
+            LiveId = message.Certificate.GetLiveId();
         }
     }
 }
