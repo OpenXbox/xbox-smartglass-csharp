@@ -79,6 +79,8 @@ namespace SmartGlass.Nano.Channels
         {
             var frameTime = DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp);
 
+            // TODO: Implement frame sorting
+            /*
             if (data.FrameId > (base.FrameId + 1))
             {
                 uint lostFrameCount = data.FrameId - base.FrameId;
@@ -86,6 +88,7 @@ namespace SmartGlass.Nano.Channels
                 ReportLostFramesAsync(base.FrameId + 1, data.FrameId - 1)
                     .GetAwaiter().GetResult();
             }
+            */
 
             if (data.FrameId > FrameId)
                 base.FrameId = data.FrameId;
