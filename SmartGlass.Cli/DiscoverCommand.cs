@@ -13,7 +13,7 @@ namespace SmartGlass.Cli
 
             foreach (var device in devices)
             {
-                Console.WriteLine($"{device.Name} ({device.HardwareId}) {device.Address}");
+                Console.WriteLine($"{device.Name} ({device.HardwareId}) {device.Address} {device.LiveId}");
             }
 
             return CommandResult.Success;
