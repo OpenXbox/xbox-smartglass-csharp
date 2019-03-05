@@ -2,6 +2,11 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Discovery
 {
+    /// <summary>
+    /// Presence request message.
+    /// Send from client to multicast / broadcast.
+    /// Active consoles will respond with PresenceResponse.
+    /// </summary>
     [MessageType(MessageType.PresenceRequest)]
     internal class PresenceRequestMessage : MessageBase<DiscoveryMessageHeader>
     {

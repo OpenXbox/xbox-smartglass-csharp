@@ -16,8 +16,16 @@ namespace SmartGlass.Channels
         private readonly JsonSerializerSettings _serializerSettings;
         private readonly IMessageTransport<SessionMessageBase> _baseTransport;
 
+        /// <summary>
+        /// Invoked when message received.
+        /// </summary>
         public event EventHandler<MessageReceivedEventArgs<TMessage>> MessageReceived;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SmartGlass.Channels.JsonMessageTransport`1"/> class.
+        /// </summary>
+        /// <param name="baseTransport">Base transport.</param>
+        /// <param name="settings">Settings.</param>
         public JsonMessageTransport(IMessageTransport<SessionMessageBase> baseTransport, JsonSerializerSettings settings)
         {
             _serializerSettings = settings;

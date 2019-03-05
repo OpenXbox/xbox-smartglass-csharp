@@ -1,15 +1,18 @@
 namespace SmartGlass.Messaging
 {
+    /// <summary>
+    /// Message type.
+    /// </summary>
     enum MessageType : ushort
     {
-        SessionMessage = 53261,
+        SessionMessage = 0xD00D,
 
-        ConnectRequest = 52224,
-        ConnectResponse = 52225,
+        ConnectRequest = 0xCC00,
+        ConnectResponse = 0xCC01,
 
-        PresenceRequest = 56576,
-        PresenceResponse = 56577,
+        PresenceRequest = 0xDD00,
+        PresenceResponse = 0xDD01,
 
-        PowerOn = 56578
+        PowerOn = 0xDD02
     }
 }

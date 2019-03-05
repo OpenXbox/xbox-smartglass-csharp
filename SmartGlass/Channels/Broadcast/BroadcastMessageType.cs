@@ -2,6 +2,9 @@
 
 namespace SmartGlass.Channels.Broadcast
 {
+    /// <summary>
+    /// Broadcast message type.
+    /// </summary>
     enum BroadcastMessageType
     {
         StartGamestream = 1,

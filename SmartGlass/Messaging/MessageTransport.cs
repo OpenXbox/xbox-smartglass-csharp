@@ -41,6 +41,7 @@ namespace SmartGlass.Messaging
 
         public MessageTransport(string addressOrHostname, CryptoContext crypto)
         {
+            _cancellationTokenSource = new CancellationTokenSource();
             _addressOrHostname = addressOrHostname;
             _crypto = crypto;
 
@@ -102,6 +103,11 @@ namespace SmartGlass.Messaging
             });
         }
 
+        /// <summary>
+        /// Sends a packet
+        /// </summary>
+        /// <returns>The send task.</returns>
+        /// <param name="message">SmartGlass SimpleMessage to sent</param>
         public async Task SendAsync(IMessage message)
         {
             var cryptoMessage = message as ICryptoMessage;

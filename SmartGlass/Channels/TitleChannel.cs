@@ -4,10 +4,18 @@ using SmartGlass.Messaging.Session.Messages;
 
 namespace SmartGlass.Channels
 {
+    /// <summary>
+    /// Title channel.
+    /// Supported titles: Fallout 4 (Are there more supported games ?!)
+    /// </summary>
     public class TitleChannel : IDisposable
     {
         private readonly ChannelMessageTransport _transport;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SmartGlass.Channels.TitleChannel"/> class.
+        /// </summary>
+        /// <param name="transport">Transport.</param>
         internal TitleChannel(ChannelMessageTransport transport)
         {
             _transport = transport;

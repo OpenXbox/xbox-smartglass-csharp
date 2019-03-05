@@ -6,16 +6,35 @@ using SmartGlass.Messaging.Session.Messages;
 
 namespace SmartGlass.Analysis
 {
+    /// <summary>
+    /// MessageAnalzer provides an easy way to parse SmartGlass
+    /// messages in form of raw bytes. It needs to be initialized
+    /// with a crypto blob (shared secret).
+    /// </summary>
     public class MessageAnalyzer
     {
         private readonly CryptoContext _crypto;
 
+        /// <summary>
+        /// Initialize an instance of MessageAnalzer with a
+        /// shared secret blob.
+        /// <seealso cref="SmartGlass.Connection.CryptoContext.CryptoBlob"/>
+        /// </summary>
+        /// <param name="cryptoBlob">Shared secret blob</param>
         public MessageAnalyzer(byte[] cryptoBlob)
         {
             _crypto = new CryptoContext(cryptoBlob);
         }
 
 
+        /// <summary>
+        /// Read a message in form of raw bytes and return its decrypted,
+        /// parsed and human-readable information.
+        /// </summary>
+        /// <param name="encryptedMessage">
+        /// Encrypted SmartGlass messages as bytearray
+        /// </param>
+        /// <returns>Parsed MessageInfo</returns>
         public MessageInfo ReadMessage(byte[] encryptedMessage)
         {
             var message = new SessionFragmentMessage();

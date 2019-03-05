@@ -2,9 +2,13 @@ using System.Linq;
 using SmartGlass.Connection;
 using SmartGlass.Common;
 using Newtonsoft.Json;
+using System;
 
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Session fragment message.
+    /// </summary>
     [MessageType(MessageType.SessionMessage)]
     internal class SessionFragmentMessage : MessageBase<SessionFragmentMessageHeader>, ICryptoMessage
     {

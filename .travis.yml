@@ -18,10 +18,7 @@ matrix:
 script:
 - dotnet --info
 - dotnet restore
-- dotnet test Tests/SmartGlass
-- dotnet test Tests/SmartGlass.Common
-- dotnet test Tests/SmartGlass.Cli
-- dotnet test Tests/SmartGlass.Nano
+- dotnet test SmartGlass.Tests
 - dotnet build -c $BUILD_CONFIG
 - dotnet publish -c $BUILD_CONFIG -r $PUBLISH_TARGET -o $PACKAGE_NAME SmartGlass.Cli
 

@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace SmartGlass.Messaging
 {
+    /// <summary>
+    /// Message base.
+    /// </summary>
     abstract class MessageBase<THeader> : IMessage<THeader>
         where THeader : IMessageHeader, new()
     {

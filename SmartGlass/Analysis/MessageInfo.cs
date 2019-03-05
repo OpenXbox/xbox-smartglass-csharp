@@ -1,5 +1,9 @@
 namespace SmartGlass.Analysis
 {
+    /// <summary>
+    /// MessageInfo holds basic information about a SmartGlass
+    /// message in a flat representation.
+    /// </summary>
     public class MessageInfo
     {
         public string MessageType { get; set; }

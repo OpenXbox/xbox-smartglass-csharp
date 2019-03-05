@@ -5,6 +5,9 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging
 {
+    /// <summary>
+    /// Protected message base.
+    /// </summary>
     internal abstract class ProtectedMessageBase<THeader> : MessageBase<THeader>, ICryptoMessage
         where THeader : IProtectedMessageHeader, new()
     {

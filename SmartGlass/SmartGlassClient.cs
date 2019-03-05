@@ -58,7 +58,7 @@ namespace SmartGlass
                     await transport.SendAsync(requestMessage);
                 };
 
-                var response = await TaskExtensions.WithRetries(() =>
+                var response = await Common.TaskExtensions.WithRetries(() =>
                     transport.WaitForMessageAsync<ConnectResponseMessage>(
                         connectTimeout,
                         () => connectFunc().GetAwaiter().GetResult()),

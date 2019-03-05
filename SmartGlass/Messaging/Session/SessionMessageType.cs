@@ -1,5 +1,8 @@
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Session message type.
+    /// </summary>
     enum SessionMessageType : ushort
     {
         Ack = 0x01,

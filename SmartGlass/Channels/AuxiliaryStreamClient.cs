@@ -8,10 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace SmartGlass.Channels
 {
-    // TODO: Connection state events.
-
+   /// <summary>
+   /// Auxiliary stream client.
+   /// </summary>
     public class AuxiliaryStreamClient : IDisposable
     {
+        // TODO: Connection state events.
         private static readonly ILogger logger = Logging.Factory.CreateLogger<AuxiliaryStreamClient>();
 
         private readonly TcpClient _client;
@@ -19,11 +21,28 @@ namespace SmartGlass.Channels
         private readonly int _port;
         private readonly AuxiliaryStreamCryptoContext _cryptoContext;
 
+        /// <summary>
+        /// Gets the address or hostname.
+        /// </summary>
+        /// <value>The address or hostname.</value>
         public string AddressOrHostname => _addressOrHostname;
+        /// <summary>
+        /// Gets the port.
+        /// </summary>
+        /// <value>The port.</value>
         public int Port => _port;
 
+        /// <summary>
+        /// Invoked with decrypted auxiliary stream data.
+        /// </summary>
         public event EventHandler<AuxiliaryStreamDataReceivedEventArgs> DataReceived;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SmartGlass.Channels.AuxiliaryStreamClient"/> class.
+        /// </summary>
+        /// <param name="addressOrHostname">Address or hostname to connect to.</param>
+        /// <param name="port">Port to connect to.</param>
+        /// <param name="cryptoContext">Crypto context.</param>
         internal AuxiliaryStreamClient(
             string addressOrHostname,
             int port,
@@ -36,6 +55,9 @@ namespace SmartGlass.Channels
             _cryptoContext = cryptoContext;
         }
 
+        /// <summary>
+        /// Reads the auxiliary stream chunks.
+        /// </summary>
         private void ReadChunks()
         {
             Task.Run(() =>
@@ -69,6 +91,11 @@ namespace SmartGlass.Channels
             });
         }
 
+        /// <summary>
+        /// Reads and decrypts auxiliary channel chunk.
+        /// </summary>
+        /// <returns>Decrypted chunk.</returns>
+        /// <param name="stream">Stream.</param>
         private byte[] ReadAndDecryptChunk(Stream stream)
         {
             var reader = new BEReader(stream);
@@ -109,12 +136,21 @@ namespace SmartGlass.Channels
             return decryptedPayload.Take(length).ToArray();
         }
 
+        /// <summary>
+        /// Connects asynchronously
+        /// </summary>
+        /// <returns>Task.</returns>
         internal async Task ConnectAsync()
         {
             await _client.ConnectAsync(_addressOrHostname, _port);
             ReadChunks();
         }
 
+        /// <summary>
+        /// Sends an auxiliary chunk.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="bytes">Plaintext bytes.</param>
         public async Task SendAsync(byte[] bytes)
         {
             logger.LogTrace($"Sending auxiliary stream buffer: {bytes.Length} bytes");
