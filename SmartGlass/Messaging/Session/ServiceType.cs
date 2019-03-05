@@ -1,5 +1,8 @@
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Service type.
+    /// </summary>
     enum ServiceType : ushort
     {
         None,

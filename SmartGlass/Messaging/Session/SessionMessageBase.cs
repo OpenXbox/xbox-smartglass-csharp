@@ -2,6 +2,9 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Session message base.
+    /// </summary>
     abstract class SessionMessageBase : ISerializable
     {
         public SessionMessageHeader Header { get; set; }

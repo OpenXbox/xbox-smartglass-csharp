@@ -7,6 +7,9 @@ using Org.BouncyCastle.Security;
 
 namespace SmartGlass.Channels
 {
+    /// <summary>
+    /// Auxiliary stream crypto context.
+    /// </summary>
     internal class AuxiliaryStreamCryptoContext
     {
         private readonly byte[] _cryptoKey;
@@ -15,6 +18,13 @@ namespace SmartGlass.Channels
         private readonly IBlockCipher _serverCipher;
         private readonly IBlockCipher _clientCipher;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SmartGlass.Channels.AuxiliaryStreamCryptoContext"/> class.
+        /// </summary>
+        /// <param name="cryptoKey">Crypto key.</param>
+        /// <param name="serverInitVector">Server init vector.</param>
+        /// <param name="clientInitVector">Client init vector.</param>
+        /// <param name="signHash">Sign hash.</param>
         public AuxiliaryStreamCryptoContext(
             byte[] cryptoKey,
             byte[] serverInitVector,
@@ -28,6 +38,12 @@ namespace SmartGlass.Channels
             _clientCipher = CreateCipher(clientInitVector, true);
         }
 
+        /// <summary>
+        /// Creates the cipher context
+        /// </summary>
+        /// <returns>The cipher.</returns>
+        /// <param name="initVector">Init vector.</param>
+        /// <param name="encrypt">If set to <c>true</c> encrypt.</param>
         private IBlockCipher CreateCipher(byte[] initVector, bool encrypt)
         {
             var aesCipher = new AesEngine();
@@ -41,6 +57,11 @@ namespace SmartGlass.Channels
             return blockCipher;
         }
 
+        /// <summary>
+        /// Encrypt the specified data.
+        /// </summary>
+        /// <returns>The encrypted data</returns>
+        /// <param name="data">Encrypted data.</param>
         public byte[] Encrypt(byte[] data)
         {
             var writer = new BEWriter();
@@ -64,6 +85,11 @@ namespace SmartGlass.Channels
             return output;
         }
 
+        /// <summary>
+        /// Decrypt the specified data.
+        /// </summary>
+        /// <returns>The decrypted data</returns>
+        /// <param name="data">Decrypted data.</param>
         public byte[] Decrypt(byte[] data)
         {
             var output = new byte[data.Length];
@@ -76,6 +102,11 @@ namespace SmartGlass.Channels
             return output;
         }
 
+        /// <summary>
+        /// Calculates the message signature (HMAC-SHA256)
+        /// </summary>
+        /// <returns>The message signature.</returns>
+        /// <param name="bytes">Message signature as bytes.</param>
         public byte[] CalculateMessageSignature(byte[] bytes)
         {
             return MacUtilities.CalculateMac(

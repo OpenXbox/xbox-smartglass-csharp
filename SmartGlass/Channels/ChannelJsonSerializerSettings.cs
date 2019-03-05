@@ -8,8 +8,15 @@ using SmartGlass.Channels.Broadcast;
 
 namespace SmartGlass.Channels
 {
+    /// <summary>
+    /// Json serializer settings for ServiceChannels
+    /// </summary>
     static class ChannelJsonSerializerSettings
     {
+        /// <summary>
+        /// Gets the JSON serializer settings for Broadcast channel.
+        /// </summary>
+        /// <returns>JSON serializer settings</returns>
         public static JsonSerializerSettings GetBroadcastSettings()
         {
             var serializerSettings = new JsonSerializerSettings()

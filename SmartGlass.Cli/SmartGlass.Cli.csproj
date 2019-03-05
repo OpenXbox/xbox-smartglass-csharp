@@ -2,12 +2,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <RuntimeIdentifiers>win-x86;win-x64;linux-x64;osx.10.12-x64</RuntimeIdentifiers>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartGlass\SmartGlass.csproj" />
-    <ProjectReference Include="..\SmartGlass.Nano\SmartGlass.Nano.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NClap" Version="2.3.6" />

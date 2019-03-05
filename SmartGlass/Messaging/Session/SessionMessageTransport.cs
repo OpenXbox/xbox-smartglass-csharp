@@ -10,6 +10,9 @@ using System.Threading;
 
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Session message transport.
+    /// </summary>
     internal class SessionMessageTransport : IDisposable, IMessageTransport<SessionMessageBase>
     {
         // TODO: Decide on severities
@@ -230,7 +233,7 @@ namespace SmartGlass.Messaging.Session
 
                 if (message.Header.RequestAcknowledge)
                 {
-                    return TaskExtensions.WithRetries(async () =>
+                    return Common.TaskExtensions.WithRetries(async () =>
                     {
                         var ackMessage = await WaitForMessageAsync<AckMessage>(
                             TimeSpan.FromSeconds(1),

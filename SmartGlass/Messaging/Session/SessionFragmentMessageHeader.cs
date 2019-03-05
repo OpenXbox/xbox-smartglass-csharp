@@ -2,6 +2,9 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Session fragment message header.
+    /// </summary>
     internal class SessionFragmentMessageHeader : SessionMessageHeader, IMessageHeader
     {
         public MessageType Type { get; set; }

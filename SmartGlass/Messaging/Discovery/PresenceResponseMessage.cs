@@ -5,6 +5,10 @@ using Org.BouncyCastle.X509;
 
 namespace SmartGlass.Messaging.Discovery
 {
+    /// <summary>
+    /// Presence response message.
+    /// Sent from console to client as response to PresenceRequest.
+    /// </summary>
     [MessageType(MessageType.PresenceResponse)]
     internal class PresenceResponseMessage : MessageBase<DiscoveryMessageHeader>
     {

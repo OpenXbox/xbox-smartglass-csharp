@@ -2,6 +2,9 @@
 
 namespace SmartGlass.Messaging.Power
 {
+    /// <summary>
+    /// Power on message header.
+    /// </summary>
     internal class PowerOnMessageHeader : IMessageHeader
     {
         public MessageType Type { get; set; }

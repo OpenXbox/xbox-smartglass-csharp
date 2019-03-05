@@ -3,6 +3,10 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Connection
 {
+    /// <summary>
+    /// Connect response message.
+    /// Sent from console to client on successful connection.
+    /// </summary>
     [MessageType(MessageType.ConnectResponse)]
     internal class ConnectResponseMessage : ProtectedMessageBase<ConnectionMessageHeader>
     {

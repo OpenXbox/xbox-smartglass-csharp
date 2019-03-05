@@ -1,7 +1,10 @@
 ﻿using System;
 
-namespace SmartGlass.Channels.Broadcast.Messages
+namespace SmartGlass.Channels.Broadcast
 {
+    /// <summary>
+    /// Gamestream error.
+    /// </summary>
     public enum GamestreamError
     {
         General = 1,

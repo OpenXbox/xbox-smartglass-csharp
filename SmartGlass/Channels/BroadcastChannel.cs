@@ -11,6 +11,16 @@ using Microsoft.Extensions.Logging;
 
 namespace SmartGlass.Channels
 {
+    /// <summary>
+    /// BroadcastChannel handles the initial communication with the
+    /// console to initialize a GameStreaming session.
+    /// <para>
+    /// You need to provide a GamestreamConfiguration to make the
+    /// console start gamestreaming. It is possible that the
+    /// console you connect to has gamestreaming functionality disabled,
+    /// check <see cref="GamestreamEnabledReceived"/> and <see cref="Enabled"/>.
+    /// </para>
+    /// </summary>
     public class BroadcastChannel : IDisposable
     {
         private static readonly ILogger logger = Logging.Factory.CreateLogger<BroadcastChannel>();
@@ -20,29 +30,86 @@ namespace SmartGlass.Channels
 
         private GamestreamEnabledMessage _enabledMessage;
 
-        public bool Enabled => _enabledMessage.Enabled;
-        public bool CanBeEnabled => _enabledMessage.CanBeEnabled;
-        public int MajorProtocolVersion => _enabledMessage.MajorProtocolVersion;
-        public int MinorProtocolVersion => _enabledMessage.MinorProtocolVersion;
+        /// <summary>
+        /// A value indicating wether the GamestreamEnabled message
+        /// has been received.
+        /// </summary>
+        public bool GamestreamEnabledReceived =>
+            _enabledMessage != null;
+        
+        /// <summary>
+        /// A value indicating wether the gamestreaming ability
+        /// is enabled on the console.
+        /// <seealso cref="BroadcastChannel.GamestreamEnabledReceived"/>
+        /// </summary>
+        public bool Enabled =>
+            _enabledMessage != null && _enabledMessage.Enabled;
 
+        /// <summary>
+        /// A value indicating wether the gamestreaming ability
+        /// can be enabled on the console.
+        /// <seealso cref="BroadcastChannel.GamestreamEnabledReceived"/>
+        /// </summary>
+        public bool CanBeEnabled =>
+            _enabledMessage != null && _enabledMessage.CanBeEnabled;
+        
+        /// <summary>
+        /// Major gamestreaming protocol version the console is using.
+        /// <seealso cref="BroadcastChannel.GamestreamEnabledReceived"/>
+        /// </summary>
+        public int MajorProtocolVersion =>
+            _enabledMessage != null ? _enabledMessage.MajorProtocolVersion : 0;
+        
+        /// <summary>
+        /// Minor gamestreaming protocol version the console is using.
+        /// <seealso cref="BroadcastChannel.GamestreamEnabledReceived"/>
+        /// </summary>
+        public int MinorProtocolVersion =>
+            _enabledMessage != null ? _enabledMessage.MinorProtocolVersion : 0;
+
+        /// <summary>
+        /// Initialize class of BroadcastChannel.
+        /// Internally done by <see cref="SmartGlass.SmartGlassClient"/>
+        /// </summary>
+        /// <param name="transport">ChannelMessage transport</param>
         internal BroadcastChannel(ChannelMessageTransport transport)
         {
             _baseTransport = transport;
-            _transport = new JsonMessageTransport<BroadcastBaseMessage>(_baseTransport, ChannelJsonSerializerSettings.GetBroadcastSettings());
+            _transport = new JsonMessageTransport<BroadcastBaseMessage>(
+                _baseTransport, ChannelJsonSerializerSettings.GetBroadcastSettings());
             _transport.MessageReceived += OnMessageReceived;
         }
 
-        internal async Task WaitForEnabledAsync()
+        /// <summary>
+        /// Currently unused
+        /// </summary>
+        /// <returns>Task</returns>
+        public Task WaitForEnabledAsync(TimeSpan timeout)
         {
-            await _transport.WaitForMessageAsync<GamestreamEnabledMessage>(TimeSpan.FromSeconds(3));
+            return Task.Run(() =>
+            {
+                var start = DateTime.Now;
+                while(DateTime.Now - start < timeout)
+                {
+                    if (GamestreamEnabledReceived)
+                        return;
+                }
+                throw new TimeoutException();
+            });
         }
 
+        /// <summary>
+        /// OnMessageReceived is called internally when a new broadcast
+        /// message comes in.
+        /// </summary>
+        /// <param name="sender">Origin sender</param>
+        /// <param name="e">EventArgs containing the broadcast message</param>
         private void OnMessageReceived(object sender, MessageReceivedEventArgs<BroadcastBaseMessage> e)
         {
-            var enabledMessage = e.Message as GamestreamEnabledMessage;
-            if (enabledMessage != null)
+            if (e.Message is GamestreamEnabledMessage enabledMessage)
             {
                 _enabledMessage = enabledMessage;
+
             }
 
             logger.LogTrace("Received BroadcastMsg:\r\n{0}\r\n{1}",
@@ -50,6 +117,17 @@ namespace SmartGlass.Channels
                 JsonConvert.SerializeObject(e.Message, Formatting.Indented));
         }
 
+        /// <summary>
+        /// Initiate a Gamestream session with the host.
+        /// </summary>
+        /// <param name="configuration">Desired gamestream configuration</param>
+        /// <returns>Task returning the GamestreamSession object</returns>
+        /// <exception cref="System.TimeoutException">
+        /// When console does not respond in time
+        /// </exception>
+        /// <exception cref="SmartGlass.Channels.Broadcast.GamestreamException">
+        /// On unexpected GamestreamSession
+        /// </exception>
         public async Task<GamestreamSession> StartGamestreamAsync(GamestreamConfiguration configuration)
         {
             var startMessage = new GamestreamStartMessage()
@@ -79,6 +157,9 @@ namespace SmartGlass.Channels
             return new GamestreamSession(initializingMessage.TcpPort, initializingMessage.UdpPort, configuration, initializingMessage.SessionId);
         }
 
+        /// <summary>
+        /// Disposes transport objects
+        /// </summary>
         public void Dispose()
         {
             _transport.Dispose();

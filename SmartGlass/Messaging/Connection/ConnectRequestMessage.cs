@@ -1,8 +1,13 @@
 using System;
+using System.Collections.Generic;
 using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Connection
 {
+    /// <summary>
+    /// Connect request message.
+    /// Sent from client to console. Console will respond with ConnectResponse.
+    /// </summary>
     [MessageType(MessageType.ConnectRequest)]
     internal class ConnectRequestMessage : ProtectedMessageBase<ConnectionMessageHeader>
     {

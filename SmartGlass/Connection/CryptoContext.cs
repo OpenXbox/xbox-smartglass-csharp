@@ -13,6 +13,9 @@ using Org.BouncyCastle.X509;
 
 namespace SmartGlass.Connection
 {
+    /// <summary>
+    /// Crypto context.
+    /// </summary>
     public class CryptoContext
     {
         private static readonly byte[] cryptoBlobPrepend =
@@ -20,6 +23,11 @@ namespace SmartGlass.Connection
         private static readonly byte[] cryptoBlobAppend =
             new byte[] { 0xa8, 0xf8, 0x1a, 0x57, 0x4e, 0x22, 0x8a, 0xb7 };
 
+        /// <summary>
+        /// Derives the key pair via elliptic curve algorithm.
+        /// </summary>
+        /// <returns>The generated key pair.</returns>
+        /// <param name="certificate">Certificate containing console's pubkey.</param>
         private static AsymmetricCipherKeyPair GenerateKeyPair(X509Certificate certificate)
         {
             var consolePublicKey = (ECPublicKeyParameters)certificate.GetPublicKey();
@@ -30,6 +38,12 @@ namespace SmartGlass.Connection
             return gen.GenerateKeyPair();
         }
 
+        /// <summary>
+        /// Generates the shared secret.
+        /// </summary>
+        /// <returns>The shared secret.</returns>
+        /// <param name="clientPrivateKey">Client private key.</param>
+        /// <param name="serverPublicKey">Server public key.</param>
         private static BigInteger GenerateSharedSecret(
             ICipherParameters clientPrivateKey,
             ICipherParameters serverPublicKey)
@@ -40,6 +54,11 @@ namespace SmartGlass.Connection
             return agreement.CalculateAgreement(serverPublicKey);
         }
 
+        /// <summary>
+        /// Creates the crypto BLOB.
+        /// </summary>
+        /// <returns>The crypto BLOB.</returns>
+        /// <param name="sharedSecret">Shared secret.</param>
         private static byte[] CreateCryptoBlob(BigInteger sharedSecret)
         {
             using (var stream = new MemoryStream())
@@ -56,6 +75,10 @@ namespace SmartGlass.Connection
             }
         }
 
+        /// <summary>
+        /// Generates the random init vector.
+        /// </summary>
+        /// <returns>The random init vector.</returns>
         public static byte[] GenerateRandomInitVector()
         {
             return SecureRandom.GetNextBytes(new SecureRandom(), 16);
@@ -67,9 +90,21 @@ namespace SmartGlass.Connection
         private byte[] _derivationKey;
         private byte[] _hmacSecret;
 
+        /// <summary>
+        /// Gets the type of the public key.
+        /// </summary>
+        /// <value>The type of the public key.</value>
         public PublicKeyType PublicKeyType { get; private set; }
+        /// <summary>
+        /// Gets the public key as bytearray.
+        /// </summary>
+        /// <value>The public key.</value>
         public byte[] PublicKey => _publicKey;
 
+        /// <summary>
+        /// Gets the crypto BLOB.
+        /// </summary>
+        /// <value>The crypto BLOB.</value>
         public byte[] CryptoBlob
         {
             get
@@ -87,6 +122,11 @@ namespace SmartGlass.Connection
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SmartGlass.Connection.CryptoContext"/> class
+        /// via X509 certificate.
+        /// </summary>
+        /// <param name="serverCertificate">Server certificate.</param>
         public CryptoContext(X509Certificate serverCertificate)
         {
             var keyPair = GenerateKeyPair(serverCertificate);
@@ -97,6 +137,12 @@ namespace SmartGlass.Connection
             CryptoBlob = CreateCryptoBlob(sharedSecret);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SmartGlass.Connection.CryptoContext"/> class
+        /// via <paramref name="cryptoBlob"/>.
+        /// </summary>
+        /// <param name="cryptoBlob">Crypto BLOB.</param>
+        /// <param name="publicKey">Public key.</param>
         public CryptoContext(byte[] cryptoBlob, byte[] publicKey = null)
         {
             CryptoBlob = cryptoBlob;
@@ -104,6 +150,11 @@ namespace SmartGlass.Connection
             _publicKey = publicKey ?? new byte[64];
         }
 
+        /// <summary>
+        /// Creates the derived init vector.
+        /// </summary>
+        /// <returns>The derived init vector.</returns>
+        /// <param name="data">Data.</param>
         public byte[] CreateDerivedInitVector(byte[] data)
         {
             var cipher = CipherUtilities.GetCipher(NistObjectIdentifiers.IdAes128Ecb);
@@ -114,6 +165,13 @@ namespace SmartGlass.Connection
             return cipher.DoFinal(data).Take(16).ToArray();
         }
 
+        /// <summary>
+        /// De/encrypt data via AES128-CBC
+        /// </summary>
+        /// <returns>The transformed data.</returns>
+        /// <param name="data">Data to transform.</param>
+        /// <param name="initVector">Init vector.</param>
+        /// <param name="encrypt">If set to <c>true</c> data is encrypted, <c>false</c> decrypts.</param>
         private byte[] UseAesCipher(byte[] data, byte[] initVector, bool encrypt)
         {
             var cipher = CipherUtilities.GetCipher(NistObjectIdentifiers.IdAes128Cbc);
@@ -125,6 +183,14 @@ namespace SmartGlass.Connection
             return cipher.DoFinal(data);
         }
 
+        /// <summary>
+        /// De/encrypt data via AES128-CBC without applying standarized
+        /// padding (SmartGlass uses out-of-spec padding technique).
+        /// </summary>
+        /// <returns>The transformed data without padding.</returns>
+        /// <param name="data">Data to transform.</param>
+        /// <param name="initVector">Init vector.</param>
+        /// <param name="encrypt">If set to <c>true</c> data is encrypted, <c>false</c> decrypts.</param>
         private byte[] UseAesCipherWithoutPadding(byte[] data, byte[] initVector, bool encrypt)
         {
             var aesCipher = new AesEngine();
@@ -139,26 +205,55 @@ namespace SmartGlass.Connection
             return cipher.DoFinal(data);
         }
 
+        /// <summary>
+        /// Encrypt the specified data.
+        /// </summary>
+        /// <returns>The encrypted data.</returns>
+        /// <param name="data">Plaintext data.</param>
+        /// <param name="initVector">Init vector.</param>
         public byte[] Encrypt(byte[] data, byte[] initVector)
         {
             return UseAesCipher(data, initVector, true);
         }
 
+        /// <summary>
+        /// Decrypt the specified data.
+        /// </summary>
+        /// <returns>The decrypted data.</returns>
+        /// <param name="data">Plaintext data.</param>
+        /// <param name="initVector">Init vector.</param>
         public byte[] Decrypt(byte[] data, byte[] initVector)
         {
             return UseAesCipher(data, initVector, false);
         }
 
+        /// <summary>
+        /// Encrypt the specified data without padding.
+        /// </summary>
+        /// <returns>The encrypted data.</returns>
+        /// <param name="data">Plaintext data.</param>
+        /// <param name="initVector">Init vector.</param>
         public byte[] EncryptWithoutPadding(byte[] data, byte[] initVector)
         {
             return UseAesCipherWithoutPadding(data, initVector, true);
         }
 
+        /// <summary>
+        /// Decrypt the specified data without padding.
+        /// </summary>
+        /// <returns>The decrypted data.</returns>
+        /// <param name="data">Plaintext data.</param>
+        /// <param name="initVector">Init vector.</param>
         public byte[] DecryptWithoutPadding(byte[] data, byte[] initVector)
         {
             return UseAesCipherWithoutPadding(data, initVector, false);
         }
 
+        /// <summary>
+        /// Calculates the message signature (HMAC-SHA256).
+        /// </summary>
+        /// <returns>The message signature.</returns>
+        /// <param name="bytes">Signature bytes.</param>
         public byte[] CalculateMessageSignature(byte[] bytes)
         {
             return MacUtilities.CalculateMac(

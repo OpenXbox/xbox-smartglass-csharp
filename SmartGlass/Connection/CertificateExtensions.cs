@@ -6,8 +6,17 @@ using Org.BouncyCastle.X509;
 
 namespace SmartGlass.Connection
 {
+    /// <summary>
+    /// Certificate extensions.
+    /// </summary>
     internal static class CertificateExtensions
     {
+        /// <summary>
+        /// Gets the LiveID from a X509 certificate.
+        /// It assumes that the ID is contained in "SubjectDN" field.
+        /// </summary>
+        /// <returns>The LiveID.</returns>
+        /// <param name="cert">Certificate received with DiscoveryResponse.</param>
         public static string GetLiveId(this X509Certificate cert)
         {
             var subjectDnValues = cert.SubjectDN.GetValueList();

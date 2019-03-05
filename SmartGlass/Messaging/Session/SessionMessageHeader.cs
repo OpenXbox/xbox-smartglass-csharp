@@ -1,5 +1,8 @@
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Session message header.
+    /// </summary>
     internal class SessionMessageHeader
     {
         public SessionMessageType SessionMessageType { get; set; }

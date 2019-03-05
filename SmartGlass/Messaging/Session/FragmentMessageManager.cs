@@ -7,6 +7,10 @@ using System.Diagnostics;
 
 namespace SmartGlass.Messaging.Session
 {
+    /// <summary>
+    /// Fragment message manager.
+    /// Assembles fragmented SessionMessages.
+    /// </summary>
     internal class FragmentMessageManager
     {
         private Dictionary<int, byte[]> _fragmentQueue;

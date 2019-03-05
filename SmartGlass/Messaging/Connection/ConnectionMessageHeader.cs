@@ -2,6 +2,9 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Connection
 {
+    /// <summary>
+    /// Message header used by ConnectRequest and ConnectResponse.
+    /// </summary>
     internal class ConnectionMessageHeader : IProtectedMessageHeader
     {
         public MessageType Type { get; set; }

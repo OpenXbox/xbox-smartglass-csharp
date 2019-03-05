@@ -6,14 +6,27 @@ using Org.BouncyCastle.X509;
 
 namespace SmartGlass.Connection
 {
+    /// <summary>
+    /// Crypto extensions.
+    /// </summary>
     internal static class CryptoExtensions
     {
+        /// <summary>
+        /// Convert a ASN encoded certificate into X509Certificate object
+        /// </summary>
+        /// <returns>The certificate object.</returns>
+        /// <param name="bytes">Certificate data.</param>
         public static X509Certificate DeserializeCertificateAsn(byte[] bytes)
         {
             var asn = Asn1Object.FromByteArray(bytes);
             return new X509Certificate(X509CertificateStructure.GetInstance(asn));
         }
 
+        /// <summary>
+        /// Gets the public key type from ECPublicKeyParameters
+        /// </summary>
+        /// <returns>The public key type.</returns>
+        /// <param name="parameters">Public key parameters.</param>
         public static PublicKeyType ToPubKeyType(this ECPublicKeyParameters parameters)
         {
             switch (parameters.Parameters.Curve.FieldSize)
@@ -29,6 +42,11 @@ namespace SmartGlass.Connection
             }
         }
 
+        /// <summary>
+        /// Converts ECPublicKeyParameters to XY blob.
+        /// </summary>
+        /// <returns>The XY blob.</returns>
+        /// <param name="parameters">Public key parameters.</param>
         public static byte[] ToXYBlob(this ECPublicKeyParameters parameters)
         {
             using (var stream = new MemoryStream())

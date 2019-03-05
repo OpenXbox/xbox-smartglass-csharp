@@ -2,6 +2,9 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Discovery
 {
+    /// <summary>
+    /// Discovery message header, used by PresenceRequest and PresenceResponse.
+    /// </summary>
     internal class DiscoveryMessageHeader : IMessageHeader
     {
         public MessageType Type { get; set; }

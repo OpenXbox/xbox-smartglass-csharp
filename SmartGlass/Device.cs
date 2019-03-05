@@ -48,7 +48,7 @@ namespace SmartGlass
             {
                 var requestMessage = new PresenceRequestMessage();
 
-                var response = await TaskExtensions.WithRetries(() =>
+                var response = await Common.TaskExtensions.WithRetries(() =>
                     messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
                     () => messageTransport.SendAsync(requestMessage).GetAwaiter().GetResult()),
                         pingRetries);
@@ -72,7 +72,7 @@ namespace SmartGlass
 
                 var presenceRequestMessage = new PresenceRequestMessage();
 
-                var response = await TaskExtensions.WithRetries(() =>
+                var response = await Common.TaskExtensions.WithRetries(() =>
                     messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
                     () => messageTransport.SendAsync(presenceRequestMessage).GetAwaiter().GetResult()),
                         pingRetries);
