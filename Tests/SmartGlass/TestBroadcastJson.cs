@@ -56,7 +56,7 @@ namespace Tests.SmartGlass
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
             Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Initializing, msg.State);
-            Assert.Equal<string>("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
             Assert.Equal<int>(53394, msg.TcpPort);
             Assert.Equal<int>(49665, msg.UdpPort);
         }
@@ -69,7 +69,7 @@ namespace Tests.SmartGlass
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
             Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Started, msg.State);
-            Assert.Equal<string>("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
             Assert.False(msg.IsWirelessConnection);
             Assert.Equal<int>(0, msg.WirelessChannel);
             Assert.Equal<int>(1000000000, msg.TransmitLinkSpeed);
@@ -84,7 +84,7 @@ namespace Tests.SmartGlass
 
             Assert.Equal<BroadcastMessageType>(BroadcastMessageType.GamestreamState, msg.Type);
             Assert.Equal<GamestreamStateMessageType>(GamestreamStateMessageType.Stopped, msg.State);
-            Assert.Equal<string>("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
+            Assert.Equal("14608f3c-1c4a-4f32-9da6-179ce1001e4a", msg.SessionId.ToString());
         }
 
         [Fact]

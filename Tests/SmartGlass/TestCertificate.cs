@@ -21,8 +21,8 @@ namespace Tests.SmartGlass
 
             Assert.NotNull(x509);
             Assert.Equal<int>(3, x509.Version);
-            Assert.Equal<string>("CN=Rust", x509.IssuerDN.ToString());
-            Assert.Equal<string>("CN=FFFFFFFFFFF", x509.SubjectDN.ToString());
+            Assert.Equal("CN=Rust", x509.IssuerDN.ToString());
+            Assert.Equal("CN=FFFFFFFFFFF", x509.SubjectDN.ToString());
             Assert.NotNull(publicKey);
         }
     }
