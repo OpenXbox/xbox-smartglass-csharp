@@ -41,6 +41,16 @@ namespace SmartGlass.Nano
         public VideoFormat[] VideoFormats => Video == null ? null : Video.AvailableFormats;
         public AudioFormat[] AudioFormats => Audio == null ? null : Audio.AvailableFormats;
 
+        public event EventHandler<AudioDataEventArgs> AudioFrameAvailable;
+        public Action<AudioDataEventArgs> FireAudioFrameAvailable
+            => (arg) => AudioFrameAvailable?.Invoke(this, arg);
+        public event EventHandler<VideoDataEventArgs> VideoFrameAvailable;
+        public Action<VideoDataEventArgs> FireVideoFrameAvailable
+            => (arg) => VideoFrameAvailable?.Invoke(this, arg);
+        public event EventHandler<InputFrameEventArgs> InputFeedbackFrameAvailable;
+        public Action<InputFrameEventArgs> FireInputFeedbackFrameAvailable
+            => (arg) => InputFeedbackFrameAvailable?.Invoke(this, arg);
+
 
         /// <summary>
         /// 
@@ -135,7 +145,8 @@ namespace SmartGlass.Nano
             var inputChannelOpenData = new ChannelOpen(new byte[0]);
 
             Input = new InputChannel(_transport, inputChannelOpenData);
-            InputFeedback = new InputFeedbackChannel(_transport, inputChannelOpenData);
+            InputFeedback = new InputFeedbackChannel(_transport, inputChannelOpenData,
+                FireInputFeedbackFrameAvailable);
 
             // Send ControllerEvent.Added
             await _transport.WaitForMessageAsync<ChannelCreate>(
@@ -195,8 +206,8 @@ namespace SmartGlass.Nano
 
             await Task.WhenAll(video, audio, chatAudio, control);
 
-            Video = new VideoChannel(_transport, video.Result);
-            Audio = new AudioChannel(_transport, audio.Result);
+            Video = new VideoChannel(_transport, video.Result, FireVideoFrameAvailable);
+            Audio = new AudioChannel(_transport, audio.Result, FireAudioFrameAvailable);
             ChatAudio = new ChatAudioChannel(_transport, chatAudio.Result);
             Control = new ControlChannel(_transport, control.Result);
         }
@@ -267,17 +278,17 @@ namespace SmartGlass.Nano
 
         public void AddConsumer(Consumer.IConsumer consumer)
         {
-            Audio.FeedAudioData += consumer.ConsumeAudioData;
-            Video.FeedVideoData += consumer.ConsumeVideoData;
-            InputFeedback.FeedInputFeedbackFrame += consumer.ConsumeInputFeedbackFrame;
+            AudioFrameAvailable += consumer.ConsumeAudioData;
+            VideoFrameAvailable += consumer.ConsumeVideoData;
+            InputFeedbackFrameAvailable += consumer.ConsumeInputFeedbackFrame;
             _consumers.Add(consumer);
         }
 
         public bool RemoveConsumer(Consumer.IConsumer consumer)
         {
-            Audio.FeedAudioData -= consumer.ConsumeAudioData;
-            Video.FeedVideoData -= consumer.ConsumeVideoData;
-            InputFeedback.FeedInputFeedbackFrame -= consumer.ConsumeInputFeedbackFrame;
+            AudioFrameAvailable -= consumer.ConsumeAudioData;
+            VideoFrameAvailable -= consumer.ConsumeVideoData;
+            InputFeedbackFrameAvailable -= consumer.ConsumeInputFeedbackFrame;
             return _consumers.Remove(consumer);
         }
 
