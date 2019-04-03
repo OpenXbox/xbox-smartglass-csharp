@@ -14,8 +14,8 @@ namespace SmartGlass.Nano.Channels
         public abstract void OnFrame(InputFrame frame);
         public abstract void OnFrameAck(InputFrameAck ack);
 
-        internal InputChannelBase(NanoRdpTransport transport, byte[] flags)
-            : base(transport, flags)
+        internal InputChannelBase(NanoRdpTransport transport, ChannelOpen openPacket)
+            : base(transport, openPacket)
         {
             MessageReceived += OnMessage;
         }

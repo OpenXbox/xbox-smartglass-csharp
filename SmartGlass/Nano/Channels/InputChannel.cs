@@ -11,8 +11,8 @@ namespace SmartGlass.Nano.Channels
         public override NanoChannel Channel => NanoChannel.Input;
         public override int ProtocolVersion => 3;
 
-        internal InputChannel(NanoRdpTransport transport, byte[] flags)
-            : base(transport, flags)
+        internal InputChannel(NanoRdpTransport transport, ChannelOpen openPacket)
+            : base(transport, openPacket)
         {
         }
 
@@ -80,7 +80,7 @@ namespace SmartGlass.Nano.Channels
             // Send ChannelOpen and wait for ChannelOpen response
             Task<ChannelOpen> openTask = WaitForMessageAsync<ChannelOpen>(
                 TimeSpan.FromSeconds(3),
-                async () => await _transport.SendChannelOpen(NanoChannel.Input, Flags),
+                async () => await SendChannelOpen(NanoChannel.Input, _channelOpenData.Flags),
                 p => p.Channel == NanoChannel.Input
             );
 

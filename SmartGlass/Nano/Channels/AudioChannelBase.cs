@@ -12,8 +12,8 @@ namespace SmartGlass.Nano.Channels
         public abstract void OnControl(AudioControl control);
         public abstract void OnData(AudioData data);
 
-        internal AudioChannelBase(NanoRdpTransport transport, byte[] flags)
-            : base(transport, flags)
+        internal AudioChannelBase(NanoRdpTransport transport, ChannelOpen openPacket)
+            : base(transport, openPacket)
         {
             MessageReceived += OnMessage;
         }

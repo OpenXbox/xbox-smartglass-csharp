@@ -13,8 +13,8 @@ namespace SmartGlass.Nano.Channels
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
         public Packets.AudioFormat ActiveFormat { get; internal set; }
 
-        internal ChatAudioChannel(NanoRdpTransport transport, byte[] flags)
-            : base(transport, flags)
+        internal ChatAudioChannel(NanoRdpTransport transport, ChannelOpen openPacket)
+            : base(transport, openPacket)
         {
             AvailableFormats = new AudioFormat[] { };
         }
@@ -54,7 +54,7 @@ namespace SmartGlass.Nano.Channels
             // -> Client handshake
             // -> AudioControl
             AvailableFormats = new AudioFormat[] { format };
-            await _transport.SendChannelOpen(Channel, Flags);
+            await SendChannelOpen(Channel, _channelOpenData.Flags);
 
             Task<AudioControl> controlStart = WaitForMessageAsync<AudioControl>(
                 TimeSpan.FromSeconds(3),
