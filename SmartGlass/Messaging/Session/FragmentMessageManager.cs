@@ -30,24 +30,17 @@ namespace SmartGlass.Messaging.Session
             _fragmentQueue[(int)sequenceNumber] = fragment.Data;
 
             IEnumerable<int> neededSequences = Enumerable.Range(sequenceBegin, sequenceEnd - sequenceBegin);
+            foreach (var seq in neededSequences)
+            {
+                if (!_fragmentQueue.ContainsKey(seq))
+                    return null;
+            }
 
             BEWriter writer = new BEWriter();
             foreach (int seq in neededSequences)
             {
-                try
-                {
-                    byte[] data = _fragmentQueue[seq];
-                    writer.Write(data);
-                }
-                catch (KeyNotFoundException)
-                {
-                    return null;
-                }
-            }
-
-            // Pop obsolete fragment data
-            foreach (int seq in neededSequences)
-            {
+                byte[] data = _fragmentQueue[seq];
+                writer.Write(data);
                 _fragmentQueue.Remove(seq);
             }
 
