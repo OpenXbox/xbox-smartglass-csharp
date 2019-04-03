@@ -10,15 +10,16 @@ namespace SmartGlass.Nano.Channels
 {
     public class AudioChannel : AudioChannelBase, IStreamingChannel
     {
+        readonly Action<AudioDataEventArgs> _fireAudioDataEvent;
         public override NanoChannel Channel => NanoChannel.Audio;
         public override int ProtocolVersion => 4;
         public Packets.AudioFormat[] AvailableFormats { get; internal set; }
 
-        public event EventHandler<AudioDataEventArgs> FeedAudioData;
-
-        internal AudioChannel(NanoRdpTransport transport, ChannelOpen openPacket)
+        internal AudioChannel(NanoRdpTransport transport, ChannelOpen openPacket,
+            Action<AudioDataEventArgs> fireEvent)
             : base(transport, openPacket)
         {
+            _fireAudioDataEvent = fireEvent;
         }
 
         public async Task StartStreamAsync()
@@ -39,7 +40,7 @@ namespace SmartGlass.Nano.Channels
         public override void OnData(AudioData data)
         {
             DateTime frameTime = DateTimeHelper.FromTimestampMicroseconds(data.Timestamp, ReferenceTimestamp);
-            FeedAudioData?.Invoke(this, new AudioDataEventArgs(frameTime, data));
+            _fireAudioDataEvent(new AudioDataEventArgs(frameTime, data));
         }
 
         public async Task SendClientHandshakeAsync(AudioFormat format)

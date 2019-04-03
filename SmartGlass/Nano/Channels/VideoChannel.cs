@@ -11,6 +11,7 @@ namespace SmartGlass.Nano.Channels
 {
     public class VideoChannel : StreamingChannel, IStreamingChannel
     {
+        readonly Action<VideoDataEventArgs> _fireVideoDataEvent;
         private static readonly ILogger logger = Logging.Factory.CreateLogger<VideoChannel>();
         public override NanoChannel Channel => NanoChannel.Video;
         public override int ProtocolVersion => 5;
@@ -19,11 +20,12 @@ namespace SmartGlass.Nano.Channels
         public uint Height { get; private set; }
         public Packets.VideoFormat[] AvailableFormats { get; internal set; }
         public Packets.VideoFormat ActiveFormat { get; internal set; }
-        public event EventHandler<VideoDataEventArgs> FeedVideoData;
 
-        internal VideoChannel(NanoRdpTransport transport, ChannelOpen openPacket)
+        internal VideoChannel(NanoRdpTransport transport, ChannelOpen openPacket,
+            Action<VideoDataEventArgs> fireEvent)
             : base(transport, openPacket)
         {
+            _fireVideoDataEvent = fireEvent;
             MessageReceived += OnMessage;
         }
 
@@ -93,7 +95,7 @@ namespace SmartGlass.Nano.Channels
             if (data.FrameId > FrameId)
                 base.FrameId = data.FrameId;
 
-            FeedVideoData?.Invoke(this, new VideoDataEventArgs(frameTime, data));
+            _fireVideoDataEvent(new VideoDataEventArgs(frameTime, data));
         }
 
         public async Task SendClientHandshakeAsync(VideoFormat format)

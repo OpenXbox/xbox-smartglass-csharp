@@ -9,20 +9,22 @@ namespace SmartGlass.Nano.Channels
 {
     public class InputFeedbackChannel : InputChannelBase, IStreamingChannel
     {
+        readonly Action<InputFrameEventArgs> _fireInputFrameEvent;
         public override NanoChannel Channel => NanoChannel.InputFeedback;
         public override int ProtocolVersion => 3;
-        public event EventHandler<InputFrameEventArgs> FeedInputFeedbackFrame;
 
-        internal InputFeedbackChannel(NanoRdpTransport transport, ChannelOpen openPacket)
+        internal InputFeedbackChannel(NanoRdpTransport transport, ChannelOpen openPacket,
+            Action<InputFrameEventArgs> fireEvent)
             : base(transport, openPacket)
         {
+            _fireInputFrameEvent = fireEvent;
         }
 
         public override void OnFrame(InputFrame frame)
         {
             DateTime frameTime = DateTimeHelper.FromTimestampMicroseconds(frame.CreatedTimestamp, ReferenceTimestamp);
             SendAsync(new InputFrameAck(frame.FrameId)).GetAwaiter().GetResult();
-            FeedInputFeedbackFrame?.Invoke(this, new InputFrameEventArgs(frameTime, frame));
+            _fireInputFrameEvent(new InputFrameEventArgs(frameTime, frame));
         }
 
         public override void OnFrameAck(InputFrameAck ack)
