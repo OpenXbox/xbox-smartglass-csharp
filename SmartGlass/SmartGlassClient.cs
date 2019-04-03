@@ -20,42 +20,42 @@ namespace SmartGlass
             TimeSpan.FromMilliseconds(1000)
         };
 
-        public static Task<SmartGlassClient> ConnectAsync(string addressOrHostname)
+        /// <summary>
+        /// Connect to console via ip address
+        /// </summary>
+        /// <param name="addressOrHostname"></param>
+        /// <param name="xboxLiveUserHash"></param>
+        /// <param name="xboxLiveAuthorization"></param>
+        /// <returns></returns>
+        public static async Task<SmartGlassClient> ConnectAsync(
+            string addressOrHostname, string xboxLiveUserHash=null, string xboxLiveAuthorization=null)
         {
-            return ConnectAsync(addressOrHostname, null, null);
+            var device = await Device.PingAsync(addressOrHostname).ConfigureAwait(true);
+            return await ConnectAsync(device, xboxLiveUserHash, xboxLiveAuthorization);
         }
 
+        /// <summary>
+        /// Connect to a discovered console
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="xboxLiveUserHash"></param>
+        /// <param name="xboxLiveAuthorization"></param>
+        /// <returns></returns>
         public static async Task<SmartGlassClient> ConnectAsync(
-            string addressOrHostname, string xboxLiveUserHash, string xboxLiveAuthorization)
+            Device device, string xboxLiveUserHash, string xboxLiveAuthorization)
         {
-            var device = await Device.PingAsync(addressOrHostname);
             var cryptoContext = new CryptoContext(device.Certificate);
 
             using (var transport = new MessageTransport(device.Address.ToString(), cryptoContext))
             {
-                var deviceId = Guid.NewGuid();
-                var sequenceNumber = 0u;
-
-                var initVector = CryptoContext.GenerateRandomInitVector();
-
+                Guid deviceId = Guid.NewGuid();
                 Func<Task> connectFunc = async () =>
                 {
-                    var requestMessage = new ConnectRequestMessage();
-
-                    requestMessage.InitVector = initVector;
-
-                    requestMessage.DeviceId = deviceId;
-
-                    requestMessage.UserHash = xboxLiveUserHash;
-                    requestMessage.Authorization = xboxLiveAuthorization;
-
-                    requestMessage.SequenceNumber = sequenceNumber;
-                    requestMessage.SequenceBegin = sequenceNumber + 1;
-                    requestMessage.SequenceEnd = sequenceNumber + 1;
-
-                    sequenceNumber += 2;
-
-                    await transport.SendAsync(requestMessage);
+                    foreach(var fragment in ConnectRequestMessage
+                        .GenerateConnectRequest(deviceId, cryptoContext, xboxLiveUserHash, xboxLiveAuthorization))
+                    {
+                        await transport.SendAsync(fragment);
+                    }
                 };
 
                 var response = await Common.TaskExtensions.WithRetries(() =>
