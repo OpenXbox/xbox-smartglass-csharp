@@ -41,6 +41,7 @@ namespace SmartGlass.Nano
         public VideoFormat[] VideoFormats => Video == null ? null : Video.AvailableFormats;
         public AudioFormat[] AudioFormats => Audio == null ? null : Audio.AvailableFormats;
 
+
         /// <summary>
         /// 
         /// </summary>
@@ -73,7 +74,7 @@ namespace SmartGlass.Nano
         }
 
         /// <summary>
-        /// 
+        /// Initialize nano protocol
         /// </summary>
         /// <returns></returns>
         public async Task InitializeProtocolAsync()
@@ -130,8 +131,11 @@ namespace SmartGlass.Nano
                 throw new NanoException("Protocol is not initialized");
             }
 
-            Input = new InputChannel(_transport, new byte[] { });
-            InputFeedback = new InputFeedbackChannel(_transport, new byte[] { });
+            // We have to generate ChannelOpenData to send to the console
+            var inputChannelOpenData = new ChannelOpen(new byte[0]);
+
+            Input = new InputChannel(_transport, inputChannelOpenData);
+            InputFeedback = new InputFeedbackChannel(_transport, inputChannelOpenData);
 
             // Send ControllerEvent.Added
             await _transport.WaitForMessageAsync<ChannelCreate>(
@@ -191,10 +195,10 @@ namespace SmartGlass.Nano
 
             await Task.WhenAll(video, audio, chatAudio, control);
 
-            Video = new VideoChannel(_transport, video.Result.Flags);
-            Audio = new AudioChannel(_transport, audio.Result.Flags);
-            ChatAudio = new ChatAudioChannel(_transport, chatAudio.Result.Flags);
-            Control = new ControlChannel(_transport, control.Result.Flags);
+            Video = new VideoChannel(_transport, video.Result);
+            Audio = new AudioChannel(_transport, audio.Result);
+            ChatAudio = new ChatAudioChannel(_transport, chatAudio.Result);
+            Control = new ControlChannel(_transport, control.Result);
         }
 
         /// <summary>

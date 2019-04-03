@@ -10,7 +10,7 @@ namespace SmartGlass.Nano.Channels
 {
     public abstract class StreamingChannel : IMessageTransport<INanoPacket>, IDisposable
     {
-        internal NanoRdpTransport _transport;
+        readonly NanoRdpTransport _transport;
 
         /// <summary>
         /// Set by FrameId property
@@ -70,8 +70,8 @@ namespace SmartGlass.Nano.Channels
                 _frameId = value;
             }
         }
-        internal bool IsOpen { get; set; }
-        internal byte[] Flags { get; set; }
+        internal bool _isOpen { get; set; }
+        internal ChannelOpen _channelOpenData { get; set; }
 
         public ushort NextSequenceNumber => ++SequenceNumber;
         public uint NextFrameId => ++FrameId;
@@ -82,12 +82,12 @@ namespace SmartGlass.Nano.Channels
         public event EventHandler<MessageReceivedEventArgs<INanoPacket>> MessageReceived;
 
 
-        internal StreamingChannel(NanoRdpTransport transport, byte[] flags)
+        internal StreamingChannel(NanoRdpTransport transport, ChannelOpen openPacket)
         {
             _transport = transport;
             _transport.MessageReceived += TransportMessageReceived;
 
-            Flags = flags;
+            _channelOpenData = openPacket;
             SequenceNumber = 0;
         }
 
@@ -122,6 +122,9 @@ namespace SmartGlass.Nano.Channels
                 return _transport.SendAsync(message);
             }
         }
+
+        internal Task SendChannelOpen(NanoChannel channel, byte[] flags)
+            => _transport.SendChannelOpen(channel, flags);
 
         public Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
         {

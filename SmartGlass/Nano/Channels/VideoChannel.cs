@@ -21,8 +21,8 @@ namespace SmartGlass.Nano.Channels
         public Packets.VideoFormat ActiveFormat { get; internal set; }
         public event EventHandler<VideoDataEventArgs> FeedVideoData;
 
-        internal VideoChannel(NanoRdpTransport transport, byte[] flags)
-            : base(transport, flags)
+        internal VideoChannel(NanoRdpTransport transport, ChannelOpen openPacket)
+            : base(transport, openPacket)
         {
             MessageReceived += OnMessage;
         }
@@ -106,7 +106,7 @@ namespace SmartGlass.Nano.Channels
         {
             var handshake = await WaitForMessageAsync<VideoServerHandshake>(
                 TimeSpan.FromSeconds(1),
-                async () => await _transport.SendChannelOpen(Channel, Flags)
+                async () => await SendChannelOpen(Channel, _channelOpenData.Flags)
             );
 
             if (handshake.ProtocolVersion != ProtocolVersion)

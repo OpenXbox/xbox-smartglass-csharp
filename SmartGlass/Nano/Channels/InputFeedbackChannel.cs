@@ -13,8 +13,8 @@ namespace SmartGlass.Nano.Channels
         public override int ProtocolVersion => 3;
         public event EventHandler<InputFrameEventArgs> FeedInputFeedbackFrame;
 
-        internal InputFeedbackChannel(NanoRdpTransport transport, byte[] flags)
-            : base(transport, flags)
+        internal InputFeedbackChannel(NanoRdpTransport transport, ChannelOpen openPacket)
+            : base(transport, openPacket)
         {
         }
 
@@ -66,8 +66,7 @@ namespace SmartGlass.Nano.Channels
 
             await Task.WhenAll(waitCreateTask, openTask);
 
-            await _transport
-                .SendChannelOpen(NanoChannel.InputFeedback, openTask.Result.Flags);
+            await SendChannelOpen(NanoChannel.InputFeedback, openTask.Result.Flags);
 
             InputClientHandshake handshake = await WaitForMessageAsync<InputClientHandshake>(
                 TimeSpan.FromSeconds(3),
