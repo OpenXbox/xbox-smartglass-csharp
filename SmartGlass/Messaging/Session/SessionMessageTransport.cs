@@ -159,12 +159,8 @@ namespace SmartGlass.Messaging.Session
             var ackMessage = new AckMessage();
             ackMessage.Header.RequestAcknowledge = requestAck;
             ackMessage.LowWatermark = _serverSequenceNumber;
-            ackMessage.ProcessedList = new HashSet<uint>(processed == null ?
-                                                            new uint[0] :
-                                                            processed);
-            ackMessage.RejectedList = new HashSet<uint>(rejected == null ?
-                                                            new uint[0] :
-                                                            rejected);
+            ackMessage.ProcessedList = new HashSet<uint>(processed ?? new uint[0]);
+            ackMessage.RejectedList = new HashSet<uint>(rejected ?? new uint[0]);
             return SendAsync(ackMessage);
         }
 
