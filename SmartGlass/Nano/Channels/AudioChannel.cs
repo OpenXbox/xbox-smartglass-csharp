@@ -59,7 +59,7 @@ namespace SmartGlass.Nano.Channels
         public async Task OpenAsync()
         {
             var handshake = await WaitForMessageAsync<AudioServerHandshake>(
-                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(3),
                 async () => await SendChannelOpen(Channel, _channelOpenData.Flags),
                 p => p.Channel == NanoChannel.Audio
             );
