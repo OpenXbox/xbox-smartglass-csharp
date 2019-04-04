@@ -35,9 +35,10 @@ namespace SmartGlass.Messaging.Session
             return (SessionMessageBase)Activator.CreateInstance(type);
         }
 
-        private readonly int _heartbeatTimeoutSeconds;
         private readonly object _lockObject = new object();
         private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly TimeSpan _heartbeatTimeout;
+        private readonly TimeSpan _heartbeatInterval;
 
         private readonly MessageTransport _transport;
         private readonly uint _participantId;
@@ -57,41 +58,44 @@ namespace SmartGlass.Messaging.Session
         public SessionMessageTransport(
             MessageTransport transport,
             SessionInfo sessionInfo,
-            int heartbeatTimeoutSeconds = 3)
+            int heartbeatTimeoutSeconds = 10)
         {
             _transport = transport;
 
             _participantId = sessionInfo.ParticipantId;
 
-            _heartbeatTimeoutSeconds = heartbeatTimeoutSeconds;
+            _heartbeatInterval = TimeSpan.FromSeconds(3);
+            _heartbeatTimeout = TimeSpan.FromSeconds(heartbeatTimeoutSeconds);
 
             _transport.MessageReceived += TransportMessageReceived;
 
-            _fragment_manager = new FragmentMessageManager();
             _lastReceived = DateTime.Now;
 
+            _fragment_manager = new FragmentMessageManager();
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public void StartHeartbeat()
         {
-            Task.Run(() =>
+            Task.Run(async () =>
             {
+                _lastReceived = DateTime.Now;
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    try
-                    {
-                        SendHeartbeatAsync().GetAwaiter().GetResult();
-                    }
-                    catch (TimeoutException)
+                    await SendHeartbeatAsync();
+                    await Task.Delay(_heartbeatInterval);
+                    if (DateTime.Now - _lastReceived > _heartbeatTimeout)
                     {
                         ProtocolTimeoutOccured?.Invoke(this, new EventArgs());
                         break;
                     }
-                    Task.Delay(TimeSpan.FromSeconds(_heartbeatTimeoutSeconds))
-                        .GetAwaiter().GetResult();
                 }
             }, _cancellationTokenSource.Token);
+        }
+
+        private Task SendHeartbeatAsync()
+        {
+            return SendMessageAckAsync(requestAck: true);
         }
 
         private void TransportMessageReceived(object sender, MessageReceivedEventArgs<IMessage> e)
@@ -124,12 +128,14 @@ namespace SmartGlass.Messaging.Session
                     .GetAwaiter().GetResult();
             }
 
+            /*
             if (fragmentMessage.Header.SequenceNumber <= _serverSequenceNumber)
             {
                 // TODO: Make sure messages don't get lost incorrectly.
                 logger.LogDebug("Message is too old. Ignoring...");
                 return;
             }
+            */
 
             _lastReceived = DateTime.Now;
             _serverSequenceNumber = fragmentMessage.Header.SequenceNumber;
@@ -162,11 +168,6 @@ namespace SmartGlass.Messaging.Session
             ackMessage.ProcessedList = new HashSet<uint>(processed ?? new uint[0]);
             ackMessage.RejectedList = new HashSet<uint>(rejected ?? new uint[0]);
             return SendAsync(ackMessage);
-        }
-
-        private Task SendHeartbeatAsync()
-        {
-            return SendMessageAckAsync(requestAck: true);
         }
 
         private SessionMessageBase DeserializeMessage(SessionFragmentMessage fragment)

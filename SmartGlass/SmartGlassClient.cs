@@ -185,7 +185,7 @@ namespace SmartGlass
             try
             {
                 response = await _sessionMessageTransport.WaitForMessageAsync<StartChannelResponseMessage>(
-                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(5),
                     async () => await _sessionMessageTransport.SendAsync(channelRequestMessage),
                     m => m.ChannelRequestId == requestId);
             }
