@@ -42,6 +42,7 @@ namespace SmartGlass.Nano
             _tcpPort = tcpPort;
             _udpPort = udpPort;
 
+            _cancellationTokenSource = new CancellationTokenSource();
             IPAddress hostAddr = IPAddress.Parse(address);
             _controlProtoEp = new IPEndPoint(hostAddr, _tcpPort);
             _streamingProtoEp = new IPEndPoint(hostAddr, _udpPort);
