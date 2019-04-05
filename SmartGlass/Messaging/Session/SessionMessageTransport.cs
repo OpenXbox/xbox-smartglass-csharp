@@ -82,7 +82,7 @@ namespace SmartGlass.Messaging.Session
                 _lastReceived = DateTime.Now;
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    await SendHeartbeatAsync();
+                    await SendMessageAckAsync(requestAck: true);
                     await Task.Delay(_heartbeatInterval);
                     if (DateTime.Now - _lastReceived > _heartbeatTimeout)
                     {
@@ -91,11 +91,6 @@ namespace SmartGlass.Messaging.Session
                     }
                 }
             }, _cancellationTokenSource.Token);
-        }
-
-        private Task SendHeartbeatAsync()
-        {
-            return SendMessageAckAsync(requestAck: true);
         }
 
         private void TransportMessageReceived(object sender, MessageReceivedEventArgs<IMessage> e)
@@ -120,7 +115,7 @@ namespace SmartGlass.Messaging.Session
 
             var message = DeserializeMessage(fragmentMessage);
 
-            logger.LogTrace($"Received message #{fragmentMessage.Header.SequenceNumber} ({message.ToString()})");
+            logger.LogTrace($"Received message #{fragmentMessage.Header.SequenceNumber} ({message})");
 
             if (message.Header.RequestAcknowledge)
             {
@@ -185,8 +180,6 @@ namespace SmartGlass.Messaging.Session
                 message = new FragmentMessage();
             }
 
-            logger.LogTrace($"Received {message.GetType().Name} message");
-
             message.Header.ChannelId = fragment.Header.ChannelId;
             message.Header.RequestAcknowledge = fragment.Header.RequestAcknowledge;
             message.Header.IsFragment = fragment.Header.IsFragment;
@@ -200,8 +193,6 @@ namespace SmartGlass.Messaging.Session
 
         private Task SendFragmentAsync(SessionMessageBase message, uint sequenceNumber)
         {
-            logger.LogTrace($"Sending {message.GetType().Name} message");
-
             var fragment = new SessionFragmentMessage();
 
             fragment.Header.ChannelId = message.Header.ChannelId;
@@ -226,7 +217,7 @@ namespace SmartGlass.Messaging.Session
                 _sequenceNumber = _sequenceNumber + 1;
                 var sequenceNumber = _sequenceNumber;
 
-                logger.LogTrace($"Sending outbound #{sequenceNumber}...");
+                logger.LogTrace($"Sending message #{sequenceNumber} ({message}) ...");
 
                 if (message.Header.RequestAcknowledge)
                 {
