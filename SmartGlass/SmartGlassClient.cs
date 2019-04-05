@@ -48,20 +48,19 @@ namespace SmartGlass
 
             using (var transport = new MessageTransport(device.Address.ToString(), cryptoContext))
             {
-                Guid deviceId = Guid.NewGuid();
-                Func<Task> connectFunc = async () =>
-                {
-                    foreach(var fragment in ConnectRequestMessage
-                        .GenerateConnectRequest(deviceId, cryptoContext, xboxLiveUserHash, xboxLiveAuthorization))
-                    {
-                        await transport.SendAsync(fragment);
-                    }
-                };
+                var deviceId = Guid.NewGuid();
 
                 var response = await Common.TaskExtensions.WithRetries(() =>
                     transport.WaitForMessageAsync<ConnectResponseMessage>(
                         connectTimeout,
-                        () => connectFunc().GetAwaiter().GetResult()),
+                        () => Task.Run(async () =>
+                        {
+                            foreach (var fragment in ConnectRequestMessage
+                                .GenerateConnectRequest(deviceId, cryptoContext, xboxLiveUserHash, xboxLiveAuthorization))
+                            {
+                                await transport.SendAsync(fragment);
+                            }
+                        }).Wait()),
                     connectRetries);
 
                 return new SmartGlassClient(
