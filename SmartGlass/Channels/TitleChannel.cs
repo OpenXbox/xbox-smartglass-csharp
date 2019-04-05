@@ -10,6 +10,7 @@ namespace SmartGlass.Channels
     /// </summary>
     public class TitleChannel : IDisposable
     {
+        private bool _disposed = false;
         private readonly ChannelMessageTransport _transport;
 
         /// <summary>
@@ -44,9 +45,21 @@ namespace SmartGlass.Channels
             return client;
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _transport.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            _transport.Dispose();
+            Dispose(true);
         }
     }
 }

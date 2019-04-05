@@ -12,6 +12,7 @@ namespace SmartGlass.Nano
 {
     public class NanoClient : IDisposable
     {
+        private bool _disposed = false;
         private static readonly ILogger logger = Logging.Factory.CreateLogger<NanoClient>();
         private readonly NanoRdpTransport _transport;
 
@@ -292,9 +293,21 @@ namespace SmartGlass.Nano
             return _consumers.Remove(consumer);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _transport.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            _transport.Dispose();
+            Dispose(true);
         }
     }
 }

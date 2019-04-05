@@ -15,6 +15,7 @@ namespace SmartGlass.Messaging.Session
     /// </summary>
     internal class SessionMessageTransport : IDisposable, IMessageTransport<SessionMessageBase>
     {
+        private bool _disposed = false;
         // TODO: Decide on severities
         private static readonly ILogger logger = Logging.Factory.CreateLogger<SessionMessageTransport>();
 
@@ -49,8 +50,6 @@ namespace SmartGlass.Messaging.Session
         private uint _sequenceNumber;
 
         private uint _serverSequenceNumber;
-
-        private bool _isDisposed;
 
         public event EventHandler<MessageReceivedEventArgs<SessionMessageBase>> MessageReceived;
         public event EventHandler<EventArgs> ProtocolTimeoutOccured;
@@ -256,27 +255,32 @@ namespace SmartGlass.Messaging.Session
             return this.WaitForMessageAsync<T, SessionMessageBase>(timeout, startAction, filter);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    try
+                    {
+                        SendAsync(new DisconnectMessage())
+                            .GetAwaiter().GetResult();
+                    }
+                    catch
+                    {
+                        // TODO: Trace
+                    }
+
+                    _cancellationTokenSource.Cancel();
+                    _transport.MessageReceived -= TransportMessageReceived;
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            _isDisposed = true;
-
-            try
-            {
-                SendAsync(new DisconnectMessage())
-                    .GetAwaiter().GetResult();
-            }
-            catch
-            {
-                // TODO: Trace
-            }
-
-            _cancellationTokenSource.Cancel();
-            _transport.MessageReceived -= TransportMessageReceived;
+            Dispose(true);
         }
     }
 }

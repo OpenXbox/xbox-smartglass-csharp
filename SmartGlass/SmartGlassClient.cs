@@ -12,6 +12,7 @@ namespace SmartGlass
 {
     public class SmartGlassClient : IDisposable
     {
+        private bool _disposed = false;
         private static readonly TimeSpan connectTimeout = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan[] connectRetries = new TimeSpan[]
         {
@@ -233,19 +234,31 @@ namespace SmartGlass
             await _sessionMessageTransport.SendAsync(new PowerOffMessage());
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // TODO: Close opened channels?
+                    // Assuming so for the time being, but don't know how to send stop messages yet
+                    InputChannel.Dispose();
+                    // InputTvRemoteChannel.Dispose();
+
+                    TextChannel.Dispose();
+                    MediaChannel.Dispose();
+                    BroadcastChannel.Dispose();
+
+                    _sessionMessageTransport.Dispose();
+                    _messageTransport.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            // TODO: Close opened channels?
-            // Assuming so for the time being, but don't know how to send stop messages yet
-            InputChannel.Dispose();
-            // InputTvRemoteChannel.Dispose();
-
-            TextChannel.Dispose();
-            MediaChannel.Dispose();
-            BroadcastChannel.Dispose();
-
-            _sessionMessageTransport.Dispose();
-            _messageTransport.Dispose();
+            Dispose(true);
         }
     }
 }

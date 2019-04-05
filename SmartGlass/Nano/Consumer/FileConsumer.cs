@@ -7,6 +7,7 @@ namespace SmartGlass.Nano.Consumer
 {
     public class FileConsumer : IConsumer, IDisposable
     {
+        private bool _disposed = false;
         // AAC frame id of packet is always 0, need to keep track manually
         private int audioFrameCount = 0;
 
@@ -78,15 +79,27 @@ namespace SmartGlass.Nano.Consumer
             }
         }
 
-        public void Dispose()
-        {
-            _audioFile.Dispose();
-            _videoFile.Dispose();
-        }
-
         public void ConsumeInputFeedbackFrame(object sender, InputFrameEventArgs args)
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _audioFile.Dispose();
+                    _videoFile.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

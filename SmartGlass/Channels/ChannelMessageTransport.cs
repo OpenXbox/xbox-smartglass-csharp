@@ -13,6 +13,7 @@ namespace SmartGlass.Channels
     /// <typeparam name="SessionMessageBase"></typeparam>
     internal class ChannelMessageTransport : IDisposable, IMessageTransport<SessionMessageBase>
     {
+        private bool _disposed = false;
         private readonly ulong _channelId;
         private readonly SessionMessageTransport _transport;
 
@@ -44,21 +45,6 @@ namespace SmartGlass.Channels
             {
                 MessageReceived?.Invoke(this, e);
             }
-        }
-
-        /// <summary>
-        /// Removes the MessageReceived callback and
-        /// attempts to close the channel with the configured
-        /// channel Id.
-        /// </summary>
-        public void Dispose()
-        {
-            _transport.MessageReceived -= TransportMessageReceived;
-
-            _transport.SendAsync(new StopChannelMessage()
-            {
-                ChannelIdToStop = _channelId
-            });
         }
 
         /// <summary>
@@ -99,6 +85,33 @@ namespace SmartGlass.Channels
             where T : SessionMessageBase
         {
             return this.WaitForMessageAsync<T, SessionMessageBase>(timeout, startAction, filter);
+        }
+
+        /// <summary>
+        /// Removes the MessageReceived callback and
+        /// attempts to close the channel with the configured
+        /// channel Id.
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _transport.MessageReceived -= TransportMessageReceived;
+
+                    _transport.SendAsync(new StopChannelMessage()
+                    {
+                        ChannelIdToStop = _channelId
+                    });
+                }
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }
