@@ -10,6 +10,7 @@ namespace SmartGlass.Nano.Channels
 {
     public abstract class StreamingChannel : IMessageTransport<INanoPacket>, IDisposable
     {
+        bool _disposed = false;
         readonly NanoRdpTransport _transport;
 
         /// <summary>
@@ -70,6 +71,7 @@ namespace SmartGlass.Nano.Channels
                 _frameId = value;
             }
         }
+
         internal bool _isOpen { get; set; }
         internal ChannelOpen _channelOpenData { get; set; }
 
@@ -137,9 +139,21 @@ namespace SmartGlass.Nano.Channels
             return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _transport.MessageReceived -= TransportMessageReceived;
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            _transport.MessageReceived -= TransportMessageReceived;
+            Dispose(true);
         }
     }
 }

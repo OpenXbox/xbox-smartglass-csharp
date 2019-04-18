@@ -9,13 +9,6 @@ namespace SmartGlass.Common
 {
     public static class SocketExtensions
     {
-        public static CancellationTokenSource ConsumeReceived(this UdpClient client, Action<UdpReceiveResult> consume)
-        {
-            var tokenSource = new CancellationTokenSource();
-            client.ConsumeReceived(consume, tokenSource.Token);
-            return tokenSource;
-        }
-
         public static void ConsumeReceived(
             this UdpClient client, Action<UdpReceiveResult> consume, CancellationToken token)
         {
@@ -32,14 +25,7 @@ namespace SmartGlass.Common
                         consume(receiveTask.Result);
                     }
                 }
-            });
-        }
-
-        public static CancellationTokenSource ConsumeReceived(this TcpClient client, Action<byte[]> consume)
-        {
-            var tokenSource = new CancellationTokenSource();
-            client.ConsumeReceivedPrefixed(consume, tokenSource.Token);
-            return tokenSource;
+            }, token);
         }
 
         public static void ConsumeReceivedPrefixed(
@@ -71,7 +57,7 @@ namespace SmartGlass.Common
                     }
                     consume(packet);
                 }
-            });
+            }, token);
         }
 
         /// <summary>

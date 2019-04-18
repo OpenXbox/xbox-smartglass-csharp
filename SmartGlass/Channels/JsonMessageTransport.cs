@@ -12,6 +12,7 @@ namespace SmartGlass.Channels
 {
     class JsonMessageTransport<TMessage> : IDisposable, IMessageTransport<TMessage>
     {
+        private bool _disposed = false;
         private static readonly ILogger logger = Logging.Factory.CreateLogger<JsonMessageTransport<TMessage>>();
         private readonly JsonSerializerSettings _serializerSettings;
         private readonly IMessageTransport<SessionMessageBase> _baseTransport;
@@ -44,11 +45,6 @@ namespace SmartGlass.Channels
             }
         }
 
-        public void Dispose()
-        {
-            _baseTransport.MessageReceived -= TransportMessageReceived;
-        }
-
         public Task SendAsync(TMessage message)
         {
             return _baseTransport.SendAsync(new JsonMessage() { Json = JsonConvert.SerializeObject(message, _serializerSettings) });
@@ -63,6 +59,23 @@ namespace SmartGlass.Channels
             where T : TMessage
         {
             return this.WaitForMessageAsync<T, TMessage>(timeout, startAction, filter);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _baseTransport.MessageReceived -= TransportMessageReceived;
+                }
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

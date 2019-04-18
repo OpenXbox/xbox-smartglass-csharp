@@ -15,6 +15,7 @@ namespace SmartGlass.Messaging.Session
     /// </summary>
     internal class SessionMessageTransport : IDisposable, IMessageTransport<SessionMessageBase>
     {
+        private bool _disposed = false;
         // TODO: Decide on severities
         private static readonly ILogger logger = Logging.Factory.CreateLogger<SessionMessageTransport>();
 
@@ -50,8 +51,6 @@ namespace SmartGlass.Messaging.Session
 
         private uint _serverSequenceNumber;
 
-        private bool _isDisposed;
-
         public event EventHandler<MessageReceivedEventArgs<SessionMessageBase>> MessageReceived;
         public event EventHandler<EventArgs> ProtocolTimeoutOccured;
 
@@ -82,7 +81,7 @@ namespace SmartGlass.Messaging.Session
                 _lastReceived = DateTime.Now;
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    await SendHeartbeatAsync();
+                    await SendMessageAckAsync(requestAck: true);
                     await Task.Delay(_heartbeatInterval);
                     if (DateTime.Now - _lastReceived > _heartbeatTimeout)
                     {
@@ -91,11 +90,6 @@ namespace SmartGlass.Messaging.Session
                     }
                 }
             }, _cancellationTokenSource.Token);
-        }
-
-        private Task SendHeartbeatAsync()
-        {
-            return SendMessageAckAsync(requestAck: true);
         }
 
         private void TransportMessageReceived(object sender, MessageReceivedEventArgs<IMessage> e)
@@ -120,7 +114,7 @@ namespace SmartGlass.Messaging.Session
 
             var message = DeserializeMessage(fragmentMessage);
 
-            logger.LogTrace($"Received message #{fragmentMessage.Header.SequenceNumber} ({message.ToString()})");
+            logger.LogTrace($"Received message #{fragmentMessage.Header.SequenceNumber} ({message})");
 
             if (message.Header.RequestAcknowledge)
             {
@@ -185,8 +179,6 @@ namespace SmartGlass.Messaging.Session
                 message = new FragmentMessage();
             }
 
-            logger.LogTrace($"Received {message.GetType().Name} message");
-
             message.Header.ChannelId = fragment.Header.ChannelId;
             message.Header.RequestAcknowledge = fragment.Header.RequestAcknowledge;
             message.Header.IsFragment = fragment.Header.IsFragment;
@@ -200,8 +192,6 @@ namespace SmartGlass.Messaging.Session
 
         private Task SendFragmentAsync(SessionMessageBase message, uint sequenceNumber)
         {
-            logger.LogTrace($"Sending {message.GetType().Name} message");
-
             var fragment = new SessionFragmentMessage();
 
             fragment.Header.ChannelId = message.Header.ChannelId;
@@ -226,7 +216,7 @@ namespace SmartGlass.Messaging.Session
                 _sequenceNumber = _sequenceNumber + 1;
                 var sequenceNumber = _sequenceNumber;
 
-                logger.LogTrace($"Sending outbound #{sequenceNumber}...");
+                logger.LogTrace($"Sending message #{sequenceNumber} ({message}) ...");
 
                 if (message.Header.RequestAcknowledge)
                 {
@@ -265,27 +255,32 @@ namespace SmartGlass.Messaging.Session
             return this.WaitForMessageAsync<T, SessionMessageBase>(timeout, startAction, filter);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    try
+                    {
+                        SendAsync(new DisconnectMessage())
+                            .GetAwaiter().GetResult();
+                    }
+                    catch
+                    {
+                        // TODO: Trace
+                    }
+
+                    _cancellationTokenSource.Cancel();
+                    _transport.MessageReceived -= TransportMessageReceived;
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            _isDisposed = true;
-
-            try
-            {
-                SendAsync(new DisconnectMessage())
-                    .GetAwaiter().GetResult();
-            }
-            catch
-            {
-                // TODO: Trace
-            }
-
-            _cancellationTokenSource.Cancel();
-            _transport.MessageReceived -= TransportMessageReceived;
+            Dispose(true);
         }
     }
 }

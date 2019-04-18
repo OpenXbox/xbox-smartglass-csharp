@@ -11,6 +11,7 @@ namespace SmartGlass.Messaging
 {
     internal class MessageTransport : IDisposable, IMessageTransport<IMessage>
     {
+        private bool _disposed = false;
         private static IPAddress MULTICAST_ADDR = IPAddress.Parse("239.255.255.250");
         private static IMessage CreateFromMessageType(MessageType messageType)
         {
@@ -54,7 +55,7 @@ namespace SmartGlass.Messaging
                 _client.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
             }
 
-            _cancellationTokenSource = _client.ConsumeReceived(receiveResult =>
+            _client.ConsumeReceived(receiveResult =>
             {
                 var reader = new BEReader(receiveResult.Buffer);
 
@@ -79,7 +80,7 @@ namespace SmartGlass.Messaging
                 message.Deserialize(reader);
 
                 _receiveQueue.TryAdd(message);
-            });
+            }, _cancellationTokenSource.Token);
 
             Task.Run(() =>
             {
@@ -100,7 +101,7 @@ namespace SmartGlass.Messaging
                             $"Calling MessageReceived failed! error: {e.Message}");
                     }
                 }
-            });
+            }, _cancellationTokenSource.Token);
         }
 
         /// <summary>
@@ -142,11 +143,23 @@ namespace SmartGlass.Messaging
             return this.WaitForMessageAsync<T, IMessage>(timeout, startAction, filter);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _receiveQueue.CompleteAdding();
+                    _cancellationTokenSource.Cancel();
+                    _client.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            _receiveQueue.CompleteAdding();
-            _cancellationTokenSource.Cancel();
-            _client.Dispose();
+            Dispose(true);
         }
     }
 }
