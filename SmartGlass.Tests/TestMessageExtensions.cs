@@ -56,25 +56,27 @@ namespace SmartGlass.Tests
             Assert.Equal(TestMessage1Object, _store[0]);
         }
 
+        [Fact]
         public async void TestWaitForMessageLongerAsyncActionThanTimeout()
         {
-            var result = await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
+            await Assert.ThrowsAsync<TimeoutException>(async () => await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
                 TimeSpan.FromSeconds(1),
                 () => Task.Run(() =>
                 {
-                    Task.Delay(TimeSpan.FromSeconds(2)).Wait();
-                    _transport.DummyConsume(TestMessage1Object);
+                    Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith((_) =>
+                    {
+                        _transport.DummyConsume(TestMessage1Object);
+                    });
                 })
-            );
+            ));
 
-            Assert.True(_store.Count == 1);
-            Assert.Equal(TestMessage1Object, _store[0]);
+            Assert.True(_store.Count == 0);
         }
 
         [Fact]
         public async void TestWaitForMessageLongerActionThanTimeout()
         {
-            var result = await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
+            await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
                 TimeSpan.FromSeconds(1),
                 () => Task.Run(() =>
                 {
@@ -104,7 +106,7 @@ namespace SmartGlass.Tests
         {
             await Assert.ThrowsAsync<TimeoutException>(async () =>
             {
-                var result = await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
+                await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
                     TimeSpan.FromMilliseconds(100),
                     () => Task.Run(() => _transport.DummyConsume(TestMessage1Object)),
                     (msg) => msg.Number == 101);
@@ -118,7 +120,7 @@ namespace SmartGlass.Tests
         {
             await Assert.ThrowsAsync<TimeoutException>(async () =>
             {
-                var result = await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
+                await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
                     TimeSpan.FromMilliseconds(100),
                     () => Task.Run(() => _transport.DummyConsume(TestMessage2Object)));
             });
@@ -131,7 +133,7 @@ namespace SmartGlass.Tests
         {
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                var result = await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
+                await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
                     TimeSpan.FromMilliseconds(100),
                     () => Task.Run(() => throw new InvalidOperationException()));
             });
@@ -144,7 +146,7 @@ namespace SmartGlass.Tests
         {
             await Assert.ThrowsAsync<TimeoutException>(async () =>
             {
-                var result = await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
+                await _transport.WaitForMessageAsync<TestMessage1, ITestMessage>(
                     TimeSpan.FromMilliseconds(100));
             });
 
