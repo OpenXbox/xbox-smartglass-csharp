@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/OpenXbox/xbox-smartglass-csharp.svg?branch=master)](https://travis-ci.com/OpenXbox/xbox-smartglass-csharp)
 [![Build status](https://ci.appveyor.com/api/projects/status/3tgnu214x6qd87so?svg=true)](https://ci.appveyor.com/project/tuxuser/xbox-smartglass-csharp)
 [![NuGet](https://img.shields.io/nuget/v/OpenXbox.SmartGlass.svg)](https://www.nuget.org/packages/OpenXbox.SmartGlass)
-[![Discord](https://img.shields.io/badge/discord-OpenXbox-blue.svg)](https://discord.gg/TzNKjZF)
+[![Discord](https://img.shields.io/badge/discord-OpenXbox-blue.svg)](https://openxbox.org/discord)
 
 ## Build from source
 
