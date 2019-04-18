@@ -87,8 +87,8 @@ namespace SmartGlass.Cli
                 await nano.OpenChatAudioChannelAsync(
                     new Nano.Packets.AudioFormat(1, 24000, AudioCodec.Opus));
 
-                Console.WriteLine("Adding FileConsumer");
-                FileConsumer consumer = new FileConsumer("nanostream");
+                Console.WriteLine("Adding Rtp Bridge consumer");
+                RtpBridgeConsumer consumer = new RtpBridgeConsumer();
                 nano.AddConsumer(consumer);
 
                 Console.WriteLine("Initializing AV stream (handshaking)...");
@@ -96,6 +96,13 @@ namespace SmartGlass.Cli
                                                  nano.VideoFormats[0]);
                 Console.WriteLine("Starting stream...");
                 await nano.StartStreamAsync();
+
+                Console.WriteLine(":: RTP Bridge running");
+                Console.WriteLine($"Address: {consumer.MulticastAddress}");
+                Console.WriteLine(
+                    $"Audio: Port: {consumer.AudioEndpoint.Port}, PT: {RtpBridgeConsumer.AudioPayloadType}");
+                Console.WriteLine(
+                    $"Video: Port: {consumer.VideoEndpoint.Port}, PT: {RtpBridgeConsumer.VideoPayloadType}");
             }
             catch (Exception e)
             {
