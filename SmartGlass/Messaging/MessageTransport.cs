@@ -132,12 +132,12 @@ namespace SmartGlass.Messaging
             }
         }
 
-        public Task<IMessage> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        public Task<IMessage> WaitForMessageAsync(TimeSpan timeout, Func<Task> startAction = null)
         {
             return this.WaitForMessageAsync<IMessage, IMessage>(timeout, startAction);
         }
 
-        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null)
             where T : IMessage
         {
             return this.WaitForMessageAsync<T, IMessage>(timeout, startAction, filter);

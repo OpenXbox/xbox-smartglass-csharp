@@ -119,7 +119,7 @@ namespace SmartGlass.Messaging.Session
             if (message.Header.RequestAcknowledge)
             {
                 SendMessageAckAsync(new uint[] { fragmentMessage.Header.SequenceNumber })
-                    .GetAwaiter().GetResult();
+                    .Wait();
             }
 
             /*
@@ -244,12 +244,12 @@ namespace SmartGlass.Messaging.Session
             }
         }
 
-        public Task<SessionMessageBase> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        public Task<SessionMessageBase> WaitForMessageAsync(TimeSpan timeout, Func<Task> startAction = null)
         {
             return this.WaitForMessageAsync<SessionMessageBase, SessionMessageBase>(timeout, startAction);
         }
 
-        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null)
             where T : SessionMessageBase
         {
             return this.WaitForMessageAsync<T, SessionMessageBase>(timeout, startAction, filter);
@@ -264,7 +264,7 @@ namespace SmartGlass.Messaging.Session
                     try
                     {
                         SendAsync(new DisconnectMessage())
-                            .GetAwaiter().GetResult();
+                            .Wait();
                     }
                     catch
                     {

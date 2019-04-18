@@ -145,7 +145,7 @@ namespace SmartGlass.Nano
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="flags"></param>
@@ -158,7 +158,7 @@ namespace SmartGlass.Nano
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="reason"></param>
@@ -190,25 +190,25 @@ namespace SmartGlass.Nano
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="timeout"></param>
         /// <param name="startAction"></param>
         /// <returns></returns>
-        internal Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        internal Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Func<Task> startAction = null)
         {
             return this.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="timeout"></param>
         /// <param name="startAction"></param>
         /// <param name="filter"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        internal Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+        internal Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null)
             where T : INanoPacket
         {
             return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
