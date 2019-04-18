@@ -23,6 +23,7 @@ namespace SmartGlass.Channels
     /// </summary>
     public class BroadcastChannel : IDisposable
     {
+        private bool _disposed = false;
         private static readonly ILogger logger = Logging.Factory.CreateLogger<BroadcastChannel>();
 
         private readonly ChannelMessageTransport _baseTransport;
@@ -157,13 +158,22 @@ namespace SmartGlass.Channels
             return new GamestreamSession(initializingMessage.TcpPort, initializingMessage.UdpPort, configuration, initializingMessage.SessionId);
         }
 
-        /// <summary>
-        /// Disposes transport objects
-        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _transport.Dispose();
+                    _baseTransport.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            _transport.Dispose();
-            _baseTransport.Dispose();
+            Dispose(true);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace SmartGlass.Channels
    /// </summary>
     public class AuxiliaryStreamClient : IDisposable
     {
+        bool _disposed = false;
         // TODO: Connection state events.
         private static readonly ILogger logger = Logging.Factory.CreateLogger<AuxiliaryStreamClient>();
 
@@ -166,9 +167,21 @@ namespace SmartGlass.Channels
             await _client.GetStream().WriteAsync(buffer, 0, buffer.Length);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _client.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            _client.Dispose();
+            Dispose(true);
         }
     }
 }

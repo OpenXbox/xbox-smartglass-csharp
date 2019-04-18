@@ -15,12 +15,11 @@ namespace SmartGlass.Nano
 {
     internal class NanoRdpTransport : IDisposable, IMessageTransport<INanoPacket>
     {
+        private bool _disposed = false;
+        private readonly CancellationTokenSource _cancellationTokenSource;
         private static readonly ILogger logger = Logging.Factory.CreateLogger<NanoRdpTransport>();
         private readonly TcpClient _controlProtoClient;
         private readonly UdpClient _streamingProtoClient;
-
-        private readonly CancellationTokenSource _cancellationTokenSourceStreaming;
-        private readonly CancellationTokenSource _cancellationTokenSourceControl;
 
         private readonly BlockingCollection<INanoPacket> _receiveQueue = new BlockingCollection<INanoPacket>();
 
@@ -43,6 +42,7 @@ namespace SmartGlass.Nano
             _tcpPort = tcpPort;
             _udpPort = udpPort;
 
+            _cancellationTokenSource = new CancellationTokenSource();
             IPAddress hostAddr = IPAddress.Parse(address);
             _controlProtoEp = new IPEndPoint(hostAddr, _tcpPort);
             _streamingProtoEp = new IPEndPoint(hostAddr, _udpPort);
@@ -90,12 +90,14 @@ namespace SmartGlass.Nano
                 }
             }
 
-            _cancellationTokenSourceControl = _controlProtoClient.ConsumeReceived(
-                receiveResult => ProcessPacket(receiveResult)
+            _controlProtoClient.ConsumeReceivedPrefixed(
+                receiveResult => ProcessPacket(receiveResult),
+                _cancellationTokenSource.Token
             );
 
-            _cancellationTokenSourceStreaming = _streamingProtoClient.ConsumeReceived(
-                receiveResult => ProcessPacket(receiveResult.Buffer)
+            _streamingProtoClient.ConsumeReceived(
+                receiveResult => ProcessPacket(receiveResult.Buffer),
+                _cancellationTokenSource.Token
             );
 
             Task.Run(() =>
@@ -115,7 +117,7 @@ namespace SmartGlass.Nano
                             e, "Calling Nano MessageReceived failed!");
                     }
                 }
-            });
+            }, _cancellationTokenSource.Token);
         }
 
         public Task SendAsync(INanoPacket message)
@@ -212,13 +214,24 @@ namespace SmartGlass.Nano
             return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _receiveQueue.CompleteAdding();
+                    _cancellationTokenSource.Cancel();
+                    _streamingProtoClient.Dispose();
+                    _controlProtoClient.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            _cancellationTokenSourceStreaming.Cancel();
-            _cancellationTokenSourceControl.Cancel();
-            _receiveQueue.CompleteAdding();
-            _streamingProtoClient.Dispose();
-            _controlProtoClient.Dispose();
+            Dispose(true);
         }
     }
 }
