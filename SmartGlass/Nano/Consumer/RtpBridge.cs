@@ -11,8 +11,8 @@ namespace SmartGlass.Nano.Consumer
 {
     public class RtpBridgeConsumer : IConsumer, IDisposable
     {
-        public const byte VideoPayloadType = 96;
-        public const byte AudioPayloadType = 97;
+        public const byte AudioPayloadType = 96;
+        public const byte VideoPayloadType = 97;
 
         private bool _disposed = false;
 
@@ -20,15 +20,15 @@ namespace SmartGlass.Nano.Consumer
         public IPAddress MulticastAddress { get; private set; }
         public IPEndPoint AudioEndpoint { get; private set; }
         public IPEndPoint VideoEndpoint { get; private set; }
-        public ushort SSRC { get; private set; }
+        public uint SSRC { get; private set; }
 
         public RtpBridgeConsumer(string multicastAddress = "224.1.1.1")
         {
             _udpClient = new UdpClient();
             MulticastAddress = IPAddress.Parse(multicastAddress);
-            AudioEndpoint = new IPEndPoint(MulticastAddress, 5890);
-            VideoEndpoint = new IPEndPoint(MulticastAddress, 5892);
-            SSRC = (ushort)new Random().Next(ushort.MaxValue);
+            AudioEndpoint = new IPEndPoint(MulticastAddress, 5007);
+            VideoEndpoint = new IPEndPoint(MulticastAddress, 6007);
+            SSRC = (uint)new Random().Next(int.MaxValue);
 
             _udpClient.JoinMulticastGroup(MulticastAddress);
         }
@@ -37,19 +37,19 @@ namespace SmartGlass.Nano.Consumer
         {
             StringBuilder sb = new StringBuilder();
 
+            sb.AppendLine("SDP:");
             sb.AppendLine("v=0");
             sb.AppendLine($"c=IN IP4 {MulticastAddress}");
 
             // Video
             sb.AppendLine($"m=video {VideoEndpoint.Port} RTP/AVP {VideoPayloadType}");
             sb.AppendLine($"a=rtpmap:{VideoPayloadType} H264/90000");
+            sb.AppendLine($"a=fmtp:{VideoPayloadType} packetization-mode=1");
 
             // Audio
-            /*
             sb.AppendLine($"m=audio {AudioEndpoint.Port} RTP/AVP {AudioPayloadType}");
-            sb.AppendLine($"a=rtpmap:{AudioPayloadType} mpeg4-generic/48000");
-            sb.AppendLine($"a=fmtp:{AudioPayloadType} streamType=5;profile-level-id=44;mode=AAC-hbr;sizelength=13;indexlength=3;indexdeltalength=3");
-            */
+            sb.AppendLine($"a=rtpmap:{AudioPayloadType} MPEG4-GENERIC/48000/2");
+            sb.AppendLine($"a=fmtp:{AudioPayloadType} profile-level-id=1;mode=AAC-hbr;sizelength=13;indexlength=3;indexdeltalength=3");
 
             return sb.ToString();
         }
@@ -61,32 +61,43 @@ namespace SmartGlass.Nano.Consumer
 
         void IVideoConsumer.ConsumeVideoData(object sender, VideoDataEventArgs args)
         {
-            var videoData = args.VideoData;
+            var packetData = args.VideoData;
 
-            videoData.Header.ChannelId = 0;
-            videoData.Header.ConnectionId = SSRC;
-            videoData.Header.Padding = false;
-            videoData.Header.PayloadType = (NanoPayloadType)VideoPayloadType;
+            packetData.Header.ChannelId = (ushort)(SSRC & 0xFFFF);
+            packetData.Header.ConnectionId = (ushort)(SSRC >> 16 & 0xFFFF);
+            packetData.Header.Padding = false;
+            packetData.Header.PayloadType = (NanoPayloadType)VideoPayloadType;
+            // packetData.Header.Timestamp = (uint)(videoData.Timestamp & 0xFFFFFFFF);
 
             var writer = new BEWriter();
-            videoData.Header.Serialize(writer);
-            writer.Write(videoData.Data);
+            packetData.Header.Serialize(writer);
+            writer.Write(packetData.Data);
 
             SendMulticast(writer.ToBytes(), VideoEndpoint);
         }
 
         void IAudioConsumer.ConsumeAudioData(object sender, AudioDataEventArgs args)
         {
-            var audioData = args.AudioData;
+            var packetData = args.AudioData;
 
-            audioData.Header.ChannelId = 0;
-            audioData.Header.ConnectionId = SSRC;
-            audioData.Header.Padding = false;
-            audioData.Header.PayloadType = (NanoPayloadType)AudioPayloadType;
+            packetData.Header.ChannelId = (ushort)(SSRC & 0xFFFF);
+            packetData.Header.ConnectionId = (ushort)(SSRC >> 16 & 0xFFFF);
+            packetData.Header.Padding = false;
+            packetData.Header.PayloadType = (NanoPayloadType)AudioPayloadType;
+            // packetData.Header.Timestamp = (uint)(audioData.Timestamp & 0xFFFFFFFF);
+
+            var auHeader = new byte[4];
+            auHeader[0] = 0;
+            auHeader[1] = 0x10;
+			auHeader[2] = (byte) (packetData.Data.Length >> 5);
+			auHeader[3] = (byte) (packetData.Data.Length << 3);
+            auHeader[3] &= 0xF8;
+			auHeader[3] |= 0x00;
 
             var writer = new BEWriter();
-            audioData.Header.Serialize(writer);
-            writer.Write(audioData.Data);
+            packetData.Header.Serialize(writer);
+            writer.Write(auHeader);
+            writer.Write(packetData.Data);
 
             SendMulticast(writer.ToBytes(), AudioEndpoint);
         }
