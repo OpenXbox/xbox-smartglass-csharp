@@ -39,11 +39,17 @@ namespace SmartGlass.Nano.Consumer
 
             sb.AppendLine("v=0");
             sb.AppendLine($"c=IN IP4 {MulticastAddress}");
+
+            // Video
             sb.AppendLine($"m=video {VideoEndpoint.Port} RTP/AVP {VideoPayloadType}");
-            sb.AppendLine($"m=audio {AudioEndpoint.Port} RTP/AVP {AudioPayloadType}");
             sb.AppendLine($"a=rtpmap:{VideoPayloadType} H264/90000");
+
+            // Audio
+            /*
+            sb.AppendLine($"m=audio {AudioEndpoint.Port} RTP/AVP {AudioPayloadType}");
             sb.AppendLine($"a=rtpmap:{AudioPayloadType} mpeg4-generic/48000");
             sb.AppendLine($"a=fmtp:{AudioPayloadType} streamType=5;profile-level-id=44;mode=AAC-hbr;sizelength=13;indexlength=3;indexdeltalength=3");
+            */
 
             return sb.ToString();
         }
