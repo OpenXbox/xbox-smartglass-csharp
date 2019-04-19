@@ -103,6 +103,9 @@ namespace SmartGlass.Cli
                     $"Audio: Port: {consumer.AudioEndpoint.Port}, PT: {RtpBridgeConsumer.AudioPayloadType}");
                 Console.WriteLine(
                     $"Video: Port: {consumer.VideoEndpoint.Port}, PT: {RtpBridgeConsumer.VideoPayloadType}");
+                
+                Console.WriteLine("SDP Definition:");
+                Console.WriteLine(consumer.GetSdp());
             }
             catch (Exception e)
             {

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
@@ -30,6 +31,21 @@ namespace SmartGlass.Nano.Consumer
             SSRC = (ushort)new Random().Next(ushort.MaxValue);
 
             _udpClient.JoinMulticastGroup(MulticastAddress);
+        }
+
+        public string GetSdp()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("v=0");
+            sb.AppendLine($"c=IN IP4 {MulticastAddress}");
+            sb.AppendLine($"m=video {VideoEndpoint.Port} RTP/AVP {VideoPayloadType}");
+            sb.AppendLine($"m=audio {AudioEndpoint.Port} RTP/AVP {AudioPayloadType}");
+            sb.AppendLine($"a=rtpmap:{VideoPayloadType} H264/90000");
+            sb.AppendLine($"a=rtpmap:{AudioPayloadType} mpeg4-generic/48000");
+            sb.AppendLine($"a=fmtp:{AudioPayloadType} streamType=5;profile-level-id=44;mode=AAC-hbr;sizelength=13;indexlength=3;indexdeltalength=3");
+
+            return sb.ToString();
         }
 
         int SendMulticast(byte[] data, IPEndPoint ep)
