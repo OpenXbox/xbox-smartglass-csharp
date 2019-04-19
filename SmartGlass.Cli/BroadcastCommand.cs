@@ -97,18 +97,11 @@ namespace SmartGlass.Cli
                 Console.WriteLine("Starting stream...");
                 await nano.StartStreamAsync();
 
-                var sdp = consumer.GetSdp();
+                Console.WriteLine("Waiting for SPS/PPS H264 parameters...");
+                var sdp = await consumer.GetSdpAsync();
                 var httpServer = new SimpleHttpServer(sdp, 5323);
 
                 Console.WriteLine(":: RTP Bridge running");
-                Console.WriteLine($"Address: {consumer.MulticastAddress}");
-                Console.WriteLine(
-                    $"Audio: Port: {consumer.AudioEndpoint.Port}, PT: {RtpBridgeConsumer.AudioPayloadType}");
-                Console.WriteLine(
-                    $"Video: Port: {consumer.VideoEndpoint.Port}, PT: {RtpBridgeConsumer.VideoPayloadType}");
-                Console.WriteLine();
-
-                Console.WriteLine("SDP Definition:");
                 Console.WriteLine(sdp);
                 Console.WriteLine();
 

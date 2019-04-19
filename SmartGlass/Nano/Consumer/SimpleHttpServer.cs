@@ -10,6 +10,7 @@ using System.Net;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace SmartGlass.Nano.Consumer
 {
@@ -17,7 +18,7 @@ namespace SmartGlass.Nano.Consumer
     {
         private bool _disposed = false;
 
-        private Thread _serverThread;
+        private CancellationTokenSource _cancellationTokenSource;
         private string _responseContent;
         private HttpListener _listener;
         private int _port;
@@ -31,39 +32,19 @@ namespace SmartGlass.Nano.Consumer
         /// <summary>
         /// Construct server with given port.
         /// </summary>
-        /// <param name="path">Directory path to serve.</param>
+        /// <param name="responseContent">File content to serve.</param>
         /// <param name="port">Port of the server.</param>
-        public SimpleHttpServer(string path, int port)
+        public SimpleHttpServer(string responseContent, int port)
         {
-            this.Initialize(path, port);
-        }
-    
-        /// <summary>
-        /// Construct server with suitable port.
-        /// </summary>
-        /// <param name="path">Directory path to serve.</param>
-        public SimpleHttpServer(string path)
-        {
-            //get an empty port
-            TcpListener l = new TcpListener(IPAddress.Loopback, 0);
-            l.Start();
-            int port = ((IPEndPoint)l.LocalEndpoint).Port;
-            l.Stop();
-            this.Initialize(path, port);
-        }
-    
-        private void Listen()
-        {
+            _responseContent = responseContent;
+            _port = port;
+
+            _cancellationTokenSource = new CancellationTokenSource();
             _listener = new HttpListener();
-            _listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
-            _listener.Start();
-            while (true)
-            {
-                HttpListenerContext context = _listener.GetContext();
-                Process(context);
-            }
+
+            Initialize(responseContent, port);
         }
-    
+
         private void Process(HttpListenerContext context)
         {
             var content = System.Text.UTF8Encoding.UTF8.GetBytes(_responseContent);
@@ -86,11 +67,17 @@ namespace SmartGlass.Nano.Consumer
     
         private void Initialize(string responseContent, int port)
         {
-            this._responseContent = responseContent;
-            this._port = port;
-            _serverThread = new Thread(this.Listen);
-            _serverThread.IsBackground = true;
-            _serverThread.Start();
+            Task.Run(() => 
+            {
+                _listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
+                _listener.Start();
+
+                while (!_cancellationTokenSource.IsCancellationRequested)
+                {
+                    HttpListenerContext context = _listener.GetContext();
+                    Process(context);
+                }
+            }, _cancellationTokenSource.Token);
         }
     
         protected virtual void Dispose(bool disposing)
@@ -99,7 +86,7 @@ namespace SmartGlass.Nano.Consumer
             {
                 if (disposing)
                 {
-                    _serverThread.Abort();
+                    _cancellationTokenSource.Cancel();
                     _listener.Stop();
                 }
                 _disposed = true;

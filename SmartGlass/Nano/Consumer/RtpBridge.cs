@@ -4,6 +4,8 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using SmartGlass.Common;
 using SmartGlass.Nano.Packets;
 
@@ -23,6 +25,8 @@ namespace SmartGlass.Nano.Consumer
         private bool _gotVideoParams = false;
         private byte[] _spsBytes = null;
         private byte[] _ppsBytes = null;
+        private string _spropH264Params
+            => $"{Convert.ToBase64String(_spsBytes)},{Convert.ToBase64String(_ppsBytes)}";
         private readonly UdpClient _udpClient;
         public IPAddress MulticastAddress { get; private set; }
         public IPEndPoint AudioEndpoint { get; private set; }
@@ -40,8 +44,25 @@ namespace SmartGlass.Nano.Consumer
             _udpClient.JoinMulticastGroup(MulticastAddress);
         }
 
-        public string GetSdp()
+        public async Task<string> GetSdpAsync()
         {
+            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+
+            await Task.Run(() =>
+            {
+                while (!cancellationTokenSource.IsCancellationRequested)
+                {
+                    if (_gotVideoParams)
+                    {
+                        cancellationTokenSource.Cancel();
+                        break;
+                    }
+                }
+            }, cancellationTokenSource.Token);
+
+            if (!_gotVideoParams)
+                throw new Exception("SPS/PPS not ready");
+
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine("SDP:");
@@ -51,7 +72,7 @@ namespace SmartGlass.Nano.Consumer
             // Video
             sb.AppendLine($"m=video {VideoEndpoint.Port} RTP/AVP {VideoPayloadType}");
             sb.AppendLine($"a=rtpmap:{VideoPayloadType} H264/90000");
-            sb.AppendLine($"a=fmtp:{VideoPayloadType} packetization-mode=1");
+            sb.AppendLine($"a=fmtp:{VideoPayloadType} sprop-parameter-sets={_spropH264Params};");
 
             // Audio
             sb.AppendLine($"m=audio {AudioEndpoint.Port} RTP/AVP {AudioPayloadType}");
@@ -69,39 +90,43 @@ namespace SmartGlass.Nano.Consumer
                 return false;
             }
 
-            int startPos = 4;
-            for (int i=startPos; i < nalu.Length; i++)
+            int GetNaluLength(byte[] data, int startOffset)
             {
-                if (nalu[i] == 0x00 && nalu[i + 1] == 0x00 && nalu[i + 2] == 0x00 && nalu[i + 3] == 0x01)
+                for (int i=startOffset; i < nalu.Length; i++)
                 {
-                    _spsBytes = new byte[i - startPos];
-                    Array.Copy(nalu, startPos, _spsBytes, 0, _spsBytes.Length);
-                    break;
+                    if (nalu[i] == 0x00 && nalu[i + 1] == 0x00 && nalu[i + 2] == 0x00 && nalu[i + 3] == 0x01)
+                    {
+                        return i - startOffset;
+                    }
                 }
+                return -1;
             }
 
-            if (_spsBytes == null && (_spsBytes[0] & BITMASK_NALU_TYPE) != NALU_TYPE_SPS)
+            /* SPS */
+            int startPos = 4;
+            int spsLength = GetNaluLength(nalu, startPos);
+
+            if (spsLength == -1 && (nalu[startPos] & BITMASK_NALU_TYPE) != NALU_TYPE_SPS)
             {
                 Debug.WriteLine("SPS could not be determined");
                 return false;
             }
 
-            startPos += (_spsBytes.Length + 4);
-            for (int i=startPos; i < nalu.Length; i++)
-            {
-                if (nalu[i] == 0x00 && nalu[i + 1] == 0x00 && nalu[i + 2] == 0x00 && nalu[i + 3] == 0x01)
-                {
-                    _ppsBytes = new byte[i - startPos];
-                    Array.Copy(nalu, startPos, _ppsBytes, 0, _ppsBytes.Length);
-                    break;
-                }
-            }
+            _spsBytes = new byte[spsLength];
+            Array.Copy(nalu, startPos, _spsBytes, 0, _spsBytes.Length);
 
-            if (_ppsBytes == null && (_ppsBytes[0] & BITMASK_NALU_TYPE) != NALU_TYPE_PPS)
+            /* PPS */
+            startPos += (spsLength + 4);
+            int ppsLength = GetNaluLength(nalu, startPos);
+
+            if (ppsLength == -1 && (nalu[startPos] & BITMASK_NALU_TYPE) != NALU_TYPE_PPS)
             {
                 Debug.WriteLine("PPS could not be determined");
                 return false;
             }
+
+            _ppsBytes = new byte[ppsLength];
+            Array.Copy(nalu, startPos, _ppsBytes, 0, _ppsBytes.Length);
 
             return true;
         }
