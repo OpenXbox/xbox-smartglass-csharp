@@ -14,8 +14,15 @@ namespace SmartGlass.Nano.Consumer
         public const byte AudioPayloadType = 96;
         public const byte VideoPayloadType = 97;
 
+        public const byte BITMASK_NALU_TYPE = 0x1F;
+        public const byte NALU_TYPE_SPS = 0x7;
+        public const byte NALU_TYPE_PPS = 0x8;
+
         private bool _disposed = false;
 
+        private bool _gotVideoParams = false;
+        private byte[] _spsBytes = null;
+        private byte[] _ppsBytes = null;
         private readonly UdpClient _udpClient;
         public IPAddress MulticastAddress { get; private set; }
         public IPEndPoint AudioEndpoint { get; private set; }
@@ -54,6 +61,51 @@ namespace SmartGlass.Nano.Consumer
             return sb.ToString();
         }
 
+        bool ExtractSpsPps(byte[] nalu)
+        {
+            if (nalu[0] != 0x00 || nalu[1] != 0x00 || nalu[2] != 0x00 || nalu[3] != 0x01
+                || (nalu[4] & BITMASK_NALU_TYPE) != NALU_TYPE_SPS)
+            {
+                return false;
+            }
+
+            int startPos = 4;
+            for (int i=startPos; i < nalu.Length; i++)
+            {
+                if (nalu[i] == 0x00 && nalu[i + 1] == 0x00 && nalu[i + 2] == 0x00 && nalu[i + 3] == 0x01)
+                {
+                    _spsBytes = new byte[i - startPos];
+                    Array.Copy(nalu, startPos, _spsBytes, 0, _spsBytes.Length);
+                    break;
+                }
+            }
+
+            if (_spsBytes == null && (_spsBytes[0] & BITMASK_NALU_TYPE) != NALU_TYPE_SPS)
+            {
+                Debug.WriteLine("SPS could not be determined");
+                return false;
+            }
+
+            startPos += (_spsBytes.Length + 4);
+            for (int i=startPos; i < nalu.Length; i++)
+            {
+                if (nalu[i] == 0x00 && nalu[i + 1] == 0x00 && nalu[i + 2] == 0x00 && nalu[i + 3] == 0x01)
+                {
+                    _ppsBytes = new byte[i - startPos];
+                    Array.Copy(nalu, startPos, _ppsBytes, 0, _ppsBytes.Length);
+                    break;
+                }
+            }
+
+            if (_ppsBytes == null && (_ppsBytes[0] & BITMASK_NALU_TYPE) != NALU_TYPE_PPS)
+            {
+                Debug.WriteLine("PPS could not be determined");
+                return false;
+            }
+
+            return true;
+        }
+
         int SendMulticast(byte[] data, IPEndPoint ep)
         {
             return _udpClient.Send(data, data.Length, ep);
@@ -67,13 +119,15 @@ namespace SmartGlass.Nano.Consumer
             packetData.Header.ConnectionId = (ushort)(SSRC >> 16 & 0xFFFF);
             packetData.Header.Padding = false;
             packetData.Header.PayloadType = (NanoPayloadType)VideoPayloadType;
-            // packetData.Header.Timestamp = (uint)(videoData.Timestamp & 0xFFFFFFFF);
 
             var writer = new BEWriter();
             packetData.Header.Serialize(writer);
             writer.Write(packetData.Data);
 
             SendMulticast(writer.ToBytes(), VideoEndpoint);
+
+            if (!_gotVideoParams)
+                _gotVideoParams = ExtractSpsPps(packetData.Data);
         }
 
         void IAudioConsumer.ConsumeAudioData(object sender, AudioDataEventArgs args)
@@ -84,7 +138,6 @@ namespace SmartGlass.Nano.Consumer
             packetData.Header.ConnectionId = (ushort)(SSRC >> 16 & 0xFFFF);
             packetData.Header.Padding = false;
             packetData.Header.PayloadType = (NanoPayloadType)AudioPayloadType;
-            // packetData.Header.Timestamp = (uint)(audioData.Timestamp & 0xFFFFFFFF);
 
             var auHeader = new byte[4];
             auHeader[0] = 0;
