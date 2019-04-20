@@ -66,19 +66,21 @@ namespace SmartGlass.Nano.Consumer
 
     public class AACFrame
     {
-        public ulong TimeStamp { get; private set; }
-        public uint FrameId { get; private set; }
-        public AACProfile Profile { get; private set; }
-        public int SampleRate { get; private set; }
-        public byte Channels { get; private set; }
-        public byte[] RawData { get; private set; }
+        public readonly uint Flags;
+        public readonly ulong TimeStamp;
+        public readonly uint FrameId;
+        public readonly AACProfile Profile;
+        public readonly int SampleRate;
+        public readonly byte Channels;
+        public readonly byte[] RawData;
 
-        public AACFrame(byte[] data, ulong timeStamp, uint frameId, AACProfile profile,
-                        int sampleRate, byte channels)
+        public AACFrame(byte[] data, ulong timeStamp, uint frameId, uint flags,
+                        AACProfile profile, int sampleRate, byte channels)
         {
             RawData = data;
             TimeStamp = timeStamp;
             FrameId = frameId;
+            Flags = flags;
             Profile = profile;
             SampleRate = sampleRate;
             Channels = channels;
@@ -86,12 +88,8 @@ namespace SmartGlass.Nano.Consumer
 
         public byte[] GetSamplesWithHeader()
         {
-            return RawData == null
-                ? null
-                : AacAdtsAssembler.AssembleAudioFrame(RawData,
-                                                       Profile,
-                                                       SampleRate,
-                                                       Channels);
+            return AacAdtsAssembler.AssembleAudioFrame(
+                RawData, Profile, SampleRate, Channels);
         }
 
         public byte[] GetCodecSpecificData()

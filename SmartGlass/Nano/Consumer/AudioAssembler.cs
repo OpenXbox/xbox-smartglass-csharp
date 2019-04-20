@@ -9,8 +9,8 @@ namespace SmartGlass.Nano.Consumer
         public static AACFrame AssembleAudioFrame(AudioData data, AACProfile profile,
                                                 int samplingFreq, byte channels)
         {
-            return new AACFrame(data.Data, data.Timestamp, data.FrameId, profile,
-                                samplingFreq, channels);
+            return new AACFrame(data.Data, data.Timestamp, data.FrameId, data.Flags,
+                                profile, samplingFreq, channels);
         }
     }
 }
