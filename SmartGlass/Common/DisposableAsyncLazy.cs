@@ -30,7 +30,7 @@ namespace SmartGlass.Common
 
             if (Value != null)
             {
-                Value.When().GetAwaiter().GetResult();
+                Value.When().Wait();
 
                 if (Value.Status == TaskStatus.RanToCompletion)
                 {

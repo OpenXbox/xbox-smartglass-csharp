@@ -29,7 +29,7 @@ namespace SmartGlass
         /// <param name="xboxLiveAuthorization"></param>
         /// <returns></returns>
         public static async Task<SmartGlassClient> ConnectAsync(
-            string addressOrHostname, string xboxLiveUserHash=null, string xboxLiveAuthorization=null)
+            string addressOrHostname, string xboxLiveUserHash = null, string xboxLiveAuthorization = null)
         {
             var device = await Device.PingAsync(addressOrHostname).ConfigureAwait(true);
             return await ConnectAsync(device, xboxLiveUserHash, xboxLiveAuthorization);
@@ -52,7 +52,7 @@ namespace SmartGlass
                 Guid deviceId = Guid.NewGuid();
                 Func<Task> connectFunc = async () =>
                 {
-                    foreach(var fragment in ConnectRequestMessage
+                    foreach (var fragment in ConnectRequestMessage
                         .GenerateConnectRequest(deviceId, cryptoContext, xboxLiveUserHash, xboxLiveAuthorization))
                     {
                         await transport.SendAsync(fragment);
@@ -62,7 +62,7 @@ namespace SmartGlass
                 var response = await Common.TaskExtensions.WithRetries(() =>
                     transport.WaitForMessageAsync<ConnectResponseMessage>(
                         connectTimeout,
-                        () => connectFunc().GetAwaiter().GetResult()),
+                        connectFunc),
                     connectRetries);
 
                 return new SmartGlassClient(
@@ -117,8 +117,8 @@ namespace SmartGlass
                 }
             };
 
-            _sessionMessageTransport.SendAsync(new LocalJoinMessage()).GetAwaiter().GetResult();
-            OpenChannels().GetAwaiter().GetResult();
+            _sessionMessageTransport.SendAsync(new LocalJoinMessage()).Wait();
+            OpenChannels().Wait();
             _sessionMessageTransport.StartHeartbeat();
         }
 
@@ -187,7 +187,7 @@ namespace SmartGlass
             {
                 response = await _sessionMessageTransport.WaitForMessageAsync<StartChannelResponseMessage>(
                     TimeSpan.FromSeconds(5),
-                    async () => await _sessionMessageTransport.SendAsync(channelRequestMessage),
+                    () => _sessionMessageTransport.SendAsync(channelRequestMessage),
                     m => m.ChannelRequestId == requestId);
             }
             catch (TimeoutException)
@@ -220,7 +220,7 @@ namespace SmartGlass
 
             try
             {
-                await channel.WaitForMessageAsync<AuxiliaryStreamMessage>(TimeSpan.FromSeconds(1), () => { });
+                await channel.WaitForMessageAsync<AuxiliaryStreamMessage>(TimeSpan.FromSeconds(1));
             }
             catch (TimeoutException)
             {

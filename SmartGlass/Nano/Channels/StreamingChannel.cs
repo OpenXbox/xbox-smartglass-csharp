@@ -128,12 +128,12 @@ namespace SmartGlass.Nano.Channels
         internal Task SendChannelOpen(NanoChannel channel, byte[] flags)
             => _transport.SendChannelOpen(channel, flags);
 
-        public Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        public Task<INanoPacket> WaitForMessageAsync(TimeSpan timeout, Func<Task> startAction = null)
         {
             return this.WaitForMessageAsync<INanoPacket, INanoPacket>(timeout, startAction);
         }
 
-        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null)
             where T : INanoPacket
         {
             return this.WaitForMessageAsync<T, INanoPacket>(timeout, startAction, filter);
