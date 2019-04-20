@@ -52,7 +52,7 @@ namespace SmartGlass.Nano.Consumer
             if (!_videoData.TryRemove(frameId, out VideoFrameData completeFrame))
                 return null;
             
-            return new H264Frame(completeFrame.Data, frameId, completeFrame.Timestamp);
+            return new H264Frame(completeFrame.Data, frameId, completeFrame.Timestamp, completeFrame.Flags);
         }
     }
 }

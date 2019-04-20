@@ -50,9 +50,10 @@ namespace SmartGlass.Nano.Consumer
         private byte[] _spsData;
         private byte[] _frameData;
 
-        public byte[] RawData { get; private set; }
-        public ulong TimeStamp { get; private set; }
-        public uint FrameId { get; private set; }
+        public readonly byte[] RawData;
+        public readonly ulong TimeStamp;
+        public readonly uint FrameId;
+        public readonly uint Flags;
         public List<NalUnitType> NalUnitTypes { get; private set; }
 
         public bool ContainsPPS
@@ -105,13 +106,14 @@ namespace SmartGlass.Nano.Consumer
 
         // Parsing is not done on initialization to save computation time,
         // in case of dropped frame
-        public H264Frame(byte[] data, uint frameId, ulong timeStamp)
+        public H264Frame(byte[] data, uint frameId, ulong timeStamp, uint flags)
         {
             _isParsed = false;
             RawData = data;
             TimeStamp = timeStamp;
             FrameId = frameId;
             NalUnitTypes = new List<NalUnitType>();
+            Flags = flags;
         }
 
         public byte[] GetPpsData()
