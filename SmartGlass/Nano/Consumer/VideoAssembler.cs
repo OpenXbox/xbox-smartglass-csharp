@@ -1,59 +1,58 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
-using SmartGlass.Nano.Packets;
 using System.IO;
+using System.Collections.Concurrent;
+
+using SmartGlass.Nano.Packets;
 
 namespace SmartGlass.Nano.Consumer
 {
+
+    public class VideoFrameData
+    {
+        // Keyframe: Flags & 0x2
+        // Unknown: Flags & 0x4
+        public bool IsKeyframe => (Flags & 2) == 2;
+        public uint Flags;
+        public ulong Timestamp;
+        public byte[] Data;
+        public int WrittenChunks;
+    }
+
     public class VideoAssembler
     {
-        private Dictionary<uint, List<VideoData>> _videoData;
-
-        public VideoAssembler()
-        {
-            _videoData = new Dictionary<uint, List<VideoData>>();
-        }
+        private readonly ConcurrentDictionary<uint, VideoFrameData> _videoData
+            = new ConcurrentDictionary<uint, VideoFrameData>();
 
         public H264Frame AssembleVideoFrame(VideoData data)
         {
-            // Keyframe: Flags 0x6 (20 -70 packets)
-            // Intermediate: Flags 0x4 (1-2 packets)
             uint frameId = data.FrameId;
-            uint packetCount = data.PacketCount;
-            ulong timeStamp = data.Timestamp;
-
             if (!_videoData.ContainsKey(frameId))
             {
-                _videoData.Add(frameId, new List<VideoData>());
-            }
-
-            List<VideoData> frames = _videoData[frameId];
-            frames.Add(data);
-
-            if (packetCount != frames.Count)
-            {
-                // Frame is not complete, store what we have currently
-                _videoData[frameId] = frames;
-            }
-            else
-            {
-                // Assemble final frame
-                List<VideoData> sortedFrames = frames.OrderBy(fun => fun.Offset).ToList();
-                _videoData.Remove(frameId);
-
-                using (MemoryStream ms = new MemoryStream())
+                var newData = new VideoFrameData()
                 {
-                    foreach (VideoData frame in sortedFrames)
-                    {
-                        ms.Write(frame.Data, 0, frame.Data.Length);
-                    }
+                    Flags = data.Flags,
+                    Timestamp = data.Timestamp,
+                    Data = new byte[data.TotalSize],
+                    WrittenChunks = 0
+                };
 
-                    return new H264Frame(ms.ToArray(), frameId, timeStamp);
-                }
+                if (!_videoData.TryAdd(frameId, newData))
+                    return null;
             }
 
-            return null;
+            Array.Copy(data.Data, 0, _videoData[frameId].Data, (int)data.Offset, data.Data.Length);
+            _videoData[frameId].WrittenChunks++;
+
+            if (_videoData[frameId].WrittenChunks != data.PacketCount)
+                // Frame not ready
+                return null;
+
+            // Frame is ready
+            if (!_videoData.TryRemove(frameId, out VideoFrameData completeFrame))
+                return null;
+            
+            return new H264Frame(completeFrame.Data, frameId, completeFrame.Timestamp);
         }
     }
 }
