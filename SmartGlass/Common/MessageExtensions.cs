@@ -12,7 +12,7 @@ namespace SmartGlass.Common
     public static class MessageExtensions
     {
         public static async Task<T> WaitForMessageAsync<T, TError, TBase>(
-            this IMessageTransport<TBase> transport, TimeSpan timeout, Action startAction = null, Func<T, bool> filter = null, Func<TError, bool> errorFilter = null)
+            this IMessageTransport<TBase> transport, TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null, Func<TError, bool> errorFilter = null)
             where T : TBase
             where TError : TBase, IConvertToException
         {
@@ -58,7 +58,7 @@ namespace SmartGlass.Common
         /// <typeparam name="T">Expected message type.</typeparam>
         /// <typeparam name="TBase">Message baseclass.</typeparam>
         public static async Task<T> WaitForMessageAsync<T, TBase>(
-            this IMessageTransport<TBase> transport, TimeSpan timeout, Action startAction = null, Func<T, bool> filter = null)
+            this IMessageTransport<TBase> transport, TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null)
             where T : TBase
         {
             return (T)(await TaskExtensions.EventTask<IMessageTransport<TBase>, MessageReceivedEventArgs<TBase>>(
@@ -95,7 +95,7 @@ namespace SmartGlass.Common
         /// <param name="filter">(Optional) Filter.</param>
         /// <typeparam name="T">Expected message type.</typeparam>
         public static IEnumerable<T> ReadMessages<T>(
-            this IMessageTransport<T> transport, TimeSpan readDuration, Action startAction = null)
+            this IMessageTransport<T> transport, TimeSpan readDuration, Func<Task> startAction = null)
         {
             var lockObject = new object();
             var blockingCollection = new BlockingCollection<T>();

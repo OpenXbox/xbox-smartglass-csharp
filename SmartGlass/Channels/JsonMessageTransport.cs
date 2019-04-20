@@ -50,12 +50,12 @@ namespace SmartGlass.Channels
             return _baseTransport.SendAsync(new JsonMessage() { Json = JsonConvert.SerializeObject(message, _serializerSettings) });
         }
 
-        public Task<TMessage> WaitForMessageAsync(TimeSpan timeout, Action startAction = null)
+        public Task<TMessage> WaitForMessageAsync(TimeSpan timeout, Func<Task> startAction = null)
         {
             return this.WaitForMessageAsync<TMessage, TMessage>(timeout, startAction);
         }
 
-        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction = null, Func<T, bool> filter = null)
+        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null)
             where T : TMessage
         {
             return this.WaitForMessageAsync<T, TMessage>(timeout, startAction, filter);

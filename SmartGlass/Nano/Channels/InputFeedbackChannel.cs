@@ -23,7 +23,7 @@ namespace SmartGlass.Nano.Channels
         public override void OnFrame(InputFrame frame)
         {
             DateTime frameTime = DateTimeHelper.FromTimestampMicroseconds(frame.CreatedTimestamp, ReferenceTimestamp);
-            SendAsync(new InputFrameAck(frame.FrameId)).GetAwaiter().GetResult();
+            SendAsync(new InputFrameAck(frame.FrameId)).Wait();
             _fireInputFrameEvent(new InputFrameEventArgs(frameTime, frame));
         }
 

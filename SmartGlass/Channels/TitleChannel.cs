@@ -26,7 +26,7 @@ namespace SmartGlass.Channels
         {
             var auxiliaryStreamMessage = await _transport.WaitForMessageAsync<AuxiliaryStreamMessage>(
                 TimeSpan.FromSeconds(1),
-                () => _transport.SendAsync(new AuxiliaryStreamMessage()).GetAwaiter().GetResult(),
+                () => _transport.SendAsync(new AuxiliaryStreamMessage()),
                 m => m.ConnectionInfo != null);
 
             var cryptoContext = new AuxiliaryStreamCryptoContext(
