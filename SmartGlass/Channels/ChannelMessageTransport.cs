@@ -67,7 +67,7 @@ namespace SmartGlass.Channels
         /// <exception cref="System.TimeoutException">
         /// When message is not received in time.
         /// </exception>
-        public Task<SessionMessageBase> WaitForMessageAsync(TimeSpan timeout, Action startAction)
+        public Task<SessionMessageBase> WaitForMessageAsync(TimeSpan timeout, Func<Task> startAction = null)
         {
             return this.WaitForMessageAsync<SessionMessageBase, SessionMessageBase>(timeout, startAction);
         }
@@ -81,7 +81,7 @@ namespace SmartGlass.Channels
         /// <param name="filter">Optional filter for message to get returned</param>
         /// <typeparam name="T">Message type to await</typeparam>
         /// <returns>A task returning the awaited message</returns>
-        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Action startAction, Func<T, bool> filter = null)
+        public Task<T> WaitForMessageAsync<T>(TimeSpan timeout, Func<Task> startAction = null, Func<T, bool> filter = null)
             where T : SessionMessageBase
         {
             return this.WaitForMessageAsync<T, SessionMessageBase>(timeout, startAction, filter);

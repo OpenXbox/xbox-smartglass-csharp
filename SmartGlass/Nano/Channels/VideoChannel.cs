@@ -88,7 +88,7 @@ namespace SmartGlass.Nano.Channels
                 uint lostFrameCount = data.FrameId - base.FrameId;
                 logger.LogTrace($"Requesting lost frames, frame count: {lostFrameCount}");
                 ReportLostFramesAsync(base.FrameId + 1, data.FrameId - 1)
-                    .GetAwaiter().GetResult();
+                    .Wait();
             }
             */
 
