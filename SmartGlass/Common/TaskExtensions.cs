@@ -10,9 +10,9 @@ namespace SmartGlass.Common
     /// </summary>
     public static class TaskExtensions
     {
-        public static Task<TEventArgs> EventTask<T, TEventArgs>(
+        public static async Task<TEventArgs> EventTask<T, TEventArgs>(
             T obj,
-            Action postAddAction,
+            Func<Task> postAddAction,
             Action<T, EventHandler<TEventArgs>> add,
             Action<T, EventHandler<TEventArgs>> remove,
             Func<TEventArgs, bool> filter,
@@ -39,7 +39,7 @@ namespace SmartGlass.Common
 
             if (postAddAction != null)
             {
-                postAddAction();
+                await Task.Run(async () => await postAddAction());
             }
 
             Task.Delay(timeout, timeoutCancellation.Token).ContinueWith(t =>
@@ -53,7 +53,7 @@ namespace SmartGlass.Common
                 remove(obj, handler);
             });
 
-            return tcs.Task;
+            return await tcs.Task;
         }
 
         /// <summary>
@@ -62,10 +62,10 @@ namespace SmartGlass.Common
         /// <returns>A task.</returns>
         /// <param name="func">Function to execute.</param>
         /// <param name="retryIntervals">Retry intervals.</param>
-        /// <param name="canRetry">Can retry.</param>        
-	public static Task WithRetries(Func<Task> func,
-            IEnumerable<TimeSpan> retryIntervals,
-            Func<Task, bool> canRetry = null)
+        /// <param name="canRetry">Can retry.</param>
+        public static Task WithRetries(Func<Task> func,
+                IEnumerable<TimeSpan> retryIntervals,
+                Func<Task, bool> canRetry = null)
         {
             return WithRetries<object>(async () => { await func(); return null; }, retryIntervals, canRetry);
         }

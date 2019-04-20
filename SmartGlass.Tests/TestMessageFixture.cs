@@ -26,7 +26,7 @@ namespace SmartGlass.Tests
         public class TestMessage2 : ITestMessage
         {
             public int Decimal;
-        } 
+        }
 
         public class MessageTransportTestCls : IMessageTransport<ITestMessage>
         {
