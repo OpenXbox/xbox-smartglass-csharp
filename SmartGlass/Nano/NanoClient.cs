@@ -177,7 +177,7 @@ namespace SmartGlass.Nano
         }
 
         /// <summary>
-        /// 
+        /// Start streaming Audio and Video
         /// </summary>
         /// <returns></returns>
         public async Task StartStreamAsync()
@@ -192,6 +192,20 @@ namespace SmartGlass.Nano
             await Audio.StartStreamAsync();
 
             await handshakeTask;
+        }
+
+        /// <summary>
+        /// Stop streaming Audio and Video
+        /// </summary>
+        /// <returns></returns>
+        public async Task StopStreamAsync()
+        {
+            if (!StreamInitialized)
+                return;
+
+            StreamInitialized = false;
+            await Video.StopStreamAsync();
+            await Audio.StopStreamAsync();
         }
 
         /// <summary>
