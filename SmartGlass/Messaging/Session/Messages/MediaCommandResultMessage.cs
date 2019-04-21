@@ -9,13 +9,13 @@ namespace SmartGlass.Messaging.Session.Messages
         public ulong RequestId { get; set; }
         public uint Result { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            RequestId = reader.ReadUInt64();
-            Result = reader.ReadUInt32();
+            RequestId = reader.ReadUInt64BE();
+            Result = reader.ReadUInt32BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             throw new NotSupportedException();
         }

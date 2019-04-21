@@ -11,20 +11,20 @@ namespace SmartGlass.Messaging.Session.Messages
         public float Roll { get; set; }
         public float Yaw { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            Timestamp = reader.ReadUInt64();
-            Pitch = reader.ReadInt32();
-            Roll = reader.ReadInt32();
-            Yaw = reader.ReadInt32();
+            Timestamp = reader.ReadUInt64BE();
+            Pitch = reader.ReadInt32BE();
+            Roll = reader.ReadInt32BE();
+            Yaw = reader.ReadInt32BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(Timestamp);
-            writer.Write(Pitch);
-            writer.Write(Roll);
-            writer.Write(Yaw);
+            writer.WriteBE(Timestamp);
+            writer.WriteBE(Pitch);
+            writer.WriteBE(Roll);
+            writer.WriteBE(Yaw);
         }
     }
 }

@@ -12,21 +12,21 @@ namespace SmartGlass
         public Guid SandboxId { get; private set; }
         public string AumId { get; private set; }
 
-        void ISerializable.Deserialize(BEReader reader)
+        void ISerializable.Deserialize(EndianReader reader)
         {
-            TitleId = reader.ReadUInt32();
+            TitleId = reader.ReadUInt32BE();
 
-            ushort titleDisposition = reader.ReadUInt16();
+            ushort titleDisposition = reader.ReadUInt16BE();
             HasFocus = (titleDisposition & 0x8000) == 0x8000;
             TitleLocation = (ActiveTitleLocation)(titleDisposition & 0x7FFF);
 
             ProductId = new Guid(reader.ReadBytes(16));
             SandboxId = new Guid(reader.ReadBytes(16));
 
-            AumId = reader.ReadUInt16PrefixedString();
+            AumId = reader.ReadUInt16BEPrefixedString();
         }
 
-        void ISerializable.Serialize(BEWriter writer)
+        void ISerializable.Serialize(EndianWriter writer)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    public class AudioFormat : ISerializableLE
+    public class AudioFormat : ISerializable
     {
         public uint Channels { get; private set; }
         public uint SampleRate { get; private set; }
@@ -27,27 +27,27 @@ namespace SmartGlass.Nano.Packets
             SampleType = sampleType;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader reader)
+        void ISerializable.Deserialize(EndianReader reader)
         {
-            Channels = reader.ReadUInt32();
-            SampleRate = reader.ReadUInt32();
-            Codec = (AudioCodec)reader.ReadUInt32();
+            Channels = reader.ReadUInt32LE();
+            SampleRate = reader.ReadUInt32LE();
+            Codec = (AudioCodec)reader.ReadUInt32LE();
             if (Codec == AudioCodec.PCM)
             {
-                SampleSize = reader.ReadUInt32();
-                SampleType = reader.ReadUInt32();
+                SampleSize = reader.ReadUInt32LE();
+                SampleType = reader.ReadUInt32LE();
             }
         }
 
-        void ISerializableLE.Serialize(BinaryWriter writer)
+        void ISerializable.Serialize(EndianWriter writer)
         {
-            writer.Write(Channels);
-            writer.Write(SampleRate);
-            writer.Write((uint)Codec);
+            writer.WriteLE(Channels);
+            writer.WriteLE(SampleRate);
+            writer.WriteLE((uint)Codec);
             if (Codec == AudioCodec.PCM)
             {
-                writer.Write(SampleSize);
-                writer.Write(SampleType);
+                writer.WriteLE(SampleSize);
+                writer.WriteLE(SampleType);
             }
         }
     }

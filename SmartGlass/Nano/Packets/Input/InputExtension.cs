@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    public class InputExtension : ISerializableLE
+    public class InputExtension : ISerializable
     {
         public byte Unknown1 { get; set; } // Always 1 for Gamepad!
         public byte Unknown2 { get; set; }
@@ -30,7 +30,7 @@ namespace SmartGlass.Nano.Packets
             Unknown5 = 0;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader reader)
+        void ISerializable.Deserialize(EndianReader reader)
         {
             Unknown1 = reader.ReadByte();
             Unknown2 = reader.ReadByte();
@@ -43,7 +43,7 @@ namespace SmartGlass.Nano.Packets
             Unknown5 = reader.ReadByte();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter writer)
+        void ISerializable.Serialize(EndianWriter writer)
         {
             writer.Write(Unknown1);
             writer.Write(Unknown2);

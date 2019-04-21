@@ -10,18 +10,18 @@ namespace SmartGlass.Messaging.Session.Messages
         public HashSet<uint> ProcessedList { get; set; }
         public HashSet<uint> RejectedList { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            LowWatermark = reader.ReadUInt32();
-            ProcessedList = new HashSet<uint>(reader.ReadUInt32Array());
-            RejectedList = new HashSet<uint>(reader.ReadUInt32Array());
+            LowWatermark = reader.ReadUInt32BE();
+            ProcessedList = new HashSet<uint>(reader.ReadUInt32BEArray());
+            RejectedList = new HashSet<uint>(reader.ReadUInt32BEArray());
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(LowWatermark);
-            writer.Write(ProcessedList);
-            writer.Write(RejectedList);
+            writer.WriteBE(LowWatermark);
+            writer.WriteBE(ProcessedList);
+            writer.WriteBE(RejectedList);
         }
     }
 }

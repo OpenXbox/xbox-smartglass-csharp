@@ -10,15 +10,15 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public StreamerConfiguration StreamerConfiguration { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            SurfaceType = (ActiveSurfaceType)reader.ReadUInt16();
+            SurfaceType = (ActiveSurfaceType)reader.ReadUInt16BE();
 
             StreamerConfiguration = new StreamerConfiguration();
             StreamerConfiguration.Deserialize(reader);
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             throw new NotSupportedException();
         }

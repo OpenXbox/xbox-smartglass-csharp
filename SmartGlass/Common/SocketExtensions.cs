@@ -36,6 +36,8 @@ namespace SmartGlass.Common
                 while (!token.IsCancellationRequested && client.Client != null)
                 {
                     NetworkStream ns = client.GetStream();
+
+                    // Read packet length prefix (uint32)
                     byte[] prefixBytes = new byte[sizeof(uint)];
                     Task<int> bytesReadTask = ns.ReadAsync(prefixBytes, 0, sizeof(uint));
                     Task.WaitAny(bytesReadTask);
@@ -47,6 +49,7 @@ namespace SmartGlass.Common
 
                     uint size = BitConverter.ToUInt32(prefixBytes, 0);
 
+                    // Read actual packet data
                     byte[] packet = new byte[size];
                     Task<int> receiveTask = ns.ReadAsync(packet, 0, packet.Length);
                     Task.WaitAny(receiveTask);
@@ -74,7 +77,7 @@ namespace SmartGlass.Common
                 NetworkStream ns = client.GetStream();
                 byte[] lengthPrefix = BitConverter.GetBytes(packet.Length);
 
-                BinaryWriter writer = new BinaryWriter(new MemoryStream());
+                EndianWriter writer = new EndianWriter();
                 writer.Write(lengthPrefix);
                 writer.Write(packet);
                 byte[] prefixedData = writer.ToBytes();

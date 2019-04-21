@@ -23,16 +23,16 @@ namespace SmartGlass.Nano.Packets
             ReferenceTimestamp = refTimestamp;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            MaxTouches = reader.ReadUInt32();
-            ReferenceTimestamp = reader.ReadUInt64();
+            MaxTouches = reader.ReadUInt32LE();
+            ReferenceTimestamp = reader.ReadUInt64LE();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(MaxTouches);
-            writer.Write(ReferenceTimestamp);
+            writer.WriteLE(MaxTouches);
+            writer.WriteLE(ReferenceTimestamp);
         }
     }
 }

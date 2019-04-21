@@ -40,7 +40,7 @@ namespace SmartGlass.Analysis
             var message = new SessionFragmentMessage();
             message.Crypto = _crypto;
 
-            message.Deserialize(new BEReader(encryptedMessage));
+            message.Deserialize(new EndianReader(encryptedMessage));
 
             if (message.InvalidSignature)
             {
@@ -59,7 +59,7 @@ namespace SmartGlass.Analysis
             if (message.Header.SessionMessageType == SessionMessageType.Json)
             {
                 var jsonMessage = new JsonMessage();
-                jsonMessage.Deserialize(new BEReader(message.Fragment));
+                jsonMessage.Deserialize(new EndianReader(message.Fragment));
 
                 info.Json = jsonMessage.Json;
             }

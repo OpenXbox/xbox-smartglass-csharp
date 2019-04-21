@@ -8,25 +8,25 @@ namespace SmartGlass.Messaging.Session.Messages
     {
         public GamepadState State { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             throw new NotImplementedException();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(State.Timestamp);
+            writer.WriteBE(State.Timestamp);
 
-            writer.Write((ushort)State.Buttons);
+            writer.WriteBE((ushort)State.Buttons);
 
-            writer.Write(State.LeftTrigger);
-            writer.Write(State.RightTrigger);
+            writer.WriteBE(State.LeftTrigger);
+            writer.WriteBE(State.RightTrigger);
 
-            writer.Write(State.LeftThumbstickX);
-            writer.Write(State.LeftThumbstickY);
+            writer.WriteBE(State.LeftThumbstickX);
+            writer.WriteBE(State.LeftThumbstickY);
 
-            writer.Write(State.RightThumbstickX);
-            writer.Write(State.RightThumbstickY);
+            writer.WriteBE(State.RightThumbstickX);
+            writer.WriteBE(State.RightThumbstickY);
         }
     }
 }

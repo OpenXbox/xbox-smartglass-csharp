@@ -31,16 +31,16 @@ namespace SmartGlass.Nano.Packets
             ConnectionId = connectionId;
         }
 
-        public void Deserialize(BinaryReader reader)
+        public void Deserialize(EndianReader reader)
         {
             Type = (ControlHandshakeType)reader.ReadByte();
-            ConnectionId = reader.ReadUInt16();
+            ConnectionId = reader.ReadUInt16LE();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public void Serialize(EndianWriter bw)
         {
             bw.Write((byte)Type);
-            bw.Write(ConnectionId);
+            bw.WriteLE(ConnectionId);
         }
     }
 }

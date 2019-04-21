@@ -30,13 +30,13 @@ namespace SmartGlass.Messaging
             };
         }
 
-        protected abstract void SerializePayload(BEWriter writer);
+        protected abstract void SerializePayload(EndianWriter writer);
 
-        protected abstract void DeserializePayload(BEReader reader);
+        protected abstract void DeserializePayload(EndianReader reader);
 
-        public virtual void Serialize(BEWriter writer)
+        public virtual void Serialize(EndianWriter writer)
         {
-            var payloadWriter = new BEWriter();
+            var payloadWriter = new EndianWriter();
             SerializePayload(payloadWriter);
 
             var payload = payloadWriter.ToBytes();
@@ -46,7 +46,7 @@ namespace SmartGlass.Messaging
             writer.Write(payload);
         }
 
-        public virtual void Deserialize(BEReader reader)
+        public virtual void Deserialize(EndianReader reader)
         {
             Header.Deserialize(reader);
             DeserializePayload(reader.CreateChild(Header.PayloadLength));

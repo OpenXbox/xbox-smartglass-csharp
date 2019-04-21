@@ -15,20 +15,20 @@ namespace SmartGlass.Messaging.Discovery
         public ushort MinVersion { get; set; } = 0;
         public ushort MaxVersion { get; set; } = 2;
 
-        protected override void DeserializePayload(BEReader reader)
+        protected override void DeserializePayload(EndianReader reader)
         {
-            Flags = reader.ReadUInt32();
-            DeviceType = (DeviceType)reader.ReadUInt16();
-            MinVersion = reader.ReadUInt16();
-            MaxVersion = reader.ReadUInt16();
+            Flags = reader.ReadUInt32BE();
+            DeviceType = (DeviceType)reader.ReadUInt16BE();
+            MinVersion = reader.ReadUInt16BE();
+            MaxVersion = reader.ReadUInt16BE();
         }
 
-        protected override void SerializePayload(BEWriter writer)
+        protected override void SerializePayload(EndianWriter writer)
         {
-            writer.Write(Flags);
-            writer.Write((ushort)DeviceType);
-            writer.Write(MinVersion);
-            writer.Write(MaxVersion);
+            writer.WriteBE(Flags);
+            writer.WriteBE((ushort)DeviceType);
+            writer.WriteBE(MinVersion);
+            writer.WriteBE(MaxVersion);
         }
     }
 }

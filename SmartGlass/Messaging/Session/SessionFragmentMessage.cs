@@ -21,17 +21,17 @@ namespace SmartGlass.Messaging.Session
 
         public byte[] Fragment { get; set; }
 
-        protected override void DeserializePayload(BEReader reader)
+        protected override void DeserializePayload(EndianReader reader)
         {
             Fragment = reader.ReadToEnd();
         }
 
-        protected override void SerializePayload(BEWriter writer)
+        protected override void SerializePayload(EndianWriter writer)
         {
             writer.Write(Fragment);
         }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             var message = reader.ReadToEnd();
 
@@ -47,12 +47,12 @@ namespace SmartGlass.Messaging.Session
             var initVectorSource = message.Take(16).ToArray();
             var initVector = Crypto.CreateDerivedInitVector(initVectorSource);
 
-            var messageBodyReader = new BEReader(messageBody);
+            var messageBodyReader = new EndianReader(messageBody);
 
             Header.Deserialize(messageBodyReader);
 
             var payload = messageBodyReader.ReadToEnd();
-            var payloadReader = new BEReader(payload);
+            var payloadReader = new EndianReader(payload);
             DeserializePayload(payloadReader);
 
             var decrypted = Crypto.DecryptWithoutPadding(Fragment, initVector);
@@ -60,9 +60,9 @@ namespace SmartGlass.Messaging.Session
             Fragment = decrypted.Take(Header.PayloadLength).ToArray();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            var messageWriter = new BEWriter();
+            var messageWriter = new EndianWriter();
 
             base.Serialize(messageWriter);
 
@@ -71,7 +71,7 @@ namespace SmartGlass.Messaging.Session
             var initVectorSource = message.Take(16).ToArray();
             var initVector = Crypto.CreateDerivedInitVector(initVectorSource);
 
-            var fragmentWriter = new BEWriter();
+            var fragmentWriter = new EndianWriter();
 
             byte[] padding = Padding.CreatePaddingData(
                 PaddingType.PKCS7,

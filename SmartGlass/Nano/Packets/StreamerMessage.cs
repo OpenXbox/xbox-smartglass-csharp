@@ -33,27 +33,27 @@ namespace SmartGlass.Nano.Packets
             };
         }
 
-        public void Deserialize(BinaryReader reader)
+        public void Deserialize(EndianReader reader)
         {
             StreamerHeader.Deserialize(reader);
-            StreamerSize = reader.ReadUInt32();
+            StreamerSize = reader.ReadUInt32LE();
             DeserializeStreamer(reader);
         }
 
-        public void Serialize(BinaryWriter writer)
+        public void Serialize(EndianWriter writer)
         {
             // Write out payload first to get its size
-            BinaryWriter tmpWriter = new BinaryWriter(new MemoryStream());
+            EndianWriter tmpWriter = new EndianWriter();
             SerializeStreamer(tmpWriter);
             byte[] streamerData = tmpWriter.ToBytes();
             StreamerSize = (uint)streamerData.Length;
 
             StreamerHeader.Serialize(writer);
-            writer.Write(StreamerSize);
+            writer.WriteLE(StreamerSize);
             writer.Write(streamerData);
         }
 
-        internal abstract void DeserializeStreamer(BinaryReader reader);
-        internal abstract void SerializeStreamer(BinaryWriter writer);
+        internal abstract void DeserializeStreamer(EndianReader reader);
+        internal abstract void SerializeStreamer(EndianWriter writer);
     }
 }

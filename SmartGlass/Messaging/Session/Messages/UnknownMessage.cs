@@ -5,12 +5,12 @@ namespace SmartGlass.Messaging.Session.Messages
 {
     class UnknownMessage : SessionMessageBase
     {
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
 
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             throw new InvalidOperationException();
         }

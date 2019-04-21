@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    public class VideoFormat : ISerializableLE
+    public class VideoFormat : ISerializable
     {
         public uint FPS { get; private set; }
         public uint Width { get; private set; }
@@ -35,35 +35,35 @@ namespace SmartGlass.Nano.Packets
             BlueMask = blueMask;
         }
 
-        void ISerializableLE.Deserialize(BinaryReader reader)
+        void ISerializable.Deserialize(EndianReader reader)
         {
-            FPS = reader.ReadUInt32();
-            Width = reader.ReadUInt32();
-            Height = reader.ReadUInt32();
-            Codec = (VideoCodec)reader.ReadUInt32();
+            FPS = reader.ReadUInt32LE();
+            Width = reader.ReadUInt32LE();
+            Height = reader.ReadUInt32LE();
+            Codec = (VideoCodec)reader.ReadUInt32LE();
             if (Codec == VideoCodec.RGB)
             {
-                Bpp = reader.ReadUInt32();
-                Bytes = reader.ReadUInt32();
-                RedMask = reader.ReadUInt32();
-                GreenMask = reader.ReadUInt32();
-                BlueMask = reader.ReadUInt32();
+                Bpp = reader.ReadUInt32LE();
+                Bytes = reader.ReadUInt32LE();
+                RedMask = reader.ReadUInt32LE();
+                GreenMask = reader.ReadUInt32LE();
+                BlueMask = reader.ReadUInt32LE();
             }
         }
 
-        void ISerializableLE.Serialize(BinaryWriter writer)
+        void ISerializable.Serialize(EndianWriter writer)
         {
-            writer.Write(FPS);
-            writer.Write(Width);
-            writer.Write(Height);
-            writer.Write((uint)Codec);
+            writer.WriteLE(FPS);
+            writer.WriteLE(Width);
+            writer.WriteLE(Height);
+            writer.WriteLE((uint)Codec);
             if (Codec == VideoCodec.RGB)
             {
-                writer.Write(Bpp);
-                writer.Write(Bytes);
-                writer.Write(RedMask);
-                writer.Write(GreenMask);
-                writer.Write(BlueMask);
+                writer.WriteLE(Bpp);
+                writer.WriteLE(Bytes);
+                writer.WriteLE(RedMask);
+                writer.WriteLE(GreenMask);
+                writer.WriteLE(BlueMask);
             }
         }
     }

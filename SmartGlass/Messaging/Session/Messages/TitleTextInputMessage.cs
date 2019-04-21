@@ -11,20 +11,20 @@ namespace SmartGlass.Messaging.Session.Messages
         public TextResult Result { get; set; }
         public string Text { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            TextSessionId = reader.ReadUInt64();
-            TextBufferVersion = reader.ReadUInt32();
-            Result = (TextResult)reader.ReadUInt16();
-            Text = reader.ReadUInt16PrefixedString();
+            TextSessionId = reader.ReadUInt64BE();
+            TextBufferVersion = reader.ReadUInt32BE();
+            Result = (TextResult)reader.ReadUInt16BE();
+            Text = reader.ReadUInt16BEPrefixedString();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(TextSessionId);
-            writer.Write(TextBufferVersion);
-            writer.Write((ushort)Result);
-            writer.WriteUInt16Prefixed(Text);
+            writer.WriteBE(TextSessionId);
+            writer.WriteBE(TextBufferVersion);
+            writer.WriteBE((ushort)Result);
+            writer.WriteUInt16BEPrefixed(Text);
         }
     }
 }

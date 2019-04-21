@@ -13,18 +13,18 @@ namespace SmartGlass.Messaging.Discovery
 
         public ushort Version { get; set; }
 
-        public void Deserialize(BEReader reader)
+        public void Deserialize(EndianReader reader)
         {
-            Type = (MessageType)reader.ReadUInt16();
-            PayloadLength = reader.ReadUInt16();
-            Version = reader.ReadUInt16();
+            Type = (MessageType)reader.ReadUInt16BE();
+            PayloadLength = reader.ReadUInt16BE();
+            Version = reader.ReadUInt16BE();
         }
 
-        public void Serialize(BEWriter writer)
+        public void Serialize(EndianWriter writer)
         {
-            writer.Write((ushort)Type);
-            writer.Write(PayloadLength);
-            writer.Write(Version);
+            writer.WriteBE((ushort)Type);
+            writer.WriteBE(PayloadLength);
+            writer.WriteBE(Version);
         }
     }
 }

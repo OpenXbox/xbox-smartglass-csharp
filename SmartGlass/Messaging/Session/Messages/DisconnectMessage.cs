@@ -8,15 +8,15 @@ namespace SmartGlass.Messaging.Session.Messages
         public DisconnectReason Reason { get; set; }
         public uint ErrorCode { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write((uint)Reason);
-            writer.Write(ErrorCode);
+            writer.WriteBE((uint)Reason);
+            writer.WriteBE(ErrorCode);
         }
     }
 }

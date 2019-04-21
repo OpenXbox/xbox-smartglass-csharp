@@ -10,20 +10,20 @@ namespace SmartGlass
         public uint PointX { get; set; }
         public uint PointY { get; set; }
 
-        void ISerializable.Deserialize(BEReader reader)
+        void ISerializable.Deserialize(EndianReader reader)
         {
-            Id = reader.ReadUInt32();
-            Action = (TouchAction)reader.ReadUInt16();
-            PointX = reader.ReadUInt32();
-            PointY = reader.ReadUInt32();
+            Id = reader.ReadUInt32BE();
+            Action = (TouchAction)reader.ReadUInt16BE();
+            PointX = reader.ReadUInt32BE();
+            PointY = reader.ReadUInt32BE();
         }
 
-        void ISerializable.Serialize(BEWriter writer)
+        void ISerializable.Serialize(EndianWriter writer)
         {
-            writer.Write(Id);
-            writer.Write((ushort)Action);
-            writer.Write(PointX);
-            writer.Write(PointY);
+            writer.WriteBE(Id);
+            writer.WriteBE((ushort)Action);
+            writer.WriteBE(PointX);
+            writer.WriteBE(PointY);
         }
     }
 }

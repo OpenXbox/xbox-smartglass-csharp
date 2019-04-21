@@ -8,12 +8,12 @@ namespace SmartGlass.Messaging.Session.Messages
     {
         public byte Unknown { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             Unknown = reader.ReadByte();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             writer.Write(Unknown);
         }

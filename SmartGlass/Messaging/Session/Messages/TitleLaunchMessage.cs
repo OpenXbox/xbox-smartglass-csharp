@@ -14,15 +14,15 @@ namespace SmartGlass.Messaging.Session.Messages
         public ActiveTitleLocation Location { get; set; }
         public string Uri { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             throw new NotSupportedException();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write((ushort)Location);
-            writer.WriteUInt16Prefixed(Uri);
+            writer.WriteBE((ushort)Location);
+            writer.WriteUInt16BEPrefixed(Uri);
         }
     }
 }

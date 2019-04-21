@@ -22,31 +22,31 @@ namespace SmartGlass.Messaging.Session.Messages
             Header.RequestAcknowledge = true;
         }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            TextSessionId = reader.ReadUInt32();
-            BaseVersion = reader.ReadUInt32();
-            SubmittedVersion = reader.ReadUInt32();
-            TotalTextBytelength = reader.ReadUInt32();
-            SelectionStart = reader.ReadInt32();
-            SelectionLength = reader.ReadInt32();
-            Flags = reader.ReadUInt16();
-            TextChunkByteStart = reader.ReadUInt32();
-            TextChunk = reader.ReadUInt16PrefixedString();
-            Delta = reader.ReadUInt16PrefixedArray<TextDelta>();
+            TextSessionId = reader.ReadUInt32BE();
+            BaseVersion = reader.ReadUInt32BE();
+            SubmittedVersion = reader.ReadUInt32BE();
+            TotalTextBytelength = reader.ReadUInt32BE();
+            SelectionStart = reader.ReadInt32BE();
+            SelectionLength = reader.ReadInt32BE();
+            Flags = reader.ReadUInt16BE();
+            TextChunkByteStart = reader.ReadUInt32BE();
+            TextChunk = reader.ReadUInt16BEPrefixedString();
+            Delta = reader.ReadUInt16BEPrefixedArray<TextDelta>();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(TextSessionId);
-            writer.Write(BaseVersion);
-            writer.Write(SubmittedVersion);
-            writer.Write(TotalTextBytelength);
-            writer.Write(SelectionStart);
-            writer.Write(SelectionLength);
-            writer.Write(Flags);
-            writer.Write(TextChunkByteStart);
-            writer.WriteUInt16Prefixed(TextChunk);
+            writer.WriteBE(TextSessionId);
+            writer.WriteBE(BaseVersion);
+            writer.WriteBE(SubmittedVersion);
+            writer.WriteBE(TotalTextBytelength);
+            writer.WriteBE(SelectionStart);
+            writer.WriteBE(SelectionLength);
+            writer.WriteBE(Flags);
+            writer.WriteBE(TextChunkByteStart);
+            writer.WriteUInt16BEPrefixed(TextChunk);
             // writer.Write(Delta);
         }
     }

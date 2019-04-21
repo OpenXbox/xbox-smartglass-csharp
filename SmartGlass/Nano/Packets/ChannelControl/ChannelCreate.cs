@@ -24,18 +24,18 @@ namespace SmartGlass.Nano.Packets
             Flags = flags;
         }
 
-        internal override void DeserializeData(BinaryReader reader)
+        internal override void DeserializeData(EndianReader reader)
         {
-            byte[] name = reader.ReadUInt16PrefixedBlob();
+            byte[] name = reader.ReadUInt16LEPrefixedBlob();
             Name = Encoding.GetEncoding("utf-8").GetString(name);
-            Flags = reader.ReadUInt32();
+            Flags = reader.ReadUInt32LE();
         }
 
-        internal override void SerializeData(BinaryWriter writer)
+        internal override void SerializeData(EndianWriter writer)
         {
             byte[] name = Encoding.GetEncoding("utf-8").GetBytes(Name);
-            writer.WriteUInt16PrefixedBlob(name);
-            writer.Write(Flags);
+            writer.WriteUInt16LEPrefixedBlob(name);
+            writer.WriteLE(Flags);
         }
     }
 }

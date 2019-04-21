@@ -11,16 +11,16 @@ namespace SmartGlass
         public uint BuildNumber { get; private set; }
         public string Locale { get; private set; }
 
-        void ISerializable.Deserialize(BEReader reader)
+        void ISerializable.Deserialize(EndianReader reader)
         {
-            LiveTVProvider = reader.ReadUInt32();
-            MajorVersion = reader.ReadUInt32();
-            MinorVersion = reader.ReadUInt32();
-            BuildNumber = reader.ReadUInt32();
-            Locale = reader.ReadUInt16PrefixedString();
+            LiveTVProvider = reader.ReadUInt32BE();
+            MajorVersion = reader.ReadUInt32BE();
+            MinorVersion = reader.ReadUInt32BE();
+            BuildNumber = reader.ReadUInt32BE();
+            Locale = reader.ReadUInt16BEPrefixedString();
         }
 
-        void ISerializable.Serialize(BEWriter writer)
+        void ISerializable.Serialize(EndianWriter writer)
         {
             throw new NotImplementedException();
         }

@@ -21,34 +21,34 @@ namespace SmartGlass.Messaging.Connection
         public uint SequenceBegin { get; set; }
         public uint SequenceEnd { get; set; }
 
-        protected override void DeserializePayload(BEReader reader)
+        protected override void DeserializePayload(EndianReader reader)
         {
             throw new NotImplementedException();
         }
 
-        protected override void DeserializeProtectedPayload(BEReader reader)
+        protected override void DeserializeProtectedPayload(EndianReader reader)
         {
             throw new NotImplementedException();
         }
 
-        protected override void SerializePayload(BEWriter writer)
+        protected override void SerializePayload(EndianWriter writer)
         {
             writer.Write(DeviceId.ToByteArray());
 
-            writer.Write((ushort)PublicKeyType);
+            writer.WriteBE((ushort)PublicKeyType);
             writer.Write(PublicKey);
 
             writer.Write(InitVector);
         }
 
-        protected override void SerializeProtectedPayload(BEWriter writer)
+        protected override void SerializeProtectedPayload(EndianWriter writer)
         {
-            writer.WriteUInt16Prefixed(UserHash);
-            writer.WriteUInt16Prefixed(Authorization);
+            writer.WriteUInt16BEPrefixed(UserHash);
+            writer.WriteUInt16BEPrefixed(Authorization);
 
-            writer.Write(SequenceNumber);
-            writer.Write(SequenceBegin);
-            writer.Write(SequenceEnd);
+            writer.WriteBE(SequenceNumber);
+            writer.WriteBE(SequenceBegin);
+            writer.WriteBE(SequenceEnd);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace SmartGlass.Messaging.Connection
              * available space for authentication data
              */
             var anonymousRequest = GenerateAnonymousRequest(deviceId, crypto, initialSequenceNumber);
-            BEWriter bw = new BEWriter();
+            EndianWriter bw = new EndianWriter();
             ((ICryptoMessage)anonymousRequest).Crypto = crypto;
             anonymousRequest.Serialize(bw);
             var connectRequestSize = bw.ToBytes().Length;

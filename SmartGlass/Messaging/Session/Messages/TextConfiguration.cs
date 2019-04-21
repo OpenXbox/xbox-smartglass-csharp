@@ -18,18 +18,18 @@ namespace SmartGlass.Messaging.Session.Messages
             Header.RequestAcknowledge = true;
         }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            TextSessionId = reader.ReadUInt64();
-            TextBufferVersion = reader.ReadUInt32();
-            TextOptions = (TextOption)reader.ReadUInt32();
-            InputScope = (TextInputScope)reader.ReadUInt32();
-            MaxTextLength = reader.ReadUInt32();
-            Locale = reader.ReadUInt16PrefixedString();
-            Prompt = reader.ReadUInt16PrefixedString();
+            TextSessionId = reader.ReadUInt64BE();
+            TextBufferVersion = reader.ReadUInt32BE();
+            TextOptions = (TextOption)reader.ReadUInt32BE();
+            InputScope = (TextInputScope)reader.ReadUInt32BE();
+            MaxTextLength = reader.ReadUInt32BE();
+            Locale = reader.ReadUInt16BEPrefixedString();
+            Prompt = reader.ReadUInt16BEPrefixedString();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             throw new NotSupportedException();
         }

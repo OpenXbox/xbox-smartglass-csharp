@@ -35,26 +35,26 @@ namespace SmartGlass.Nano.Packets
             Extension = extension;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            FrameId = reader.ReadUInt32();
-            Timestamp = reader.ReadUInt64();
-            CreatedTimestamp = reader.ReadUInt64();
+            FrameId = reader.ReadUInt32LE();
+            Timestamp = reader.ReadUInt64LE();
+            CreatedTimestamp = reader.ReadUInt64LE();
 
-            ((ISerializableLE)Buttons).Deserialize(reader);
-            ((ISerializableLE)Analog).Deserialize(reader);
-            ((ISerializableLE)Extension).Deserialize(reader);
+            ((ISerializable)Buttons).Deserialize(reader);
+            ((ISerializable)Analog).Deserialize(reader);
+            ((ISerializable)Extension).Deserialize(reader);
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(FrameId);
-            writer.Write(Timestamp);
-            writer.Write(CreatedTimestamp);
+            writer.WriteLE(FrameId);
+            writer.WriteLE(Timestamp);
+            writer.WriteLE(CreatedTimestamp);
 
-            ((ISerializableLE)Buttons).Serialize(writer);
-            ((ISerializableLE)Analog).Serialize(writer);
-            ((ISerializableLE)Extension).Serialize(writer);
+            ((ISerializable)Buttons).Serialize(writer);
+            ((ISerializable)Analog).Serialize(writer);
+            ((ISerializable)Extension).Serialize(writer);
         }
     }
 }

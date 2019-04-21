@@ -21,14 +21,14 @@ namespace SmartGlass.Nano.Packets
             Flags = flags;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            Flags = (AudioControlFlags)reader.ReadUInt32();
+            Flags = (AudioControlFlags)reader.ReadUInt32LE();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write((uint)Flags);
+            writer.WriteLE((uint)Flags);
         }
     }
 }

@@ -185,7 +185,7 @@ namespace SmartGlass.Messaging.Session
             message.Header.SessionMessageType = fragment.Header.SessionMessageType;
             message.Header.Version = fragment.Header.Version;
 
-            message.Deserialize(new BEReader(fragment.Fragment));
+            message.Deserialize(new EndianReader(fragment.Fragment));
 
             return message;
         }
@@ -202,7 +202,7 @@ namespace SmartGlass.Messaging.Session
             fragment.Header.SequenceNumber = sequenceNumber;
             fragment.Header.SourceParticipantId = _participantId;
 
-            var writer = new BEWriter();
+            var writer = new EndianWriter();
             message.Serialize(writer);
             fragment.Fragment = writer.ToBytes();
 

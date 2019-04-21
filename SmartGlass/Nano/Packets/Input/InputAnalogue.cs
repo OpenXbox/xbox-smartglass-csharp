@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    public class InputAnalogue : ISerializableLE
+    public class InputAnalogue : ISerializable
     {
         public byte LeftTrigger { get; set; }
         public byte RightTrigger { get; set; }
@@ -80,7 +80,7 @@ namespace SmartGlass.Nano.Packets
             }
         }
 
-        void ISerializableLE.Deserialize(BinaryReader reader)
+        void ISerializable.Deserialize(EndianReader reader)
         {
             LeftTrigger = reader.ReadByte();
             RightTrigger = reader.ReadByte();
@@ -94,14 +94,14 @@ namespace SmartGlass.Nano.Packets
             RumbleHandleR = reader.ReadByte();
         }
 
-        void ISerializableLE.Serialize(BinaryWriter writer)
+        void ISerializable.Serialize(EndianWriter writer)
         {
             writer.Write(LeftTrigger);
             writer.Write(RightTrigger);
-            writer.Write(LeftThumbX);
-            writer.Write(LeftThumbY);
-            writer.Write(RightThumbX);
-            writer.Write(RightThumbY);
+            writer.WriteLE(LeftThumbX);
+            writer.WriteLE(LeftThumbY);
+            writer.WriteLE(RightThumbX);
+            writer.WriteLE(RightThumbY);
             writer.Write(RumbleTriggerL);
             writer.Write(RumbleTriggerR);
             writer.Write(RumbleHandleL);

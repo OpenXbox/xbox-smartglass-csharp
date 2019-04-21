@@ -27,7 +27,7 @@ namespace SmartGlass.Tests
         [Fact]
         public void TestRtpHeader()
         {
-            BEReader reader = new BEReader(ResourcesProvider.GetBytes("tcp_control_handshake.bin", ResourceType.Nano));
+            EndianReader reader = new EndianReader(ResourcesProvider.GetBytes("tcp_control_handshake.bin", ResourceType.Nano));
             RtpHeader header = new RtpHeader();
             header.Deserialize(reader);
 

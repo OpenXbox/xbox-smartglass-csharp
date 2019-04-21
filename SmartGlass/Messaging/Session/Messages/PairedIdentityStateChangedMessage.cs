@@ -8,12 +8,12 @@ namespace SmartGlass.Messaging.Session.Messages
     {
         public PairedIdentityState State { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            State = (PairedIdentityState)reader.ReadUInt16();
+            State = (PairedIdentityState)reader.ReadUInt16BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             throw new NotSupportedException();
         }

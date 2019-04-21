@@ -30,9 +30,9 @@ namespace SmartGlass.Nano.Packets
             ConnectionId = 0;
             ChannelId = 0;
         }
-        public void Deserialize(BEReader reader)
+        public void Deserialize(EndianReader reader)
         {
-            var flags = reader.ReadUInt16();
+            var flags = reader.ReadUInt16BE();
 
             Version = (flags & 0xC000) >> 14;
             Padding = (flags & 0x2000) != 0;
@@ -41,13 +41,13 @@ namespace SmartGlass.Nano.Packets
             Marker = (flags & 0x80) != 0;
             PayloadType = (NanoPayloadType)((flags) & 0x7F);
 
-            SequenceNumber = reader.ReadUInt16();
-            Timestamp = reader.ReadUInt32();
-            ConnectionId = reader.ReadUInt16();
-            ChannelId = reader.ReadUInt16();
+            SequenceNumber = reader.ReadUInt16BE();
+            Timestamp = reader.ReadUInt32BE();
+            ConnectionId = reader.ReadUInt16BE();
+            ChannelId = reader.ReadUInt16BE();
         }
 
-        public void Serialize(BEWriter writer)
+        public void Serialize(EndianWriter writer)
         {
             var flags = 0;
 
@@ -58,11 +58,11 @@ namespace SmartGlass.Nano.Packets
             flags |= (Marker ? 1 : 0) << 7;
             flags |= (byte)PayloadType & 0x7F;
 
-            writer.Write((ushort)flags);
-            writer.Write(SequenceNumber);
-            writer.Write(Timestamp);
-            writer.Write(ConnectionId);
-            writer.Write(ChannelId);
+            writer.WriteBE((ushort)flags);
+            writer.WriteBE(SequenceNumber);
+            writer.WriteBE(Timestamp);
+            writer.WriteBE(ConnectionId);
+            writer.WriteBE(ChannelId);
         }
     }
 }

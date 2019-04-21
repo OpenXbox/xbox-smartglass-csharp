@@ -9,15 +9,15 @@ namespace SmartGlass.Messaging.Session.Messages
         public ConsoleConfiguration Configuration { get; set; }
         public ActiveTitle[] ActiveTitles { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             Configuration = new ConsoleConfiguration();
             ((ISerializable)Configuration).Deserialize(reader);
 
-            ActiveTitles = reader.ReadUInt16PrefixedArray<ActiveTitle>();
+            ActiveTitles = reader.ReadUInt16BEPrefixedArray<ActiveTitle>();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             throw new NotImplementedException();
         }

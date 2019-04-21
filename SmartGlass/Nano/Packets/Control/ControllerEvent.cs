@@ -24,13 +24,13 @@ namespace SmartGlass.Nano.Packets
             ControllerIndex = controllerIndex;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
             Type = (ControllerEventType)reader.ReadByte();
             ControllerIndex = reader.ReadByte();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
             writer.Write((byte)Type);
             writer.Write(ControllerIndex);

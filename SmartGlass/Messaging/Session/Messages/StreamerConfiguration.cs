@@ -12,17 +12,17 @@ namespace SmartGlass.Messaging.Session.Messages
         public ushort RenderHeight { get; set; }
         public byte[] MasterSessionKey { get; set; }
 
-        public void Deserialize(BEReader reader)
+        public void Deserialize(EndianReader reader)
         {
-            ServerTcpPort = reader.ReadUInt16();
-            ServerUdpPort = reader.ReadUInt16();
+            ServerTcpPort = reader.ReadUInt16BE();
+            ServerUdpPort = reader.ReadUInt16BE();
             SessionId = new Guid(reader.ReadBytes(16));
-            RenderWidth = reader.ReadUInt16();
-            RenderHeight = reader.ReadUInt16();
+            RenderWidth = reader.ReadUInt16BE();
+            RenderHeight = reader.ReadUInt16BE();
             MasterSessionKey = reader.ReadBytes(32);
         }
 
-        public void Serialize(BEWriter writer)
+        public void Serialize(EndianWriter writer)
         {
             throw new NotSupportedException();
         }
