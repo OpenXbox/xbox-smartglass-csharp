@@ -8,14 +8,14 @@ namespace SmartGlass.Messaging.Session.Messages
     {
         public uint TitleId { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            TitleId = reader.ReadUInt32();
+            TitleId = reader.ReadUInt32BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(TitleId);
+            writer.WriteBE(TitleId);
         }
     }
 }

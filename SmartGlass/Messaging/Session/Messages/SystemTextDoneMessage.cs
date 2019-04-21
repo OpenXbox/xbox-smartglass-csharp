@@ -16,20 +16,20 @@ namespace SmartGlass.Messaging.Session.Messages
             Header.RequestAcknowledge = true;
 		}
 
-		public override void Deserialize(BEReader reader)
+		public override void Deserialize(EndianReader reader)
         {
-            TextSessionId = reader.ReadUInt32();
-            TextVersion = reader.ReadUInt32();
-            Flags = reader.ReadUInt32();
-            Result = (TextResult)reader.ReadUInt32();
+            TextSessionId = reader.ReadUInt32BE();
+            TextVersion = reader.ReadUInt32BE();
+            Flags = reader.ReadUInt32BE();
+            Result = (TextResult)reader.ReadUInt32BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(TextSessionId);
-            writer.Write(TextVersion);
-            writer.Write(Flags);
-            writer.Write((uint)Result);
+            writer.WriteBE(TextSessionId);
+            writer.WriteBE(TextVersion);
+            writer.WriteBE(Flags);
+            writer.WriteBE((uint)Result);
         }
 	}
 }

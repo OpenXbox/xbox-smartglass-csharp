@@ -34,42 +34,42 @@ namespace SmartGlass.Nano.Packets
             LastLostFrame = lastLostFrame;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            Flags = (VideoControlFlags)reader.ReadUInt32();
+            Flags = (VideoControlFlags)reader.ReadUInt32LE();
 
             if (Flags.HasFlag(VideoControlFlags.LastDisplayedFrame))
             {
-                LastDisplayedFrameId = reader.ReadUInt32();
-                Timestamp = reader.ReadInt64();
+                LastDisplayedFrameId = reader.ReadUInt32LE();
+                Timestamp = reader.ReadInt64LE();
             }
             if (Flags.HasFlag(VideoControlFlags.QueueDepth))
             {
-                QueueDepth = reader.ReadUInt32();
+                QueueDepth = reader.ReadUInt32LE();
             }
             if (Flags.HasFlag(VideoControlFlags.LostFrames))
             {
-                FirstLostFrame = reader.ReadUInt32();
-                LastLostFrame = reader.ReadUInt32();
+                FirstLostFrame = reader.ReadUInt32LE();
+                LastLostFrame = reader.ReadUInt32LE();
             }
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write((uint)Flags);
+            writer.WriteLE((uint)Flags);
             if (Flags.HasFlag(VideoControlFlags.LastDisplayedFrame))
             {
-                writer.Write(LastDisplayedFrameId);
-                writer.Write(Timestamp);
+                writer.WriteLE(LastDisplayedFrameId);
+                writer.WriteLE(Timestamp);
             }
             if (Flags.HasFlag(VideoControlFlags.QueueDepth))
             {
-                writer.Write(QueueDepth);
+                writer.WriteLE(QueueDepth);
             }
             if (Flags.HasFlag(VideoControlFlags.LostFrames))
             {
-                writer.Write(FirstLostFrame);
-                writer.Write(LastLostFrame);
+                writer.WriteLE(FirstLostFrame);
+                writer.WriteLE(LastLostFrame);
             }
         }
     }

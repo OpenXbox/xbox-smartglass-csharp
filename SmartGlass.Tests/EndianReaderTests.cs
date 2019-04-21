@@ -4,18 +4,18 @@ using Xunit;
 
 namespace SmartGlass.Tests
 {
-    public class BEReaderTests
+    public class EndianReaderTests
     {
-        private BEReader _reader;
+        private EndianReader _reader;
 
-        public BEReaderTests()
+        public EndianReaderTests()
         {
             byte[] data = new byte[]
             {
                 0x04, 0x00, 0x00, 0x00, 0x41, 0x42, 0x43, 0x44,
                 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C
             };
-            _reader = new BEReader(data);
+            _reader = new EndianReader(data);
         }
 
         [Fact]
@@ -39,45 +39,45 @@ namespace SmartGlass.Tests
         }
 
         [Fact]
-        public void TestInt16()
+        public void TestInt16BE()
         {
-            Assert.Equal<short>(0x400, _reader.ReadInt16());
+            Assert.Equal<short>(0x400, _reader.ReadInt16BE());
         }
 
         [Fact]
-        public void TestUInt16()
+        public void TestUInt16BE()
         {
-            Assert.Equal<ushort>(0x400, _reader.ReadUInt16());
+            Assert.Equal<ushort>(0x400, _reader.ReadUInt16BE());
         }
 
         [Fact]
-        public void TestInt32()
+        public void TestInt32BE()
         {
-            Assert.Equal<int>(0x4000000, _reader.ReadInt32());
+            Assert.Equal<int>(0x4000000, _reader.ReadInt32BE());
         }
 
         [Fact]
-        public void TestUInt32()
+        public void TestUInt32BE()
         {
-            Assert.Equal<uint>(0x4000000, _reader.ReadUInt32());
+            Assert.Equal<uint>(0x4000000, _reader.ReadUInt32BE());
         }
 
         [Fact]
-        public void TestInt64()
+        public void TestInt64BE()
         {
-            Assert.Equal<long>(0x400000041424344, _reader.ReadInt64());
+            Assert.Equal<long>(0x400000041424344, _reader.ReadInt64BE());
         }
 
         [Fact]
-        public void TestUInt64()
+        public void TestUInt64BE()
         {
-            Assert.Equal<ulong>(0x400000041424344, _reader.ReadUInt64());
+            Assert.Equal<ulong>(0x400000041424344, _reader.ReadUInt64BE());
         }
 
         [Fact]
         public void TestSingle()
         {
-            Assert.Equal<float>(1.50463277E-36f, _reader.ReadSingle());
+            Assert.Equal<float>(1.50463277E-36f, _reader.ReadSingleBE());
         }
 
         [Fact]
@@ -92,9 +92,9 @@ namespace SmartGlass.Tests
         }
 
         [Fact]
-        public void TestUInt32Array()
+        public void TestUInt32BEArray()
         {
-            BEReader reader = new BEReader(new byte[]
+            EndianReader reader = new EndianReader(new byte[]
             {
                 0x00,0x00,0x00,0x04,
                 0xDE,0xAD,0xBE,0xEF,
@@ -103,7 +103,7 @@ namespace SmartGlass.Tests
                 0x40,0x41,0x42,0x43
             });
 
-            uint[] array = reader.ReadUInt32Array();
+            uint[] array = reader.ReadUInt32BEArray();
             Assert.Equal<int>(4, array.Length);
             Assert.Equal<uint>(0xDEADBEEF, array[0]);
             Assert.Equal<uint>(0xBEEFDEAD, array[1]);
@@ -112,21 +112,21 @@ namespace SmartGlass.Tests
         }
 
         [Fact]
-        public void TestUInt16PrefixedBlob()
+        public void TestUInt16BEPrefixedBlob()
         {
             byte[] data = new byte[]
             {
                 0x00, 0x03, 0xDE, 0xAD, 0xBE
             };
-            BEReader reader = new BEReader(data);
-            byte[] result = reader.ReadUInt16PrefixedBlob();
+            EndianReader reader = new EndianReader(data);
+            byte[] result = reader.ReadUInt16BEPrefixedBlob();
 
             Assert.Equal<int>(3, result.Length);
             Assert.Equal<byte[]>(new byte[] { 0xDE, 0xAD, 0xBE }, result);
         }
 
         [Fact]
-        public void TestInvalidUInt16PrefixedString()
+        public void TestInvalidUInt16BEPrefixedString()
         {
             byte[] data = new byte[]
             {
@@ -135,13 +135,13 @@ namespace SmartGlass.Tests
                 0x41, 0x42, 0x43, 0x44,
                 0x5A, 0x59, 0x58, 0x57
             };
-            BEReader reader = new BEReader(data);
+            EndianReader reader = new EndianReader(data);
             Assert.Throws<System.IO.EndOfStreamException>(
-                () => { reader.ReadUInt16PrefixedString(); });
+                () => { reader.ReadUInt16BEPrefixedString(); });
         }
 
         [Fact]
-        public void TestUInt16PrefixedString()
+        public void TestUInt16BEPrefixedString()
         {
             byte[] data = new byte[]
             {
@@ -152,8 +152,8 @@ namespace SmartGlass.Tests
                 // null terminator
                 0x00
             };
-            BEReader reader = new BEReader(data);
-            string result = reader.ReadUInt16PrefixedString();
+            EndianReader reader = new EndianReader(data);
+            string result = reader.ReadUInt16BEPrefixedString();
             Assert.Equal("ABCDZYXW", result);
         }
 
@@ -193,7 +193,7 @@ namespace SmartGlass.Tests
         public void TestToBytes()
         {
             byte[] data = new byte[] { 0xBE, 0xEF, 0xDE, 0xAD };
-            BEReader reader = new BEReader(data);
+            EndianReader reader = new EndianReader(data);
 
             Assert.Equal<byte[]>(data, reader.ToBytes());
         }

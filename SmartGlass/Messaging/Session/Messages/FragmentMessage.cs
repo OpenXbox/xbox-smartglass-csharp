@@ -11,18 +11,18 @@ namespace SmartGlass.Messaging.Session.Messages
         // Data: Plaintext SessionFragmentMessage payload
         public byte[] Data { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            SequenceBegin = reader.ReadUInt32();
-            SequenceEnd = reader.ReadUInt32();
-            Data = reader.ReadUInt16PrefixedBlob();
+            SequenceBegin = reader.ReadUInt32BE();
+            SequenceEnd = reader.ReadUInt32BE();
+            Data = reader.ReadUInt16BEPrefixedBlob();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(SequenceBegin);
-            writer.Write(SequenceEnd);
-            writer.Write((ushort)Data.Length);
+            writer.WriteBE(SequenceBegin);
+            writer.WriteBE(SequenceEnd);
+            writer.WriteBE((ushort)Data.Length);
             writer.Write(Data);
         }
     }

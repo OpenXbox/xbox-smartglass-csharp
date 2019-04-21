@@ -36,7 +36,7 @@ namespace SmartGlass.Messaging.Session
                     return null;
             }
 
-            BEWriter writer = new BEWriter();
+            EndianWriter writer = new EndianWriter();
             foreach (int seq in neededSequences)
             {
                 byte[] data = _fragmentQueue[seq];
@@ -45,7 +45,7 @@ namespace SmartGlass.Messaging.Session
             }
 
             SessionMessageBase assembled = SessionMessageTransport.CreateFromMessageType(messageType);
-            assembled.Deserialize(new BEReader(writer.ToBytes()));
+            assembled.Deserialize(new EndianReader(writer.ToBytes()));
             return assembled;
         }
     }

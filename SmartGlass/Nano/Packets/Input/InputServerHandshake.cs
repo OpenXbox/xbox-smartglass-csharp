@@ -30,22 +30,22 @@ namespace SmartGlass.Nano.Packets
             InitialFrameId = initialFrameId;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            ProtocolVersion = reader.ReadUInt32();
-            DesktopWidth = reader.ReadUInt32();
-            DesktopHeight = reader.ReadUInt32();
-            MaxTouches = reader.ReadUInt32();
-            InitialFrameId = reader.ReadUInt32();
+            ProtocolVersion = reader.ReadUInt32LE();
+            DesktopWidth = reader.ReadUInt32LE();
+            DesktopHeight = reader.ReadUInt32LE();
+            MaxTouches = reader.ReadUInt32LE();
+            InitialFrameId = reader.ReadUInt32LE();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(ProtocolVersion);
-            writer.Write(DesktopWidth);
-            writer.Write(DesktopHeight);
-            writer.Write(MaxTouches);
-            writer.Write(InitialFrameId);
+            writer.WriteLE(ProtocolVersion);
+            writer.WriteLE(DesktopWidth);
+            writer.WriteLE(DesktopHeight);
+            writer.WriteLE(MaxTouches);
+            writer.WriteLE(InitialFrameId);
         }
     }
 }

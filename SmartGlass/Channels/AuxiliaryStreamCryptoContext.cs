@@ -64,7 +64,7 @@ namespace SmartGlass.Channels
         /// <param name="data">Encrypted data.</param>
         public byte[] Encrypt(byte[] data)
         {
-            var writer = new BEWriter();
+            var writer = new EndianWriter();
             byte[] padding = Padding.CreatePaddingData(
                 PaddingType.PKCS7,
                 data,

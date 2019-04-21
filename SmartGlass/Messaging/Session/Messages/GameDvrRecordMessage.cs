@@ -14,15 +14,15 @@ namespace SmartGlass.Messaging.Session.Messages
             Header.RequestAcknowledge = true;
         }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             throw new NotSupportedException();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(StartTimeDelta);
-            writer.Write(EndTimeDelta);
+            writer.WriteBE(StartTimeDelta);
+            writer.WriteBE(EndTimeDelta);
         }
     }
 }

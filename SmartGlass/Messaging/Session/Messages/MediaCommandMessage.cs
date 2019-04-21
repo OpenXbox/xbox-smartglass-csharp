@@ -10,21 +10,21 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public MediaCommandState State { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             throw new NotImplementedException();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             var id = requestId++;
 
-            writer.Write(id);
-            writer.Write(State.TitleId);
-            writer.Write((uint) State.Command);
+            writer.WriteBE(id);
+            writer.WriteBE(State.TitleId);
+            writer.WriteBE((uint) State.Command);
 
             if (State.Command == MediaControlCommands.Seek) {
-                writer.Write(State.SeekPosition);
+                writer.WriteBE(State.SeekPosition);
             }
         }
     }

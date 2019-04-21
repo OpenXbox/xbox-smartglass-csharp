@@ -23,26 +23,26 @@ namespace SmartGlass.Messaging.Session.Messages
             Header.RequestAcknowledge = true;
         }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             throw new NotImplementedException();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write((ushort)DeviceType);
-            writer.Write(NativeWidth);
-            writer.Write(NativeHeight);
-            writer.Write(DpiX);
-            writer.Write(DpiY);
+            writer.WriteBE((ushort)DeviceType);
+            writer.WriteBE(NativeWidth);
+            writer.WriteBE(NativeHeight);
+            writer.WriteBE(DpiX);
+            writer.WriteBE(DpiY);
 
-            writer.Write((long)DeviceCapabilities);
+            writer.WriteBE((long)DeviceCapabilities);
 
-            writer.Write(ClientVersion);
-            writer.Write(OsMajorVersion);
-            writer.Write(OsMinorVersion);
+            writer.WriteBE(ClientVersion);
+            writer.WriteBE(OsMajorVersion);
+            writer.WriteBE(OsMinorVersion);
 
-            writer.WriteUInt16Prefixed(DisplayName);
+            writer.WriteUInt16BEPrefixed(DisplayName);
         }
     }
 }

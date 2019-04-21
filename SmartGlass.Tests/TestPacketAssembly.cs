@@ -58,20 +58,20 @@ namespace SmartGlass.Tests
             fragment.Header.SourceParticipantId = sourceParticipantId;
             fragment.Header.TargetParticipantId = targetParticipantId;
 
-            var writer = new BEWriter();
+            var writer = new EndianWriter();
             message.Serialize(writer);
             fragment.Fragment = writer.ToBytes();
 
             ((ICryptoMessage)fragment).Crypto = _crypto;
 
-            var finalWriter = new BEWriter();
+            var finalWriter = new EndianWriter();
             fragment.Serialize(finalWriter);
             return finalWriter.ToBytes();
         }
 
         private byte[] AssembleMessage(IMessage message)
         {
-            var writer = new BEWriter();
+            var writer = new EndianWriter();
             message.Serialize(writer);
             return writer.ToBytes();
         }

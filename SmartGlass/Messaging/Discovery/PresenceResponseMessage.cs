@@ -19,18 +19,18 @@ namespace SmartGlass.Messaging.Discovery
         public uint LastError { get; set; }
         public X509Certificate Certificate { get; set; }
 
-        protected override void DeserializePayload(BEReader reader)
+        protected override void DeserializePayload(EndianReader reader)
         {
-            Flags = (DeviceFlags)reader.ReadUInt32();
-            DeviceType = (DeviceType)reader.ReadUInt16();
-            Name = reader.ReadUInt16PrefixedString();
-            HardwareId = Guid.Parse(reader.ReadUInt16PrefixedString());
-            LastError = reader.ReadUInt32();
+            Flags = (DeviceFlags)reader.ReadUInt32BE();
+            DeviceType = (DeviceType)reader.ReadUInt16BE();
+            Name = reader.ReadUInt16BEPrefixedString();
+            HardwareId = Guid.Parse(reader.ReadUInt16BEPrefixedString());
+            LastError = reader.ReadUInt32BE();
             Certificate = CryptoExtensions
-                            .DeserializeCertificateAsn(reader.ReadUInt16PrefixedBlob());
+                            .DeserializeCertificateAsn(reader.ReadUInt16BEPrefixedBlob());
         }
 
-        protected override void SerializePayload(BEWriter writer)
+        protected override void SerializePayload(EndianWriter writer)
         {
             throw new NotImplementedException();
         }

@@ -10,7 +10,7 @@ namespace SmartGlass.Nano.Packets
     {
         public static INanoPacket ParsePacket(byte[] data, NanoChannelContext context)
         {
-            BEReader packetReader = new BEReader(data);
+            EndianReader packetReader = new EndianReader(data);
             RtpHeader header = new RtpHeader();
             header.Deserialize(packetReader);
             NanoPayloadType payloadType = header.PayloadType;
@@ -20,9 +20,8 @@ namespace SmartGlass.Nano.Packets
             // It gets processed at the end of the function
             NanoChannel channel = context.GetChannel(header.ChannelId);
 
-            BinaryReader payloadReader =
-                BinaryExtensions.ReaderFromBytes(packetReader.ReadToEnd());
             INanoPacket packet = null;
+            long payloadOffset = packetReader.Position;
 
             switch (payloadType)
             {
@@ -36,11 +35,11 @@ namespace SmartGlass.Nano.Packets
                 case NanoPayloadType.ChannelControl:
                     // Read type to pinpoint exact payload
                     ChannelControlType cct =
-                        (ChannelControlType)payloadReader.ReadUInt32();
+                        (ChannelControlType)packetReader.ReadUInt32LE();
                     packet = CreateFromChannelControlType(cct);
                     break;
                 case NanoPayloadType.Streamer:
-                    packet = CreateFromStreamerHeader(payloadReader, channel);
+                    packet = CreateFromStreamerHeader(packetReader, channel);
                     break;
                 default:
                     throw new NanoPackingException(
@@ -52,8 +51,8 @@ namespace SmartGlass.Nano.Packets
                 throw new NanoPackingException("Failed to find matching body for packet");
             }
 
-            payloadReader.Seek(0, SeekOrigin.Begin);
-            packet.Deserialize(payloadReader);
+            packetReader.Seek(payloadOffset, SeekOrigin.Begin);
+            packet.Deserialize(packetReader);
             packet.Header = header;
 
             if (packet as ChannelCreate != null)
@@ -78,30 +77,39 @@ namespace SmartGlass.Nano.Packets
                 throw new NanoPackingException("AssemblePacket: INanoPacket.Channel is UNKNOWN");
             }
 
-            BEWriter packetWriter = new BEWriter();
-            BinaryWriter payloadWriter = new BinaryWriter(new MemoryStream());
-
-            packet.Serialize(payloadWriter);
-            byte[] padding = Padding.CreatePaddingData(
-                PaddingType.ANSI_X923,
-                payloadWriter.ToBytes(),
-                alignment: 4);
-            payloadWriter.Write(padding);
-
-            if (padding.Length > 0)
+            // Serialize payload and append padding if needed
+            byte[] payloadData = null;
+            using (EndianWriter payloadWriter = new EndianWriter())
             {
-                packet.Header.Padding = true;
+                packet.Serialize(payloadWriter);
+                byte[] padding = Padding.CreatePaddingData(
+                    PaddingType.ANSI_X923,
+                    payloadWriter.ToBytes(),
+                    alignment: 4);
+
+                // Append padding
+                if (padding.Length > 0)
+                {
+                    payloadWriter.Write(padding);
+                    packet.Header.Padding = true;
+                }
+
+                payloadData = payloadWriter.ToBytes();
             }
+
+            EndianWriter packetWriter = new EndianWriter();
 
             packet.Header.ChannelId = context.GetChannelId(packet.Channel);
 
+            // Serialize header
             packet.Header.Serialize(packetWriter);
-            packetWriter.Write(payloadWriter.ToBytes());
+            // Append payload to header
+            packetWriter.Write(payloadData);
 
             return packetWriter.ToBytes();
         }
 
-        private static INanoPacket CreateFromStreamerHeader(BinaryReader reader, NanoChannel channel)
+        private static INanoPacket CreateFromStreamerHeader(EndianReader reader, NanoChannel channel)
         {
             if (channel == NanoChannel.Unknown)
             {
@@ -126,7 +134,7 @@ namespace SmartGlass.Nano.Packets
                 case NanoChannel.Control:
                     // Skip to opCode
                     reader.Seek(8, SeekOrigin.Current);
-                    ushort opCode = reader.ReadUInt16();
+                    ushort opCode = reader.ReadUInt16LE();
                     return CreateFromControlOpCode((ControlOpCode)opCode);
                 default:
                     throw new NanoPackingException(

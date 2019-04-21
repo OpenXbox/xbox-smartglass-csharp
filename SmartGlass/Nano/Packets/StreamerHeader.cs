@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    public class StreamerHeader
+    public class StreamerHeader : ISerializable
     {
         public StreamerFlags Flags { get; internal set; }
         public uint SequenceNumber { get; internal set; }
@@ -21,26 +21,26 @@ namespace SmartGlass.Nano.Packets
             PacketType = packetType;
         }
 
-        public void Deserialize(BinaryReader br)
+        public void Deserialize(EndianReader br)
         {
-            Flags = (StreamerFlags)br.ReadUInt32();
+            Flags = (StreamerFlags)br.ReadUInt32LE();
             if (Flags.HasFlag(StreamerFlags.GotSeqAndPrev))
             {
-                SequenceNumber = br.ReadUInt32();
-                PreviousSequenceNumber = br.ReadUInt32();
+                SequenceNumber = br.ReadUInt32LE();
+                PreviousSequenceNumber = br.ReadUInt32LE();
             }
-            PacketType = br.ReadUInt32();
+            PacketType = br.ReadUInt32LE();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public void Serialize(EndianWriter bw)
         {
-            bw.Write((uint)Flags);
+            bw.WriteLE((uint)Flags);
             if (Flags.HasFlag(StreamerFlags.GotSeqAndPrev))
             {
-                bw.Write(SequenceNumber);
-                bw.Write(PreviousSequenceNumber);
+                bw.WriteLE(SequenceNumber);
+                bw.WriteLE(PreviousSequenceNumber);
             }
-            bw.Write(PacketType);
+            bw.WriteLE(PacketType);
         }
     }
 }

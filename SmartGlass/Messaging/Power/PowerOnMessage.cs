@@ -14,14 +14,14 @@ namespace SmartGlass.Messaging.Power
         /// <value>The live identifier.</value>
         public string LiveId { get; set; }
 
-        protected override void DeserializePayload(BEReader reader)
+        protected override void DeserializePayload(EndianReader reader)
         {
-            LiveId = reader.ReadUInt16PrefixedString();
+            LiveId = reader.ReadUInt16BEPrefixedString();
         }
 
-        protected override void SerializePayload(BEWriter writer)
+        protected override void SerializePayload(EndianWriter writer)
         {
-            writer.WriteUInt16Prefixed(LiveId);
+            writer.WriteUInt16BEPrefixed(LiveId);
         }
     }
 }

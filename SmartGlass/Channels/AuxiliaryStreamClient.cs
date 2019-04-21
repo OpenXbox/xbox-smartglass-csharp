@@ -99,12 +99,12 @@ namespace SmartGlass.Channels
         /// <param name="stream">Stream.</param>
         private byte[] ReadAndDecryptChunk(Stream stream)
         {
-            var reader = new BEReader(stream);
+            var reader = new EndianReader(stream);
 
             // 0xde, 0xad
             reader.ReadBytes(2);
 
-            var length = reader.ReadUInt16();
+            var length = reader.ReadUInt16BE();
 
             var encryptedPayloadLength = length + Padding.CalculatePaddingSize(length, 16);
 
@@ -120,9 +120,9 @@ namespace SmartGlass.Channels
 
             var signature = reader.ReadBytes(32);
 
-            var bodyWriter = new BEWriter();
+            var bodyWriter = new EndianWriter();
             bodyWriter.Write(new byte[] { 0xde, 0xad });
-            bodyWriter.Write(length);
+            bodyWriter.WriteBE(length);
             bodyWriter.Write(encryptedPayloadBytes);
 
             var messageSignature = _cryptoContext.CalculateMessageSignature(bodyWriter.ToBytes());
@@ -156,9 +156,9 @@ namespace SmartGlass.Channels
         {
             logger.LogTrace($"Sending auxiliary stream buffer: {bytes.Length} bytes");
 
-            var writer = new BEWriter();
+            var writer = new EndianWriter();
             writer.Write(new byte[] { 0xde, 0xad });
-            writer.Write((ushort)bytes.Length);
+            writer.WriteBE((ushort)bytes.Length);
             writer.Write(_cryptoContext.Encrypt(bytes));
             writer.Write(_cryptoContext.CalculateMessageSignature(writer.ToBytes()));
 

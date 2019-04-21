@@ -5,7 +5,7 @@ using SmartGlass.Nano;
 
 namespace SmartGlass.Nano.Packets
 {
-    public class StreamerControlHeader : ISerializableLE
+    public class StreamerControlHeader : ISerializable
     {
         public uint PreviousSequence { get; set; }
         public ushort Unknown1 { get; set; }
@@ -21,20 +21,20 @@ namespace SmartGlass.Nano.Packets
             OpCode = opCode;
         }
 
-        public void Deserialize(BinaryReader br)
+        public void Deserialize(EndianReader br)
         {
-            PreviousSequence = br.ReadUInt32();
-            Unknown1 = br.ReadUInt16();
-            Unknown2 = br.ReadUInt16();
-            OpCode = (ControlOpCode)br.ReadUInt16();
+            PreviousSequence = br.ReadUInt32LE();
+            Unknown1 = br.ReadUInt16LE();
+            Unknown2 = br.ReadUInt16LE();
+            OpCode = (ControlOpCode)br.ReadUInt16LE();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public void Serialize(EndianWriter bw)
         {
-            bw.Write(PreviousSequence);
-            bw.Write(Unknown1);
-            bw.Write(Unknown2);
-            bw.Write((ushort)OpCode);
+            bw.WriteLE(PreviousSequence);
+            bw.WriteLE(Unknown1);
+            bw.WriteLE(Unknown2);
+            bw.WriteLE((ushort)OpCode);
         }
     }
 }

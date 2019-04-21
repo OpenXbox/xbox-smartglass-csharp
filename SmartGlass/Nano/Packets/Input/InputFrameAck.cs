@@ -21,14 +21,14 @@ namespace SmartGlass.Nano.Packets
             AckedFrame = ackedFrame;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            AckedFrame = reader.ReadUInt32();
+            AckedFrame = reader.ReadUInt32LE();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(AckedFrame);
+            writer.WriteLE(AckedFrame);
         }
     }
 }

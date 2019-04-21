@@ -4,13 +4,13 @@ using Xunit;
 
 namespace SmartGlass.Tests
 {
-    public class BEWriterTests
+    public class EndianWriterTests
     {
-        private BEWriter _writer;
+        private EndianWriter _writer;
 
-        public BEWriterTests()
+        public EndianWriterTests()
         {
-            _writer = new BEWriter();
+            _writer = new EndianWriter();
         }
 
         [Fact]
@@ -32,59 +32,59 @@ namespace SmartGlass.Tests
         }
 
         [Fact]
-        public void TestUShort()
+        public void TestUShortBE()
         {
-            _writer.Write((ushort)0xFB42);
+            _writer.WriteBE((ushort)0xFB42);
 
             Assert.Equal<byte[]>(new byte[] { 0xFB, 0x42 }, _writer.ToBytes());
         }
 
         [Fact]
-        public void TestUInt()
+        public void TestUIntBE()
         {
-            _writer.Write((uint)0x425112);
+            _writer.WriteBE((uint)0x425112);
 
             Assert.Equal<byte[]>(new byte[] { 0x00, 0x42, 0x51, 0x12 }, _writer.ToBytes());
         }
 
         [Fact]
-        public void TestULong()
+        public void TestULongBE()
         {
-            _writer.Write((ulong)0x425112);
+            _writer.WriteBE((ulong)0x425112);
 
             Assert.Equal<byte[]>(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x51, 0x12 },
                             _writer.ToBytes());
         }
 
         [Fact]
-        public void TestShort()
+        public void TestShortBE()
         {
-            _writer.Write((short)-2);
+            _writer.WriteBE((short)-2);
 
             Assert.Equal<byte[]>(new byte[] { 0xFF, 0xFE }, _writer.ToBytes());
         }
 
         [Fact]
-        public void TestInt()
+        public void TestIntBE()
         {
-            _writer.Write((int)-2);
+            _writer.WriteBE((int)-2);
 
             Assert.Equal<byte[]>(new byte[] { 0xFF, 0xFF, 0xFF, 0xFE }, _writer.ToBytes());
         }
 
         [Fact]
-        public void TestLong()
+        public void TestLongBE()
         {
-            _writer.Write((long)-2);
+            _writer.WriteBE((long)-2);
 
             Assert.Equal<byte[]>(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE },
                             _writer.ToBytes());
         }
 
         [Fact]
-        public void TestUInt16PrefixedString()
+        public void TestUInt16BEPrefixedString()
         {
-            _writer.WriteUInt16Prefixed("ABCXYZ");
+            _writer.WriteUInt16BEPrefixed("ABCXYZ");
 
             Assert.Equal<byte[]>(new byte[] { 0x00, 0x06, 0x41, 0x42, 0x43, 0x58, 0x59, 0x5A, 0x00 },
                             _writer.ToBytes());

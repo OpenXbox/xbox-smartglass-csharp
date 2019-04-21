@@ -15,13 +15,13 @@ namespace SmartGlass.Messaging
 
         public byte[] InitVector { get; set; }
 
-        protected abstract void SerializeProtectedPayload(BEWriter writer);
+        protected abstract void SerializeProtectedPayload(EndianWriter writer);
 
-        protected abstract void DeserializeProtectedPayload(BEReader reader);
+        protected abstract void DeserializeProtectedPayload(EndianReader reader);
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            var protectedPayloadWriter = new BEWriter();
+            var protectedPayloadWriter = new EndianWriter();
 
             SerializeProtectedPayload(protectedPayloadWriter);
 
@@ -38,7 +38,7 @@ namespace SmartGlass.Messaging
             writer.Write(signature);
         }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             var message = reader.ReadToEnd();
 
@@ -50,7 +50,7 @@ namespace SmartGlass.Messaging
                 throw new InvalidDataException("Invalid message signature.");
             }
 
-            var messageReader = new BEReader(messageBody);
+            var messageReader = new EndianReader(messageBody);
 
             base.Deserialize(messageReader);
 
@@ -58,7 +58,7 @@ namespace SmartGlass.Messaging
             var unencryptedPayload = protectedPayload.Length > 0 ?
                 Crypto.Decrypt(protectedPayload, InitVector) : new byte[] { };
 
-            var protectedPayloadReader = new BEReader(unencryptedPayload);
+            var protectedPayloadReader = new EndianReader(unencryptedPayload);
 
             DeserializeProtectedPayload(protectedPayloadReader);
         }

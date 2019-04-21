@@ -29,19 +29,19 @@ namespace SmartGlass.Nano.Packets
             Type = type;
         }
 
-        public void Deserialize(BinaryReader reader)
+        public void Deserialize(EndianReader reader)
         {
-            Type = (ChannelControlType)reader.ReadUInt32();
+            Type = (ChannelControlType)reader.ReadUInt32LE();
             DeserializeData(reader);
         }
 
-        public void Serialize(BinaryWriter writer)
+        public void Serialize(EndianWriter writer)
         {
-            writer.Write((uint)Type);
+            writer.WriteLE((uint)Type);
             SerializeData(writer);
         }
 
-        internal abstract void DeserializeData(BinaryReader reader);
-        internal abstract void SerializeData(BinaryWriter writer);
+        internal abstract void DeserializeData(EndianReader reader);
+        internal abstract void SerializeData(EndianWriter writer);
     }
 }

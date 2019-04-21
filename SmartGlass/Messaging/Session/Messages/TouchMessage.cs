@@ -8,16 +8,16 @@ namespace SmartGlass.Messaging.Session.Messages
         public uint Timestamp { get; set; }
         public TouchPoint[] Touchpoints { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            Timestamp = reader.ReadUInt32();
-            Touchpoints = reader.ReadUInt16PrefixedArray<TouchPoint>();
+            Timestamp = reader.ReadUInt32BE();
+            Touchpoints = reader.ReadUInt16BEPrefixedArray<TouchPoint>();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(Timestamp);
-            writer.Write((ushort)Touchpoints.Length);
+            writer.WriteBE(Timestamp);
+            writer.WriteBE((ushort)Touchpoints.Length);
             foreach (TouchPoint p in Touchpoints)
                 ((ISerializable)p).Serialize(writer);
         }

@@ -10,14 +10,14 @@ namespace SmartGlass.Messaging.Session.Messages
         public ulong ChannelId { get; set; }
         public int Result { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            ChannelRequestId = reader.ReadUInt32();
-            ChannelId = reader.ReadUInt64();
-            Result = reader.ReadInt32();
+            ChannelRequestId = reader.ReadUInt32BE();
+            ChannelId = reader.ReadUInt64BE();
+            Result = reader.ReadInt32BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             throw new NotImplementedException();
         }

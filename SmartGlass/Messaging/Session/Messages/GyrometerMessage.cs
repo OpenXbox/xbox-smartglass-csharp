@@ -11,20 +11,20 @@ namespace SmartGlass.Messaging.Session.Messages
         public float AngularVelocityY { get; set; }
         public float AngularVelocityZ { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            Timestamp = reader.ReadUInt64();
-            AngularVelocityX = reader.ReadInt32();
-            AngularVelocityY = reader.ReadInt32();
-            AngularVelocityZ = reader.ReadInt32();
+            Timestamp = reader.ReadUInt64BE();
+            AngularVelocityX = reader.ReadInt32BE();
+            AngularVelocityY = reader.ReadInt32BE();
+            AngularVelocityZ = reader.ReadInt32BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(Timestamp);
-            writer.Write(AngularVelocityX);
-            writer.Write(AngularVelocityY);
-            writer.Write(AngularVelocityZ);
+            writer.WriteBE(Timestamp);
+            writer.WriteBE(AngularVelocityX);
+            writer.WriteBE(AngularVelocityY);
+            writer.WriteBE(AngularVelocityZ);
         }
     }
 }

@@ -1,11 +1,13 @@
+using System.IO;
+
 namespace SmartGlass.Common
 {
     /// <summary>
-    /// Serializable (Big endian)
+    /// Serializable interface
     /// </summary>
     public interface ISerializable
     {
-        void Deserialize(BEReader reader);
-        void Serialize(BEWriter writer);
+        void Deserialize(EndianReader reader);
+        void Serialize(EndianWriter writer);
     }
 }

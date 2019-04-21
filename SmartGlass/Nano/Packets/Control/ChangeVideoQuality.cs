@@ -32,24 +32,24 @@ namespace SmartGlass.Nano.Packets
             Unknown6 = unk6;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            Unknown1 = reader.ReadUInt32();
-            Unknown2 = reader.ReadUInt32();
-            Unknown3 = reader.ReadUInt32();
-            Unknown4 = reader.ReadUInt32();
-            Unknown5 = reader.ReadUInt32();
-            Unknown6 = reader.ReadUInt32();
+            Unknown1 = reader.ReadUInt32LE();
+            Unknown2 = reader.ReadUInt32LE();
+            Unknown3 = reader.ReadUInt32LE();
+            Unknown4 = reader.ReadUInt32LE();
+            Unknown5 = reader.ReadUInt32LE();
+            Unknown6 = reader.ReadUInt32LE();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(Unknown1);
-            writer.Write(Unknown2);
-            writer.Write(Unknown3);
-            writer.Write(Unknown4);
-            writer.Write(Unknown5);
-            writer.Write(Unknown6);
+            writer.WriteLE(Unknown1);
+            writer.WriteLE(Unknown2);
+            writer.WriteLE(Unknown3);
+            writer.WriteLE(Unknown4);
+            writer.WriteLE(Unknown5);
+            writer.WriteLE(Unknown6);
         }
 
     }

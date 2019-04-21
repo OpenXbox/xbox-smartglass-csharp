@@ -12,17 +12,17 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public AuxiliaryStreamEndpoint[] Endpoints { get; set; }
 
-        public void Deserialize(BEReader reader)
+        public void Deserialize(EndianReader reader)
         {
-            CryptoKey = reader.ReadUInt16PrefixedBlob();
-            ServerInitVector = reader.ReadUInt16PrefixedBlob();
-            ClientInitVector = reader.ReadUInt16PrefixedBlob();
-            SignHash = reader.ReadUInt16PrefixedBlob();
+            CryptoKey = reader.ReadUInt16BEPrefixedBlob();
+            ServerInitVector = reader.ReadUInt16BEPrefixedBlob();
+            ClientInitVector = reader.ReadUInt16BEPrefixedBlob();
+            SignHash = reader.ReadUInt16BEPrefixedBlob();
 
-            Endpoints = reader.ReadUInt16PrefixedArray<AuxiliaryStreamEndpoint>();
+            Endpoints = reader.ReadUInt16BEPrefixedArray<AuxiliaryStreamEndpoint>();
         }
 
-        public void Serialize(BEWriter writer)
+        public void Serialize(EndianWriter writer)
         {
             throw new NotSupportedException();
         }

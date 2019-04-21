@@ -8,13 +8,13 @@ namespace SmartGlass.Messaging.Session.Messages
         public string Host { get; set; }
         public string Service { get; set; }
 
-        public void Deserialize(BEReader reader)
+        public void Deserialize(EndianReader reader)
         {
-            Host = reader.ReadUInt16PrefixedString();
-            Service = reader.ReadUInt16PrefixedString();
+            Host = reader.ReadUInt16BEPrefixedString();
+            Service = reader.ReadUInt16BEPrefixedString();
         }
 
-        public void Serialize(BEWriter writer)
+        public void Serialize(EndianWriter writer)
         {
             throw new NotSupportedException();
         }

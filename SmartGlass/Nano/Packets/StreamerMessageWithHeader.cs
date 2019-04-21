@@ -1,4 +1,5 @@
 using System.IO;
+using SmartGlass.Common;
 
 namespace SmartGlass.Nano.Packets
 {
@@ -35,21 +36,21 @@ namespace SmartGlass.Nano.Packets
             ControlHeader = new StreamerControlHeader(opCode);
         }
 
-        public void Deserialize(BinaryReader reader)
+        public void Deserialize(EndianReader reader)
         {
             StreamerHeader.Deserialize(reader);
             ControlHeader.Deserialize(reader);
             DeserializeStreamer(reader);
         }
 
-        public void Serialize(BinaryWriter writer)
+        public void Serialize(EndianWriter writer)
         {
             StreamerHeader.Serialize(writer);
             ControlHeader.Serialize(writer);
             SerializeStreamer(writer);
         }
 
-        internal abstract void DeserializeStreamer(BinaryReader reader);
-        internal abstract void SerializeStreamer(BinaryWriter writer);
+        internal abstract void DeserializeStreamer(EndianReader reader);
+        internal abstract void SerializeStreamer(EndianWriter writer);
     }
 }

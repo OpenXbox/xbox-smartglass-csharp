@@ -9,18 +9,18 @@ namespace SmartGlass
         public uint DeleteCount { get; set; }
         public string InsertContent { get; set; }
 
-        public void Deserialize(BEReader reader)
+        public void Deserialize(EndianReader reader)
         {
-            Offset = reader.ReadUInt32();
-            DeleteCount = reader.ReadUInt32();
-            InsertContent = reader.ReadUInt16PrefixedString();
+            Offset = reader.ReadUInt32BE();
+            DeleteCount = reader.ReadUInt32BE();
+            InsertContent = reader.ReadUInt16BEPrefixedString();
         }
 
-        public void Serialize(BEWriter writer)
+        public void Serialize(EndianWriter writer)
         {
-            writer.Write(Offset);
-            writer.Write(DeleteCount);
-            writer.WriteUInt16Prefixed(InsertContent);
+            writer.WriteBE(Offset);
+            writer.WriteBE(DeleteCount);
+            writer.WriteUInt16BEPrefixed(InsertContent);
         }
     }
 }

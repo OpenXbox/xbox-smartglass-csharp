@@ -18,7 +18,7 @@ namespace SmartGlass.Messaging.Session
             };
         }
 
-        public abstract void Deserialize(BEReader reader);
-        public abstract void Serialize(BEWriter writer);
+        public abstract void Deserialize(EndianReader reader);
+        public abstract void Serialize(EndianWriter writer);
     }
 }

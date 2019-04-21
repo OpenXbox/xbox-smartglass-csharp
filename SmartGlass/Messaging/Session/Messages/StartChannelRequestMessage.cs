@@ -48,20 +48,20 @@ namespace SmartGlass.Messaging.Session.Messages
         public ServiceType ServiceType { get; set; }
         public uint ActivityId { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             throw new NotImplementedException();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(ChannelRequestId);
-            writer.Write(TitleId);
+            writer.WriteBE(ChannelRequestId);
+            writer.WriteBE(TitleId);
 
             var uuidBytes = ServiceUuids[ServiceType];
             writer.Write(uuidBytes);
 
-            writer.Write(ActivityId);
+            writer.WriteBE(ActivityId);
         }
     }
 }

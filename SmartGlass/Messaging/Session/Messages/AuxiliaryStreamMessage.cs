@@ -7,7 +7,7 @@ namespace SmartGlass.Messaging.Session.Messages
     {
         public AuxiliaryStreamConnectionInfo ConnectionInfo { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
             if (reader.ReadByte() == 1)
             {
@@ -16,7 +16,7 @@ namespace SmartGlass.Messaging.Session.Messages
             }
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
             writer.Write((byte)0);
         }

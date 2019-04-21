@@ -26,18 +26,18 @@ namespace SmartGlass.Nano.Packets
             Formats = formats;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            ProtocolVersion = reader.ReadUInt32();
-            ReferenceTimestamp = reader.ReadUInt64();
-            Formats = reader.ReadUInt32PrefixedArray<AudioFormat>();
+            ProtocolVersion = reader.ReadUInt32LE();
+            ReferenceTimestamp = reader.ReadUInt64LE();
+            Formats = reader.ReadUInt32LEPrefixedArray<AudioFormat>();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(ProtocolVersion);
-            writer.Write(ReferenceTimestamp);
-            writer.WriteUInt32PrefixedArray(Formats);
+            writer.WriteLE(ProtocolVersion);
+            writer.WriteLE(ReferenceTimestamp);
+            writer.WriteUInt32LEPrefixedArray(Formats);
         }
     }
 }

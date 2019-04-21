@@ -62,7 +62,7 @@ namespace SmartGlass.Nano
             {
                 try
                 {
-                    BEReader reader = new BEReader(packetData);
+                    EndianReader reader = new EndianReader(packetData);
                     INanoPacket packet = NanoPacketFactory.ParsePacket(packetData, ChannelContext);
 
                     if (packet.Header.PayloadType == NanoPayloadType.ChannelControl &&

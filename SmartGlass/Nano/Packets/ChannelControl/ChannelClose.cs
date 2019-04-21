@@ -21,14 +21,14 @@ namespace SmartGlass.Nano.Packets
             Flags = flags;
         }
 
-        internal override void DeserializeData(BinaryReader reader)
+        internal override void DeserializeData(EndianReader reader)
         {
-            Flags = reader.ReadUInt32();
+            Flags = reader.ReadUInt32LE();
         }
 
-        internal override void SerializeData(BinaryWriter writer)
+        internal override void SerializeData(EndianWriter writer)
         {
-            writer.Write(Flags);
+            writer.WriteLE(Flags);
         }
     }
 }

@@ -24,16 +24,16 @@ namespace SmartGlass.Nano.Packets
             RequestedFormat = requestedFormat;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            InitialFrameId = reader.ReadUInt32();
-            ((ISerializableLE)RequestedFormat).Deserialize(reader);
+            InitialFrameId = reader.ReadUInt32LE();
+            ((ISerializable)RequestedFormat).Deserialize(reader);
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(InitialFrameId);
-            ((ISerializableLE)RequestedFormat).Serialize(writer);
+            writer.WriteLE(InitialFrameId);
+            ((ISerializable)RequestedFormat).Serialize(writer);
         }
     }
 }

@@ -13,24 +13,24 @@ namespace SmartGlass.Messaging.Session.Messages
         public float RotationY { get; set; }
         public float RotationZ { get; set; }
 
-        public override void Deserialize(BEReader reader)
+        public override void Deserialize(EndianReader reader)
         {
-            Timestamp = reader.ReadUInt64();
-            RotationMatrixValue = reader.ReadInt32();
-            RotationW = reader.ReadInt32();
-            RotationX = reader.ReadInt32();
-            RotationY = reader.ReadInt32();
-            RotationZ = reader.ReadInt32();
+            Timestamp = reader.ReadUInt64BE();
+            RotationMatrixValue = reader.ReadInt32BE();
+            RotationW = reader.ReadInt32BE();
+            RotationX = reader.ReadInt32BE();
+            RotationY = reader.ReadInt32BE();
+            RotationZ = reader.ReadInt32BE();
         }
 
-        public override void Serialize(BEWriter writer)
+        public override void Serialize(EndianWriter writer)
         {
-            writer.Write(Timestamp);
-            writer.Write(RotationMatrixValue);
-            writer.Write(RotationW);
-            writer.Write(RotationX);
-            writer.Write(RotationY);
-            writer.Write(RotationZ);
+            writer.WriteBE(Timestamp);
+            writer.WriteBE(RotationMatrixValue);
+            writer.WriteBE(RotationW);
+            writer.WriteBE(RotationX);
+            writer.WriteBE(RotationY);
+            writer.WriteBE(RotationZ);
         }
     }
 }

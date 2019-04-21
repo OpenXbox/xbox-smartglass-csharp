@@ -35,26 +35,26 @@ namespace SmartGlass.Nano.Packets
             Data = data;
         }
 
-        internal override void DeserializeStreamer(BinaryReader reader)
+        internal override void DeserializeStreamer(EndianReader reader)
         {
-            Flags = reader.ReadUInt32();
-            FrameId = reader.ReadUInt32();
-            Timestamp = reader.ReadUInt64();
-            TotalSize = reader.ReadUInt32();
-            PacketCount = reader.ReadUInt32();
-            Offset = reader.ReadUInt32();
-            Data = reader.ReadUInt32PrefixedBlob();
+            Flags = reader.ReadUInt32LE();
+            FrameId = reader.ReadUInt32LE();
+            Timestamp = reader.ReadUInt64LE();
+            TotalSize = reader.ReadUInt32LE();
+            PacketCount = reader.ReadUInt32LE();
+            Offset = reader.ReadUInt32LE();
+            Data = reader.ReadUInt32LEPrefixedBlob();
         }
 
-        internal override void SerializeStreamer(BinaryWriter writer)
+        internal override void SerializeStreamer(EndianWriter writer)
         {
-            writer.Write(Flags);
-            writer.Write(FrameId);
-            writer.Write(Timestamp);
-            writer.Write(TotalSize);
-            writer.Write(PacketCount);
-            writer.Write(Offset);
-            writer.WriteUInt32PrefixedBlob(Data);
+            writer.WriteLE(Flags);
+            writer.WriteLE(FrameId);
+            writer.WriteLE(Timestamp);
+            writer.WriteLE(TotalSize);
+            writer.WriteLE(PacketCount);
+            writer.WriteLE(Offset);
+            writer.WriteUInt32LEPrefixedBlob(Data);
         }
     }
 }

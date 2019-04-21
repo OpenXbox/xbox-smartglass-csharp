@@ -57,9 +57,9 @@ namespace SmartGlass.Messaging
 
             _client.ConsumeReceived(receiveResult =>
             {
-                var reader = new BEReader(receiveResult.Buffer);
+                var reader = new EndianReader(receiveResult.Buffer);
 
-                var messageType = (MessageType)reader.ReadUInt16();
+                var messageType = (MessageType)reader.ReadUInt16BE();
                 reader.Position = 0;
 
                 var message = CreateFromMessageType(messageType);
@@ -117,7 +117,7 @@ namespace SmartGlass.Messaging
                 cryptoMessage.Crypto = _crypto;
             }
 
-            var writer = new BEWriter();
+            var writer = new EndianWriter();
             message.Serialize(writer);
             var serialized = writer.ToBytes();
 

@@ -29,12 +29,12 @@ namespace SmartGlass.Nano.Packets
             Type = type;
         }
 
-        public void Deserialize(BinaryReader br)
+        public void Deserialize(EndianReader br)
         {
             Type = (ControlHandshakeType)br.ReadByte();
         }
 
-        public void Serialize(BinaryWriter bw)
+        public void Serialize(EndianWriter bw)
         {
             bw.Write((byte)Type);
         }
