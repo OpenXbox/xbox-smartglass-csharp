@@ -1,3 +1,7 @@
+/// <summary>
+/// SmartGlass packet assembly tests
+/// </summary>
+
 using System.Collections.Generic;
 using SmartGlass;
 using SmartGlass.Common;
@@ -12,11 +16,11 @@ using Conn = SmartGlass.Connection;
 
 namespace SmartGlass.Tests
 {
-    public class TestPacketAssembly
+    public class TestSgPacketAssembly
     {
         private Conn.CryptoContext _crypto;
 
-        public TestPacketAssembly()
+        public TestSgPacketAssembly()
         {
             byte[] sharedSecretBlob = new byte[]
             {

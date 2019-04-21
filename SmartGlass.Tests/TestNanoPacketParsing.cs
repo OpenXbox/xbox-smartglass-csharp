@@ -9,11 +9,11 @@ using SmartGlass.Tests.Resources;
 
 namespace SmartGlass.Tests
 {
-    public class TestPacketParsing
+    public class TestNanoPacketParsing
     {
         private NanoChannelContext _context { get; set; }
 
-        public TestPacketParsing()
+        public TestNanoPacketParsing()
         {
             _context = new NanoChannelContext();
             _context.RegisterChannel(1024, NanoChannel.Video);
