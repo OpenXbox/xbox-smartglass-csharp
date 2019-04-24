@@ -31,7 +31,7 @@ namespace SmartGlass
         public static async Task<SmartGlassClient> ConnectAsync(
             string addressOrHostname, string xboxLiveUserHash = null, string xboxLiveAuthorization = null)
         {
-            var device = await Device.PingAsync(addressOrHostname).ConfigureAwait(true);
+            var device = await Device.PingAsync(addressOrHostname);
             return await ConnectAsync(device, xboxLiveUserHash, xboxLiveAuthorization);
         }
 
@@ -45,6 +45,14 @@ namespace SmartGlass
         public static async Task<SmartGlassClient> ConnectAsync(
             Device device, string xboxLiveUserHash, string xboxLiveAuthorization)
         {
+            bool connectAuthenticated = !String.IsNullOrEmpty(xboxLiveUserHash)
+                                     && !String.IsNullOrEmpty(xboxLiveAuthorization);
+
+            if (device.State == DeviceState.Unavailable)
+                throw new SmartGlassException("Target device state is 'Unavailable'.");
+            else if (!connectAuthenticated && !device.Flags.HasFlag(DeviceFlags.AllowAnonymousUsers))
+                throw new SmartGlassException("Anonymous connection forbidden.");
+
             var cryptoContext = new CryptoContext(device.Certificate);
 
             using (var transport = new MessageTransport(device.Address.ToString(), cryptoContext))
