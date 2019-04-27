@@ -142,6 +142,9 @@ namespace SmartGlass.Nano.Consumer
             if (_cachedFrame != null && _cachedFrame.FrameId == _nextExpectedFrameId)
             {
                 h264Frame = _cachedFrame;
+                _lastProcessedFrameId = _cachedFrame.FrameId;
+                _nextExpectedFrameId = _lastProcessedFrameId + 1;
+                CleanVideoDataDictionary(_lastProcessedFrameId);
                 _cachedFrame = null;
             }
             return h264Frame;
