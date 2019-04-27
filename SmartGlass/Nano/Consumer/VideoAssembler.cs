@@ -71,8 +71,8 @@ namespace SmartGlass.Nano.Consumer
 
             Buffer.BlockCopy(data.Data, 0, _videoData[frameId].Data, (int)data.Offset, data.Data.Length);
             _videoData[frameId].WrittenChunks++;
-            bool isFrameRead = _videoData[frameId].WrittenChunks >= data.PacketCount;
-            return isFrameRead ? ProcessFrameIsReady(frameId) : ProcessFrameIsNotReady();
+            bool isFrameReady = _videoData[frameId].WrittenChunks >= data.PacketCount;
+            return isFrameReady ? ProcessFrameIsReady(frameId) : ProcessFrameIsNotReady();
         }
 
         private H264Frame ProcessFrameIsReady(uint frameId)
