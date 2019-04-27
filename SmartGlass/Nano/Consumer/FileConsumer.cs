@@ -15,6 +15,7 @@ namespace SmartGlass.Nano.Consumer
         private readonly bool _dumpSingleFrames;
 
         private VideoAssembler _videoAssembler;
+        private AudioAssembler _audioAssembler;
 
         private FileStream _videoFile;
         private FileStream _audioFile;
@@ -24,6 +25,7 @@ namespace SmartGlass.Nano.Consumer
             _fileName = filename;
             _dumpSingleFrames = singleFrames;
             _videoAssembler = new VideoAssembler();
+            _audioAssembler = new AudioAssembler();
 
             if (!singleFrames)
             {
@@ -56,7 +58,7 @@ namespace SmartGlass.Nano.Consumer
 
         void IAudioConsumer.ConsumeAudioData(object sender, AudioDataEventArgs args)
         {
-            AACFrame frame = AudioAssembler.AssembleAudioFrame(
+            AACFrame frame = _audioAssembler.AssembleAudioFrame(
                 args.AudioData, AACProfile.LC, 48000, 2);
 
             if (frame == null)

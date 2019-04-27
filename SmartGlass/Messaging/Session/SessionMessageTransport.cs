@@ -114,8 +114,6 @@ namespace SmartGlass.Messaging.Session
 
             var message = DeserializeMessage(fragmentMessage);
 
-            logger.LogTrace($"Received message #{fragmentMessage.Header.SequenceNumber} ({message})");
-
             if (message.Header.RequestAcknowledge)
             {
                 SendMessageAckAsync(new uint[] { fragmentMessage.Header.SequenceNumber })
@@ -151,11 +149,6 @@ namespace SmartGlass.Messaging.Session
         private Task SendMessageAckAsync(uint[] processed = null, uint[] rejected = null,
                                                                   bool requestAck = false)
         {
-            if (processed != null)
-            {
-                logger.LogTrace($"Acking #{String.Join(",", processed)}");
-            }
-
             var ackMessage = new AckMessage();
             ackMessage.Header.RequestAcknowledge = requestAck;
             ackMessage.LowWatermark = _serverSequenceNumber;
@@ -216,8 +209,6 @@ namespace SmartGlass.Messaging.Session
                 _sequenceNumber = _sequenceNumber + 1;
                 var sequenceNumber = _sequenceNumber;
 
-                logger.LogTrace($"Sending message #{sequenceNumber} ({message}) ...");
-
                 if (message.Header.RequestAcknowledge)
                 {
                     return Common.TaskExtensions.WithRetries(async () =>
@@ -232,8 +223,6 @@ namespace SmartGlass.Messaging.Session
                         {
                             throw new SmartGlassException("Message rejected by server.");
                         }
-
-                        logger.LogTrace($"Got ack for outbound #{sequenceNumber}");
                     },
                     messageRetries);
                 }
