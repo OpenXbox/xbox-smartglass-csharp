@@ -107,8 +107,6 @@ namespace SmartGlass.Nano
                     try
                     {
                         var message = _receiveQueue.Take();
-                        logger.LogTrace(
-                            $"NANO: Received {message.Header.PayloadType} on Channel <{message.Channel}>");
                         MessageReceived?.Invoke(this, new MessageReceivedEventArgs<INanoPacket>(message));
                     }
                     catch (Exception e)
@@ -122,9 +120,6 @@ namespace SmartGlass.Nano
 
         public Task SendAsync(INanoPacket message)
         {
-            logger.LogTrace(
-                $"Sending {message.Header.PayloadType} on Channel <{message.Channel}>");
-
             switch (message.Header.PayloadType)
             {
                 case NanoPayloadType.ChannelControl:
