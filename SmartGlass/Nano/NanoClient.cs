@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+
 using SmartGlass.Common;
 using SmartGlass.Nano.Channels;
 using SmartGlass.Nano.Packets;
@@ -54,12 +56,36 @@ namespace SmartGlass.Nano
 
 
         /// <summary>
-        /// 
+        /// Initialize an instance of NanoClient
         /// </summary>
-        /// <param name="address"></param>
-        /// <param name="session"></param>
+        /// <param name="address">Console IP address</param>
+        /// <param name="session">Gamestream session from BroadcastChannel</param>
+        public NanoClient(IPAddress address, GamestreamSession session)
+            : this(address.ToString(), session)
+        {
+        }
+
+        /// <summary>
+        /// Initialize an instance of NanoClient
+        /// </summary>
+        /// <param name="address">Console IP address string</param>
+        /// <param name="session">Gamestream session from BroadcastChannel</param>
         public NanoClient(string address, GamestreamSession session)
             : this(address, session.TcpPort, session.UdpPort, session.Config, session.SessionId)
+        {
+        }
+
+        /// <summary>
+        /// Initialize an instance of NanoClient
+        /// </summary>
+        /// <param name="address">Console IP address</param>
+        /// <param name="tcpPort">Nano TCP port</param>
+        /// <param name="udpPort">Nano UDP port</param>
+        /// <param name="configuration">GamestreamConfiguration sent via BroadcastChannel *unused atm*</param>
+        /// <param name="sessionId">Session ID received on BroadcastChannel *unused atm*</param>
+        public NanoClient(IPAddress address, int tcpPort, int udpPort,
+                          GamestreamConfiguration configuration, Guid sessionId)
+            : this(address.ToString(), tcpPort, udpPort, configuration, sessionId)
         {
         }
 

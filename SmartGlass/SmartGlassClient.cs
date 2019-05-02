@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using SmartGlass.Common;
 using SmartGlass.Messaging;
@@ -24,9 +25,22 @@ namespace SmartGlass
         /// <summary>
         /// Connect to console via ip address
         /// </summary>
-        /// <param name="addressOrHostname"></param>
-        /// <param name="xboxLiveUserHash"></param>
-        /// <param name="xboxLiveAuthorization"></param>
+        /// <param name="address">IP Address</param>
+        /// <param name="xboxLiveUserHash">Xbox Live userhash (uhs)</param>
+        /// <param name="xboxLiveAuthorization">Xbox Live authorization token (XToken)</param>
+        /// <returns></returns>
+        public static async Task<SmartGlassClient> ConnectAsync(
+            IPAddress address, string xboxLiveUserHash = null, string xboxLiveAuthorization = null)
+        {
+            return await ConnectAsync(address.ToString(), xboxLiveUserHash, xboxLiveAuthorization);
+        }
+
+        /// <summary>
+        /// Connect to console via ip address or hostname
+        /// </summary>
+        /// <param name="addressOrHostname">IP Address or hostname</param>
+        /// <param name="xboxLiveUserHash">Xbox Live userhash (uhs)</param>
+        /// <param name="xboxLiveAuthorization">Xbox Live authorization token (XToken)</param>
         /// <returns></returns>
         public static async Task<SmartGlassClient> ConnectAsync(
             string addressOrHostname, string xboxLiveUserHash = null, string xboxLiveAuthorization = null)
@@ -38,9 +52,9 @@ namespace SmartGlass
         /// <summary>
         /// Connect to a discovered console
         /// </summary>
-        /// <param name="device"></param>
-        /// <param name="xboxLiveUserHash"></param>
-        /// <param name="xboxLiveAuthorization"></param>
+        /// <param name="device">Discovered, available console</param>
+        /// <param name="xboxLiveUserHash">Xbox Live userhash (uhs)</param>
+        /// <param name="xboxLiveAuthorization">Xbox Live authorization token (XToken)</param>
         /// <returns></returns>
         public static async Task<SmartGlassClient> ConnectAsync(
             Device device, string xboxLiveUserHash, string xboxLiveAuthorization)
