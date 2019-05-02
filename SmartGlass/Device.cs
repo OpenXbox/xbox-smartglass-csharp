@@ -45,12 +45,15 @@ namespace SmartGlass
                         () => messageTransport.SendAsync(requestMessage))
                         .OfType<PresenceResponseMessage>()
                         .DistinctBy(m => m.HardwareId)
-                        .Where(m => {
-                            return liveId == null ? true : m.Certificate.GetLiveId() == liveId;}
-                        )
+                        .Where(m => liveId == null || m.Certificate.GetLiveId() == liveId)
                         .Select(m => new Device(m)).ToArray().AsEnumerable();
                 }
             });
+        }
+
+        public static async Task<Device> PingAsync(IPAddress address)
+        {
+            return await PingAsync(address.ToString());
         }
 
         public static async Task<Device> PingAsync(string addressOrHostname)
@@ -137,6 +140,19 @@ namespace SmartGlass
             State = DeviceState.Unavailable;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SmartGlass.Device"/>
+        /// class by copying from an existing instance.
+        /// NOTE: The new instance will have an initial state of
+        /// DeviceState.Unavailable
+        /// </summary>
+        /// <param name="copyFrom">Device object to copy from.</param>
+        public Device(Device copyFrom)
+            : this(copyFrom.DeviceType, copyFrom.Address, copyFrom.Name,
+                   copyFrom.LiveId, copyFrom.HardwareId)
+        {
+        }
+
         internal Device(PresenceResponseMessage message)
         {
             Address = message.Origin.Address;
@@ -174,6 +190,7 @@ namespace SmartGlass
         /// <returns>true if poweron was successful, false otherwise</returns>
         public async Task<bool> PowerOnAsync()
         {
+            var ipAddress = Address.ToString();
             try
             {
                 var device = await Device.PowerOnAsync(LiveId);
@@ -182,7 +199,17 @@ namespace SmartGlass
             }
             catch (TimeoutException)
             {
-                return false;
+                // Try again via IP address
+                try
+                {
+                    var device = await Device.PowerOnAsync(
+                        LiveId, addressOrHostname: ipAddress);
+                    Update(device);
+                }
+                catch (TimeoutException)
+                {
+                    return false;
+                }
             }
             
             return true;
