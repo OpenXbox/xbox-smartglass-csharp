@@ -127,6 +127,7 @@ namespace SmartGlass
         /// <param name="name">Friendly name</param>
         /// <param name="liveId">Live ID</param>
         /// <param name="hardwareId">Hardware Id</param>
+        [JsonConstructor]
         public Device(DeviceType type, IPAddress address, string name, string liveId, Guid hardwareId)
         {
             Address = address;
