@@ -66,17 +66,11 @@ namespace SmartGlass.Nano.Packets
                 throw new NanoPackingException("ParsePacket: INanoPacket.Channel is UNKNOWN");
             }
 
-            packet.Channel = channel;
             return packet;
         }
 
         public static byte[] AssemblePacket(INanoPacket packet, NanoChannelContext context)
         {
-            if (packet.Channel == NanoChannel.Unknown)
-            {
-                throw new NanoPackingException("AssemblePacket: INanoPacket.Channel is UNKNOWN");
-            }
-
             // Serialize payload and append padding if needed
             byte[] payloadData = null;
             using (EndianWriter payloadWriter = new EndianWriter())
@@ -98,8 +92,6 @@ namespace SmartGlass.Nano.Packets
             }
 
             EndianWriter packetWriter = new EndianWriter();
-
-            packet.Header.ChannelId = context.GetChannelId(packet.Channel);
 
             // Serialize header
             packet.Header.Serialize(packetWriter);

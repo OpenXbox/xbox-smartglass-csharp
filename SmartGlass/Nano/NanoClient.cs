@@ -29,8 +29,6 @@ namespace SmartGlass.Nano
         public AudioChannel Audio { get; private set; }
         public ChatAudioChannel ChatAudio { get; private set; }
         public ControlChannel Control { get; private set; }
-        public InputChannel Input { get; private set; }
-        public InputFeedbackChannel InputFeedback { get; private set; }
         public VideoChannel Video { get; private set; }
 
         internal List<Consumer.IConsumer> _consumers { get; set; }
@@ -161,7 +159,8 @@ namespace SmartGlass.Nano
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task OpenInputChannelAsync(uint desktopWidth, uint desktopHeight)
+        public async Task<(InputChannel InputChannel, InputFeedbackChannel InputFeedbackChannel)> OpenInputChannelAsync(
+            uint desktopWidth, uint desktopHeight, byte controllerIndex)
         {
             if (!ProtocolInitialized)
             {
@@ -171,21 +170,23 @@ namespace SmartGlass.Nano
             // We have to generate ChannelOpenData to send to the console
             var inputChannelOpenData = new ChannelOpen(new byte[0]);
 
-            Input = new InputChannel(_transport, inputChannelOpenData);
-            InputFeedback = new InputFeedbackChannel(_transport, inputChannelOpenData,
+            var inputChannel = new InputChannel(_transport, inputChannelOpenData);
+            var inputFeedbackChannel = new InputFeedbackChannel(_transport, inputChannelOpenData,
                 FireInputFeedbackFrameAvailable);
 
             // Send ControllerEvent.Added
             await _transport.WaitForMessageAsync<ChannelCreate>(
                 TimeSpan.FromSeconds(3),
                 async () => await Control.SendControllerEventAsync(
-                    ControllerEventType.Added, 0),
+                    ControllerEventType.Added, controllerIndex),
                 p => p.Channel == NanoChannel.Input);
 
             await Task.WhenAll(
-                Input.OpenAsync(),
-                InputFeedback.OpenAsync(desktopWidth, desktopHeight)
+                inputChannel.OpenAsync(),
+                inputFeedbackChannel.OpenAsync(desktopWidth, desktopHeight)
             );
+
+            return (inputChannel, inputFeedbackChannel);
         }
 
         /// <summary>
