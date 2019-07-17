@@ -27,7 +27,7 @@ namespace SmartGlass.Messaging
 
             SerializeProtectedPayload(protectedPayloadWriter);
 
-            // length is pefore padding
+            // length is before padding
             Header.ProtectedPayloadLength = (ushort)protectedPayloadWriter.Length;
 
             // padding is before encryption
