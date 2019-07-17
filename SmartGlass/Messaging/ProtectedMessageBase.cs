@@ -11,6 +11,8 @@ namespace SmartGlass.Messaging
     internal abstract class ProtectedMessageBase<THeader> : MessageBase<THeader>, ICryptoMessage
         where THeader : IProtectedMessageHeader, new()
     {
+        private static readonly int payloadSizeAlignment = 16;
+        
         public CryptoContext Crypto { get; set; }
 
         public byte[] InitVector { get; set; }
