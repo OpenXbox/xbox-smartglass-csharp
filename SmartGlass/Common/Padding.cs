@@ -29,24 +29,31 @@ namespace SmartGlass.Common
         /// <param name="size">Size of unpadded data</param>
         /// <param name="alignmentSize">Alignment bytecount</param>
         /// <returns></returns>
-        public static int CalculatePaddingSize(int size, int alignmentSize)
-        {
-            return (alignmentSize - (size % alignmentSize)) % alignmentSize;
-        }
+        public static int CalculatePaddingSize(long size, int alignmentSize) => Convert.ToInt32((alignmentSize - (size % alignmentSize)) % alignmentSize);
+
+        /// <summary>
+        /// Create padding bytearray
+        /// </summary>
+        /// <param name="paddingType">Type of padding</param>
+        /// <param name="bytes">Unpadded data blob</param>
+        /// <param name="alignment">Alignment size</param>
+        /// <returns>Padding bytearray</returns>
+        public static byte[] CreatePaddingData(
+            PaddingType paddingType, byte[] bytes, int alignment) => CreatePaddingData(paddingType, bytes.LongLength, alignment);
 
         /// <summary>
         /// Create padding bytearray
         /// NOTE: Does not include the input data
         /// </summary>
         /// <param name="paddingType">Type of padding</param>
-        /// <param name="bytes">Unpadded Data blob</param>
+        /// <param name="byteslen">Length of unpadded data blob</param>
         /// <param name="alignment">Alignment size</param>
         /// <returns>Padding bytearray</returns>
         public static byte[] CreatePaddingData(
-            PaddingType paddingType, byte[] bytes, int alignment)
+            PaddingType paddingType, long byteslen, int alignment)
         {
             byte[] paddingBytes;
-            int paddingSize = CalculatePaddingSize(bytes.Length, alignment);
+            int paddingSize = CalculatePaddingSize(byteslen, alignment);
 
             if (paddingSize == 0)
             {

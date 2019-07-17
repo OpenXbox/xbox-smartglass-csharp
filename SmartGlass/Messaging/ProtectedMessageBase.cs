@@ -11,6 +11,8 @@ namespace SmartGlass.Messaging
     internal abstract class ProtectedMessageBase<THeader> : MessageBase<THeader>, ICryptoMessage
         where THeader : IProtectedMessageHeader, new()
     {
+        private static readonly int payloadSizeAlignment = 16;
+        
         public CryptoContext Crypto { get; set; }
 
         public byte[] InitVector { get; set; }
@@ -25,11 +27,20 @@ namespace SmartGlass.Messaging
 
             SerializeProtectedPayload(protectedPayloadWriter);
 
-            var protectedPayload = protectedPayloadWriter.ToBytes();
-            Header.ProtectedPayloadLength = (ushort)protectedPayload.Length;
+            // length is before padding
+            Header.ProtectedPayloadLength = (ushort)protectedPayloadWriter.Length;
 
-            var encryptedPayload = protectedPayload.Length > 0 ?
-                Crypto.Encrypt(protectedPayload, InitVector) : new byte[] { };
+            // padding is before encryption
+            byte[] padding = Padding.CreatePaddingData(
+               PaddingType.PKCS7,
+               protectedPayloadWriter.Length,
+               alignment: payloadSizeAlignment
+            );
+
+            protectedPayloadWriter.Write(padding);
+
+            // encrypt without adding padding to the encrypted value
+            var encryptedPayload = Crypto.EncryptWithoutPadding(protectedPayloadWriter.ToBytes(), InitVector);
 
             base.Serialize(writer);
             writer.Write(encryptedPayload);
