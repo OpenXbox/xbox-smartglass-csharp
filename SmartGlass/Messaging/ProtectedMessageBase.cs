@@ -25,11 +25,20 @@ namespace SmartGlass.Messaging
 
             SerializeProtectedPayload(protectedPayloadWriter);
 
-            var protectedPayload = protectedPayloadWriter.ToBytes();
-            Header.ProtectedPayloadLength = (ushort)protectedPayload.Length;
+            // legth is pefore padding
+            Header.ProtectedPayloadLength = (ushort)protectedPayloadWriter.Length;
 
-            var encryptedPayload = protectedPayload.Length > 0 ?
-                Crypto.Encrypt(protectedPayload, InitVector) : new byte[] { };
+            // padding is before encryption
+            byte[] padding = Padding.CreatePaddingData(
+               PaddingType.PKCS7,
+               protectedPayloadWriter.Length,
+               alignment: payloadSizeAlignment
+            );
+
+            protectedPayloadWriter.Write(padding);
+
+            // encrypt without adding padding to the encrypted value
+            var encryptedPayload = Crypto.EncryptWithoutPadding(protectedPayloadWriter.ToBytes(), InitVector);
 
             base.Serialize(writer);
             writer.Write(encryptedPayload);
