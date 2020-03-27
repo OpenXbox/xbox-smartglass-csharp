@@ -68,6 +68,7 @@ namespace SmartGlass
                 throw new SmartGlassException("Anonymous connection forbidden.");
 
             var cryptoContext = new CryptoContext(device.Certificate);
+            ConnectResponseMessage response;
 
             using (var transport = new MessageTransport(device.Address.ToString(), cryptoContext))
             {
@@ -81,17 +82,18 @@ namespace SmartGlass
                     }
                 };
 
-                var response = await Common.TaskExtensions.WithRetries(() =>
+                response = await Common.TaskExtensions.WithRetries(() =>
                     transport.WaitForMessageAsync<ConnectResponseMessage>(
                         connectTimeout,
                         connectFunc),
                     connectRetries);
-
-                return new SmartGlassClient(
-                    device,
-                    response,
-                    cryptoContext);
             }
+            var client =  new SmartGlassClient(
+                device,
+                response,
+                cryptoContext);
+            await client._InitTask;
+            return client;
         }
 
         private readonly MessageTransport _messageTransport;
@@ -108,7 +110,13 @@ namespace SmartGlass
         public event EventHandler<ConsoleStatusChangedEventArgs> ConsoleStatusChanged;
 
         public ConsoleStatus CurrentConsoleStatus { get; private set; }
-
+        
+        /// <summary>
+        /// CAUTION: YOU MUST <see langword="await"/> <see cref="_InitTask"/> BEFORE USING THIS OBJECT!
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="connectResponse"></param>
+        /// <param name="cryptoContext"></param>
         private SmartGlassClient(
             Device device,
             ConnectResponseMessage connectResponse,
@@ -139,8 +147,14 @@ namespace SmartGlass
                 }
             };
 
-            _sessionMessageTransport.SendAsync(new LocalJoinMessage()).Wait();
-            OpenChannels().Wait();
+            _InitTask = InitializeAsync();
+        }
+        
+        private Task _InitTask { get; set; }
+        private async Task InitializeAsync()
+        {
+            await _sessionMessageTransport.SendAsync(new LocalJoinMessage());
+            await OpenChannels();
             _sessionMessageTransport.StartHeartbeat();
         }
 

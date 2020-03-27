@@ -120,7 +120,7 @@ namespace SmartGlass.Messaging.Connection
                 throw new InvalidOperationException(
                     "Authentication data too small to fragment");
 
-            var position = 0;
+            var xtokenPosition = 0;
             for (int fragment = 0; fragment < fragmentCount; fragment++)
             {
                 var availableBytes = maxStringSize;
@@ -134,16 +134,19 @@ namespace SmartGlass.Messaging.Connection
                     availableBytes -= currentUserhash.Length;
                 }
 
-                currentXToken = xboxLiveAuthorization.Substring(position,
-                    availableBytes);
-                position += currentXToken.Length;
+                var xtokenCopyLength = availableBytes > (xboxLiveAuthorization.Length - xtokenPosition)
+                                       ? xboxLiveAuthorization.Length - xtokenPosition
+                                       : availableBytes;
+
+                currentXToken = xboxLiveAuthorization.Substring(xtokenPosition, xtokenCopyLength);
+                xtokenPosition += currentXToken.Length;
 
                 var requestFragment = new ConnectRequestMessage()
                 {
                     InitVector = SmartGlass.Connection.CryptoContext.GenerateRandomInitVector(),
                     DeviceId = deviceId,
-                    UserHash = xboxLiveUserHash,
-                    Authorization = xboxLiveAuthorization,
+                    UserHash = currentUserhash,
+                    Authorization = currentXToken,
 
                     SequenceNumber = (uint)(initialSequenceNumber + fragment),
                     SequenceBegin = (uint)initialSequenceNumber,
