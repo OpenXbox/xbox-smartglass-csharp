@@ -7,19 +7,11 @@ namespace SmartGlass.Messaging.Session.Messages
     [SessionMessageType(SessionMessageType.LocalJoin)]
     internal class LocalJoinMessage : SessionMessageBase
     {
-        public DeviceType DeviceType { get; set; } = DeviceType.WindowsStore;
-        public ushort NativeWidth { get; set; } = 1280;
-        public ushort NativeHeight { get; set; } = 720;
-        public ushort DpiX { get; set; } = 96;
-        public ushort DpiY { get; set; } = 96;
-        public DeviceCapabilities DeviceCapabilities { get; set; } = DeviceCapabilities.SupportsAll;
-        public uint ClientVersion { get; set; } = 44;
-        public uint OsMajorVersion = 6;
-        public uint OsMinorVersion = 2;
-        public string DisplayName = "SmartGlass";
+        public ClientInfo ClientInfo { get; set; }
 
-        public LocalJoinMessage()
+        public LocalJoinMessage(ClientInfo clientInfo)
         {
+            ClientInfo = clientInfo;
             Header.RequestAcknowledge = true;
         }
 
@@ -30,19 +22,19 @@ namespace SmartGlass.Messaging.Session.Messages
 
         public override void Serialize(EndianWriter writer)
         {
-            writer.WriteBE((ushort)DeviceType);
-            writer.WriteBE(NativeWidth);
-            writer.WriteBE(NativeHeight);
-            writer.WriteBE(DpiX);
-            writer.WriteBE(DpiY);
+            writer.WriteBE((ushort)ClientInfo.DeviceType);
+            writer.WriteBE(ClientInfo.NativeWidth);
+            writer.WriteBE(ClientInfo.NativeHeight);
+            writer.WriteBE(ClientInfo.DpiX);
+            writer.WriteBE(ClientInfo.DpiY);
 
-            writer.WriteBE((long)DeviceCapabilities);
+            writer.WriteBE((long)ClientInfo.DeviceCapabilities);
 
-            writer.WriteBE(ClientVersion);
-            writer.WriteBE(OsMajorVersion);
-            writer.WriteBE(OsMinorVersion);
+            writer.WriteBE(ClientInfo.ClientVersion);
+            writer.WriteBE(ClientInfo.OsMajorVersion);
+            writer.WriteBE(ClientInfo.OsMinorVersion);
 
-            writer.WriteUInt16BEPrefixed(DisplayName);
+            writer.WriteUInt16BEPrefixed(ClientInfo.DisplayName);
         }
     }
 }

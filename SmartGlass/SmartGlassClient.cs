@@ -107,6 +107,7 @@ namespace SmartGlass
         public TextChannel TextChannel { get; private set; }
         public BroadcastChannel BroadcastChannel { get; private set; }
 
+        public ClientInfo ClientInfo { get; private set; }
         public event EventHandler<ConsoleStatusChangedEventArgs> ConsoleStatusChanged;
 
         public ConsoleStatus CurrentConsoleStatus { get; private set; }
@@ -122,6 +123,8 @@ namespace SmartGlass
             ConnectResponseMessage connectResponse,
             CryptoContext cryptoContext)
         {
+            ClientInfo = ClientInfo.GetDefaultWindowStoreClient();
+
             _messageTransport = new MessageTransport(device.Address.ToString(), cryptoContext);
             _sessionMessageTransport = new SessionMessageTransport(
                 _messageTransport,
@@ -153,7 +156,7 @@ namespace SmartGlass
         private Task _InitTask { get; set; }
         private async Task InitializeAsync()
         {
-            await _sessionMessageTransport.SendAsync(new LocalJoinMessage());
+            await _sessionMessageTransport.SendAsync(new LocalJoinMessage(ClientInfo));
             await OpenChannels();
             _sessionMessageTransport.StartHeartbeat();
         }

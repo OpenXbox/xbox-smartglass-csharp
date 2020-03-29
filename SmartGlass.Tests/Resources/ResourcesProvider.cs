@@ -18,9 +18,19 @@ namespace SmartGlass.Tests.Resources
     {
         static readonly string ResourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../Resources");
 
+        public static string GetRandomTempFilePath()
+        {
+            return Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        }
+
+        public static string GetFilePath(string fileName, ResourceType type = ResourceType.Misc)
+        {
+            return $"{ResourcePath}/{type}/{fileName}";
+        }
+
         public static byte[] GetBytes(string fileName, ResourceType type = ResourceType.Misc)
         {
-            var file = $"{ResourcePath}/{type}/{fileName}";
+            var file = GetFilePath(fileName, type);
             if (File.Exists(file))
             {
                 return File.ReadAllBytes(file);
@@ -30,7 +40,7 @@ namespace SmartGlass.Tests.Resources
 
         public static async Task<byte[]> GetBytesAsync(string fileName, ResourceType type = ResourceType.Misc)
         {
-            var file = $"{ResourcePath}/{type}/{fileName}";
+            var file = GetFilePath(fileName, type);
             if (File.Exists(file))
             {
                 return await File.ReadAllBytesAsync(file);
@@ -39,7 +49,7 @@ namespace SmartGlass.Tests.Resources
         }
         public static string GetString(string fileName, ResourceType type = ResourceType.Misc)
         {
-            var file = $"{ResourcePath}/{type}/{fileName}";
+            var file = GetFilePath(fileName, type);
             if (File.Exists(file))
             {
                 return System.Text.Encoding.UTF8.GetString(

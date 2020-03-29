@@ -322,19 +322,21 @@ namespace SmartGlass.Tests
         [Fact]
         public void TestLocalJoinMessage()
         {
-            var message = new Msgs.Messages.LocalJoinMessage()
-            {
-                DeviceType = DeviceType.Android,
-                NativeWidth = 600,
-                NativeHeight = 1024,
-                DpiX = 160,
-                DpiY = 160,
-                DeviceCapabilities = DeviceCapabilities.SupportsAll,
-                ClientVersion = 133713371,
-                OsMajorVersion = 42,
-                OsMinorVersion = 0,
-                DisplayName = "package.name.here"
-            };
+            var message = new Msgs.Messages.LocalJoinMessage(
+                new ClientInfo()
+                {
+                    DeviceType = DeviceType.Android,
+                    NativeWidth = 600,
+                    NativeHeight = 1024,
+                    DpiX = 160,
+                    DpiY = 160,
+                    DeviceCapabilities = DeviceCapabilities.SupportsAll,
+                    ClientVersion = 133713371,
+                    OsMajorVersion = 42,
+                    OsMinorVersion = 0,
+                    DisplayName = "package.name.here"
+                }
+            );
 
             //FIXME: Version == 0 ?
             message.Header.ChannelId = 0;

@@ -3,7 +3,7 @@ namespace SmartGlass
     /// <summary>
     /// Device capabilities.
     /// </summary>
-    enum DeviceCapabilities : long
+    public enum DeviceCapabilities : long
     {
         SupportsAll = -1,
         SupportsNone = 0,
