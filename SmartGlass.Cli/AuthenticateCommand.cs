@@ -17,7 +17,6 @@ namespace SmartGlass.Cli
         [PositionalArgument(ArgumentFlags.Required, Position = 0)]
         public string TokenFilePath { get; set; }
 
-#pragma warning disable 1998
         public override async Task<CommandResult> ExecuteAsync(CancellationToken cancel)
         {
             string authUrl = AuthenticationService.GetWindowsLiveAuthenticationUrl();
@@ -34,7 +33,7 @@ namespace SmartGlass.Cli
 
                 AuthenticationService authService = new AuthenticationService(response);
 
-                authService.Authenticate();
+                await authService.AuthenticateAsync();
 
                 using (FileStream fs = File.Open(TokenFilePath, FileMode.Create))
                 {
@@ -50,6 +49,5 @@ namespace SmartGlass.Cli
             Console.WriteLine($"Authentication succeeded, tokens saved to {TokenFilePath}");
             return CommandResult.Success;
         }
-#pragma warning restore 1998
     }
 }
