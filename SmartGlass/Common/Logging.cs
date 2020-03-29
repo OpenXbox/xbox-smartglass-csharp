@@ -9,7 +9,12 @@ namespace SmartGlass.Common
     /// </summary>
     public class Logging
     {
-        public static ILoggerFactory Factory { get; private set; } =
-            new LoggerFactory().AddDebug(LogLevel.Trace);
+        public static ILoggerFactory Factory { get; set; } =
+            LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddFilter(logLevel => logLevel <= LogLevel.Trace)
+                    .AddDebug();
+            });
     }
 }
