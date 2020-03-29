@@ -83,7 +83,7 @@ namespace SmartGlass.Cli
             {
                 Console.WriteLine($"Running protocol init...");
                 await nano.InitializeProtocolAsync();
-                await nano.OpenInputChannelAsync(1280, 720);
+                await nano.OpenInputChannelAsync(1280, 720, controllerIndex: 0);
                 await nano.OpenChatAudioChannelAsync(
                     new Nano.Packets.AudioFormat(1, 24000, AudioCodec.Opus));
 

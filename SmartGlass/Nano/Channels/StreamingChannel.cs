@@ -78,6 +78,7 @@ namespace SmartGlass.Nano.Channels
         public ushort NextSequenceNumber => ++SequenceNumber;
         public uint NextFrameId => ++FrameId;
 
+        public ushort ChannelId => _channelOpenData.Header.ChannelId;
         public abstract NanoChannel Channel { get; }
         public abstract int ProtocolVersion { get; }
 
@@ -95,7 +96,7 @@ namespace SmartGlass.Nano.Channels
 
         private void TransportMessageReceived(object sender, MessageReceivedEventArgs<INanoPacket> e)
         {
-            if (e.Message.Channel == Channel)
+            if (e.Message.Header.ChannelId == ChannelId)
             {
                 MessageReceived?.Invoke(this, e);
             }
@@ -107,7 +108,7 @@ namespace SmartGlass.Nano.Channels
             if (message.StreamerHeader.PacketType == 4)
             {
                 // Data packet -> UDP
-                message.Channel = Channel;
+                message.Header.ChannelId = ChannelId;
                 message.Header.SequenceNumber = NextSequenceNumber;
                 message.StreamerHeader.Flags = 0;
 
@@ -116,7 +117,7 @@ namespace SmartGlass.Nano.Channels
             else
             {
                 // TCP
-                message.Channel = Channel;
+                message.Header.ChannelId = ChannelId;
                 message.StreamerHeader.PreviousSequenceNumber = SequenceNumber;
                 message.StreamerHeader.SequenceNumber = NextSequenceNumber;
                 message.StreamerHeader.Flags = StreamerFlags.GotSeqAndPrev | StreamerFlags.Unknown1;
