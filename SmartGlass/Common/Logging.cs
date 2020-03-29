@@ -13,7 +13,7 @@ namespace SmartGlass.Common
             LoggerFactory.Create(builder =>
             {
                 builder
-                    .AddFilter(logLevel => logLevel <= LogLevel.Trace)
+                    .AddFilter(logLevel => logLevel >= LogLevel.Trace)
                     .AddDebug();
             });
     }

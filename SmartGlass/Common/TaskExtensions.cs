@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace SmartGlass.Common
 {
@@ -10,6 +11,8 @@ namespace SmartGlass.Common
     /// </summary>
     public static class TaskExtensions
     {
+        public static ILogger logger = Logging.Factory.CreateLogger("TaskExtensions");
+
         public static async Task<TEventArgs> EventTask<T, TEventArgs>(
             T obj,
             Func<Task> postAddAction,
@@ -19,6 +22,7 @@ namespace SmartGlass.Common
             TimeSpan timeout)
             where TEventArgs : EventArgs
         {
+            logger.LogDebug("EventTask started");
             var tcs = new TaskCompletionSource<TEventArgs>();
             var timeoutCancellation = new CancellationTokenSource();
 
