@@ -9,7 +9,7 @@ namespace SmartGlass.Cli
     {
         public override async Task<CommandResult> ExecuteAsync(CancellationToken cancel)
         {
-            var devices = await Device.DiscoverAsync();
+            var devices = await SmartGlassClient.DiscoverAsync();
 
             foreach (var device in devices)
             {

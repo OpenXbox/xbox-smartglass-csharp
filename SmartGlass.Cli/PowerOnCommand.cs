@@ -18,7 +18,7 @@ namespace SmartGlass.Cli
             Device device = null;
             try
             {
-                device = await Device.PowerOnAsync(LiveId);
+                device = await SmartGlassClient.PowerOnAsync(LiveId);
                 Console.WriteLine($"{device.Name} ({device.HardwareId}) {device.Address}");
             }
             catch (TimeoutException)

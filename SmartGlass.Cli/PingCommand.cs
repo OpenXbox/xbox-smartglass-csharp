@@ -17,7 +17,7 @@ namespace SmartGlass.Cli
             {
                 try
                 {
-                    var device = await Device.PingAsync(hostname);
+                    var device = await SmartGlassClient.PingAsync(hostname);
                     Console.WriteLine($"{device.Name} ({device.HardwareId}) {device.Address}");
                 }
                 catch (TimeoutException)

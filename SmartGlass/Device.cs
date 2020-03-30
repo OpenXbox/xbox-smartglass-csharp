@@ -15,84 +15,12 @@ namespace SmartGlass
 {
     public class Device
     {
-        private static readonly TimeSpan discoveryListenTime = TimeSpan.FromSeconds(1);
-
-        private static readonly TimeSpan pingTimeout = TimeSpan.FromSeconds(1);
-        private static readonly TimeSpan[] pingRetries = new TimeSpan[]
-        {
-            TimeSpan.FromMilliseconds(100),
-            TimeSpan.FromMilliseconds(250),
-            TimeSpan.FromMilliseconds(500)
-        };
-
         public static JsonSerializerSettings GetJsonSerializerSettings()
         {
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new Json.IPAddressConverter());
             settings.Formatting = Formatting.Indented;
             return settings;
-        }
-
-        public static Task<IEnumerable<Device>> DiscoverAsync(string liveId = null)
-        {
-            return Task.Run(() =>
-            {
-                using (var messageTransport = new MessageTransport())
-                {
-                    var requestMessage = new PresenceRequestMessage();
-
-                    return messageTransport.ReadMessages(discoveryListenTime,
-                        () => messageTransport.SendAsync(requestMessage))
-                        .OfType<PresenceResponseMessage>()
-                        .DistinctBy(m => m.HardwareId)
-                        .Where(m => liveId == null || m.Certificate.GetLiveId() == liveId)
-                        .Select(m => new Device(m)).ToArray().AsEnumerable();
-                }
-            });
-        }
-
-        public static async Task<Device> PingAsync(IPAddress address)
-        {
-            return await PingAsync(address.ToString());
-        }
-
-        public static async Task<Device> PingAsync(string addressOrHostname)
-        {
-            using (var messageTransport = new MessageTransport(addressOrHostname))
-            {
-                var requestMessage = new PresenceRequestMessage();
-
-                var response = await Common.TaskExtensions.WithRetries(() =>
-                    messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
-                    () => messageTransport.SendAsync(requestMessage)),
-                        pingRetries);
-
-                return new Device(response);
-            }
-        }
-
-        public static async Task<Device> PowerOnAsync(string liveId, int times = 5, int delay = 1000,
-                                                      string addressOrHostname = null)
-        {
-            using (var messageTransport = new MessageTransport(addressOrHostname))
-            {
-                var poweronRequestMessage = new PowerOnMessage { LiveId = liveId };
-
-                for (var i = 0; i < times; i++)
-                {
-                    await messageTransport.SendAsync(poweronRequestMessage);
-                    await Task.Delay(delay);
-                }
-
-                var presenceRequestMessage = new PresenceRequestMessage();
-
-                var response = await Common.TaskExtensions.WithRetries(() =>
-                    messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
-                    () => messageTransport.SendAsync(presenceRequestMessage)),
-                        pingRetries);
-
-                return new Device(response);
-            }
         }
 
         [JsonProperty("address")]
@@ -194,7 +122,7 @@ namespace SmartGlass
             var ipAddress = Address.ToString();
             try
             {
-                var device = await Device.PowerOnAsync(LiveId);
+                var device = await SmartGlassClient.PowerOnAsync(LiveId);
                 // Successfully powered on
                 Update(device);
             }
@@ -203,7 +131,7 @@ namespace SmartGlass
                 // Try again via IP address
                 try
                 {
-                    var device = await Device.PowerOnAsync(
+                    var device = await SmartGlassClient.PowerOnAsync(
                         LiveId, addressOrHostname: ipAddress);
                     Update(device);
                 }
@@ -227,7 +155,7 @@ namespace SmartGlass
             try
             {
                 // Try to reach console by last known IP address
-                var deviceByAddress = await Device.PingAsync(Address.ToString());
+                var deviceByAddress = await SmartGlassClient.PingAsync(Address.ToString());
                 // Console found
                 Update(deviceByAddress);
                 return true;
@@ -238,7 +166,7 @@ namespace SmartGlass
             }
 
             // Also try to discover via multicast presence request
-            var deviceByLiveId = await Device.DiscoverAsync(LiveId);
+            var deviceByLiveId = await SmartGlassClient.DiscoverAsync(LiveId);
             if (deviceByLiveId.Count() > 0)
             {
                 // Console found via multicast

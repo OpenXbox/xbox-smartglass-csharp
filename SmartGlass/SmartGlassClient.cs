@@ -8,19 +8,114 @@ using SmartGlass.Messaging.Session;
 using SmartGlass.Messaging.Session.Messages;
 using SmartGlass.Connection;
 using SmartGlass.Channels;
+using System.Collections.Generic;
+using SmartGlass.Messaging.Discovery;
+using System.Linq;
+using SmartGlass.Messaging.Power;
 
 namespace SmartGlass
 {
     public class SmartGlassClient : IDisposable
     {
         private bool _disposed = false;
+        private static readonly TimeSpan discoveryListenTime = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan pingTimeout = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan connectTimeout = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan[] pingRetries = new TimeSpan[]
+        {
+            TimeSpan.FromMilliseconds(100),
+            TimeSpan.FromMilliseconds(250),
+            TimeSpan.FromMilliseconds(500)
+        };
         private static readonly TimeSpan[] connectRetries = new TimeSpan[]
         {
             TimeSpan.FromMilliseconds(500),
             TimeSpan.FromMilliseconds(500),
             TimeSpan.FromMilliseconds(1000)
         };
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="liveId"></param>
+        /// <returns></returns>
+        public static Task<IEnumerable<Device>> DiscoverAsync(string liveId = null)
+        {
+            return Task.Run(() =>
+            {
+                using (var messageTransport = new MessageTransport())
+                {
+                    var requestMessage = new PresenceRequestMessage();
+
+                    return messageTransport.ReadMessages(discoveryListenTime,
+                        () => messageTransport.SendAsync(requestMessage))
+                        .OfType<PresenceResponseMessage>()
+                        .DistinctBy(m => m.HardwareId)
+                        .Where(m => liveId == null || m.Certificate.GetLiveId() == liveId)
+                        .Select(m => new Device(m)).ToArray().AsEnumerable();
+                }
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public static async Task<Device> PingAsync(IPAddress address)
+            => await PingAsync(address.ToString());
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="addressOrHostname"></param>
+        /// <returns></returns>
+        public static async Task<Device> PingAsync(string addressOrHostname)
+        {
+            using (var messageTransport = new MessageTransport(addressOrHostname))
+            {
+                var requestMessage = new PresenceRequestMessage();
+
+                var response = await Common.TaskExtensions.WithRetries(() =>
+                    messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
+                    () => messageTransport.SendAsync(requestMessage)),
+                        pingRetries);
+
+                return new Device(response);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="liveId"></param>
+        /// <param name="times"></param>
+        /// <param name="delay"></param>
+        /// <param name="addressOrHostname"></param>
+        /// <returns></returns>
+        public static async Task<Device> PowerOnAsync(string liveId, int times = 5, int delay = 1000,
+                                                      string addressOrHostname = null)
+        {
+            using (var messageTransport = new MessageTransport(addressOrHostname))
+            {
+                var poweronRequestMessage = new PowerOnMessage { LiveId = liveId };
+
+                for (var i = 0; i < times; i++)
+                {
+                    await messageTransport.SendAsync(poweronRequestMessage);
+                    await Task.Delay(delay);
+                }
+
+                var presenceRequestMessage = new PresenceRequestMessage();
+
+                var response = await Common.TaskExtensions.WithRetries(() =>
+                    messageTransport.WaitForMessageAsync<PresenceResponseMessage>(pingTimeout,
+                    () => messageTransport.SendAsync(presenceRequestMessage)),
+                        pingRetries);
+
+                return new Device(response);
+            }
+        }
 
         /// <summary>
         /// Connect to console via ip address
@@ -45,7 +140,7 @@ namespace SmartGlass
         public static async Task<SmartGlassClient> ConnectAsync(
             string addressOrHostname, string xboxLiveUserHash = null, string xboxLiveAuthorization = null)
         {
-            var device = await Device.PingAsync(addressOrHostname);
+            var device = await PingAsync(addressOrHostname);
             return await ConnectAsync(device, xboxLiveUserHash, xboxLiveAuthorization);
         }
 
