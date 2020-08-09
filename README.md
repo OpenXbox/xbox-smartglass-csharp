@@ -1,7 +1,6 @@
 # Xbox One SmartGlass client library for .NET
 
-[![Build Status](https://travis-ci.com/OpenXbox/xbox-smartglass-csharp.svg?branch=master)](https://travis-ci.com/OpenXbox/xbox-smartglass-csharp)
-[![Build status](https://ci.appveyor.com/api/projects/status/3tgnu214x6qd87so?svg=true)](https://ci.appveyor.com/project/tuxuser/xbox-smartglass-csharp)
+[![GitHub Workflow - Build](https://img.shields.io/github/workflow/status/OpenXbox/xbox-smartglass-csharp/build?label=build)](https://github.com/OpenXbox/xbox-smartglass-csharp/actions?query=workflow%3Abuild)
 [![NuGet](https://img.shields.io/nuget/v/OpenXbox.SmartGlass.svg)](https://www.nuget.org/packages/OpenXbox.SmartGlass)
 [![Discord](https://img.shields.io/badge/discord-OpenXbox-blue.svg)](https://openxbox.org/discord)
 
