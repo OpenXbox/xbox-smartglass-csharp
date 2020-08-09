@@ -1,0 +1,32 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+    - name: Publish
+      run: dotnet publish --configuration Release
+    - name: Upload SmartGlass.Cli Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: SmartGlass.Cli
+        path: SmartGlass.Cli/bin/Release/netcoreapp3.1/publish/
+    - name: Create tag and publish to nuget
+      id: publish_nuget
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: SmartGlass/SmartGlass.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}

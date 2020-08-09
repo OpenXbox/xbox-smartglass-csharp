@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>OpenXbox.SmartGlass</PackageId>
-    <PackageVersion>1.0.5</PackageVersion>
     <Authors>Joel Day, Team OpenXbox</Authors>
     <Description>Xbox One SmartGlass/Arcadia client library for .NET</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -10,7 +9,7 @@
     <PackageTags>xbox smartglass arcadia nano gamestream client</PackageTags>
     <Version>1.0.5</Version>
     <PackageProjectUrl>https://github.com/OpenXbox/xbox-smartglass-csharp</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/OpenXbox/xbox-smartglass-csharp/blob/master/LICENSE</PackageLicenseUrl>
+    <License>MIT</License>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
