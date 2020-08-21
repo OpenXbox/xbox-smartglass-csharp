@@ -91,7 +91,7 @@ namespace SmartGlass
             var client =  new SmartGlassClient(
                 device,
                 response,
-                cryptoContext);
+                cryptoContext, connectAuthenticated);
             await client._InitTask;
             return client;
         }
@@ -110,7 +110,8 @@ namespace SmartGlass
         public event EventHandler<ConsoleStatusChangedEventArgs> ConsoleStatusChanged;
 
         public ConsoleStatus CurrentConsoleStatus { get; private set; }
-        
+
+        public bool connectedAuthenticated;
         /// <summary>
         /// CAUTION: YOU MUST <see langword="await"/> <see cref="_InitTask"/> BEFORE USING THIS OBJECT!
         /// </summary>
@@ -120,8 +121,9 @@ namespace SmartGlass
         private SmartGlassClient(
             Device device,
             ConnectResponseMessage connectResponse,
-            CryptoContext cryptoContext)
+            CryptoContext cryptoContext, bool connectedAuthenticated)
         {
+            this.connectedAuthenticated = connectedAuthenticated;
             _messageTransport = new MessageTransport(device.Address.ToString(), cryptoContext);
             _sessionMessageTransport = new SessionMessageTransport(
                 _messageTransport,
@@ -175,6 +177,11 @@ namespace SmartGlass
                 await StartChannelAsync(ServiceType.SystemText));
             BroadcastChannel = new BroadcastChannel(
                 await StartChannelAsync(ServiceType.SystemBroadcast));
+            if (this.connectedAuthenticated) {
+                InputTvRemoteChannel = new InputTVRemoteChannel(
+                    await StartChannelAsync(ServiceType.SystemInputTVRemote)
+                    );
+            }
         }
 
         public Task LaunchTitleAsync(

@@ -27,6 +27,7 @@ namespace SmartGlass.Channels
             serializerSettings.Converters.Add(new GuidConverter());
             serializerSettings.Converters.Add(new BroadcastMessageJsonConverter());
             serializerSettings.Converters.Add(new GamestreamConfigurationJsonConverter());
+            serializerSettings.Converters.Add(new JsonBaseMessageJsonConverter());
 
             return serializerSettings;
         }
