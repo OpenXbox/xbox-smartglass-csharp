@@ -45,6 +45,7 @@ namespace SmartGlass.Messaging.Session
         private readonly uint _participantId;
 
         private readonly FragmentMessageManager _fragment_manager;
+        private readonly JsonFragmentManager _json_fragment_manager;
 
         private DateTime _lastReceived;
         private uint _sequenceNumber;
@@ -71,6 +72,7 @@ namespace SmartGlass.Messaging.Session
             _lastReceived = DateTime.Now;
 
             _fragment_manager = new FragmentMessageManager();
+            _json_fragment_manager = new JsonFragmentManager();
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -139,11 +141,22 @@ namespace SmartGlass.Messaging.Session
                 message = _fragment_manager.AssembleFragment(message, fragmentMessage.Header.SequenceNumber);
                 if (message == null)
                 {
-                    Debug.WriteLine($"FragmentMessage {message.Header.SessionMessageType} not ready yet");
+                    Debug.WriteLine($"FragmentMessage {fragmentMessage.Header.SessionMessageType} not ready yet");
                     return;
                 }
             }
+            if (message is JsonMessage jm) {
+                var json_fragment = JsonConvert.DeserializeObject<JsonMessageFragment>(jm.Json);
+                if (json_fragment.datagram_id != 0) {
+                    message = _json_fragment_manager.HandleMessage(json_fragment);
+                    if (message == null) {
+                        Debug.WriteLine($"JsonFragmentMessage {fragmentMessage.Header.SessionMessageType} not ready yet");
+                        return;
+                    }
+                    message.Header = fragmentMessage.Header;
+                }
 
+            }
             MessageReceived?.Invoke(this, new MessageReceivedEventArgs<SessionMessageBase>(message));
         }
 
