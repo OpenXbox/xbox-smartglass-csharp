@@ -1,14 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SmartGlass.Channels.Broadcast.Messages;
 using SmartGlass.Common;
-using SmartGlass.Messaging.Session.Messages;
 
 namespace SmartGlass.Channels {
 	/// <summary>
@@ -30,15 +26,15 @@ namespace SmartGlass.Channels {
 			if (msg_id_prefix == null)
 			msg_id_prefix = Guid.NewGuid().ToString().Replace("-", "").Substring(0,8);
 			_baseTransport = transport;
-			_transport = new JsonMessageTransport<JsonBaseMessage>(_baseTransport, ChannelJsonSerializerSettings.GetBroadcastSettings());
+			_transport = new JsonMessageTransport<JsonBaseMessage>(_baseTransport, ChannelJsonSerializerOptions.GetBroadcastOptions());
 			_transport.MessageReceived += OnMessageReceived;
 		}
 
 		private void OnMessageReceived(object sender, MessageReceivedEventArgs<JsonBaseMessage> e) {
-			
+
 			logger.LogTrace("Received JsonMsg:\r\n{0}\r\n{1}",
 				e.Message.ToString(),
-				JsonConvert.SerializeObject(e.Message, Formatting.Indented));
+				JsonSerializer.Serialize(e.Message, new JsonSerializerOptions() { WriteIndented = true }));
 		}
 
 		/// <summary>
@@ -67,8 +63,10 @@ namespace SmartGlass.Channels {
 				);
 
 			var res = await receive_task;
-			if (res.@params is JArray ja)
-				return ja.ToObject<IRDevice[]>();
+			if (res.@params is JsonElement je)
+            {
+				return JsonSerializer.Deserialize<IRDevice[]>(je.GetRawText());
+            }
 			return null;
 		}
 		private static string next_msg_id => $"{msg_id_prefix}.{msg_cnt++}";

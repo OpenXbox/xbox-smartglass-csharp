@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SmartGlass.Common;
 using SmartGlass.Messaging.Session.Messages;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading;
+using System.Text.Json;
 
 namespace SmartGlass.Messaging.Session
 {
@@ -146,7 +146,7 @@ namespace SmartGlass.Messaging.Session
                 }
             }
             if (message is JsonMessage jm) {
-                var json_fragment = JsonConvert.DeserializeObject<JsonMessageFragment>(jm.Json);
+                var json_fragment = JsonSerializer.Deserialize<JsonMessageFragment>(jm.Json);
                 if (json_fragment.datagram_id != 0) {
                     message = _json_fragment_manager.HandleMessage(json_fragment);
                     if (message == null) {
@@ -183,7 +183,7 @@ namespace SmartGlass.Messaging.Session
             if (type == null)
             {
                 logger.LogTrace("Incoming decrypted has no impl: " +
-                    JsonConvert.SerializeObject(fragment, Formatting.Indented));
+                    JsonSerializer.Serialize(fragment, new JsonSerializerOptions() { WriteIndented = true }));
             }
 
             var message = CreateFromMessageType(fragment.Header.SessionMessageType);

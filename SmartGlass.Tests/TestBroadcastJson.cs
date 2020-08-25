@@ -1,27 +1,25 @@
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using Xunit;
-
-
 using SmartGlass.Common;
-using SmartGlass.Channels;
 using SmartGlass.Channels.Broadcast;
 using SmartGlass.Channels.Broadcast.Messages;
 using SmartGlass.Tests.Resources;
+using System.Text.Json;
+using SmartGlass.Channels;
 
 namespace SmartGlass.Tests
 {
     public class TestBroadcastJson
     {
-        JsonSerializerSettings _serializerSettings;
+        private readonly JsonSerializerOptions _serializerSettings;
+
         public TestBroadcastJson()
         {
-            _serializerSettings = ChannelJsonSerializerSettings.GetBroadcastSettings();
+            _serializerSettings = ChannelJsonSerializerOptions.GetBroadcastOptions(true);
         }
 
         T DeserializeJson<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json, _serializerSettings);
+            return JsonSerializer.Deserialize<T>(json, _serializerSettings);
         }
 
         [Fact]
@@ -111,7 +109,16 @@ namespace SmartGlass.Tests
             };
 
             // TODO: check why this isn't working like expected
-            Assert.Equal(JsonConvert.SerializeObject(origMsg), JsonConvert.SerializeObject(msg));
+            Assert.Equal(JsonSerializer.Serialize(origMsg), JsonSerializer.Serialize(msg));
+        }
+
+        [Fact]
+        public void TestJsonBaseMessage()
+        {
+            string json = ResourcesProvider.GetString("basemessage.json", ResourceType.Json);
+            var sample = DeserializeJson<JsonBaseMessage>(json);
+
+            Assert.Equal("something", sample.request);
         }
     }
 }

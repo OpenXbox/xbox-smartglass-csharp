@@ -1,7 +1,4 @@
-﻿using System;
-using SmartGlass.Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using SmartGlass.Common;
 
 namespace SmartGlass.Channels.Broadcast.Messages
 {

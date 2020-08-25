@@ -1,0 +1,15 @@
+{
+  "msgid": "5",
+  "request": "something",
+	"@params": [
+		{
+			"device_type": "remote",
+			"devive_brand": "Unicorn Corp.",
+			"device_model": "Simple Dimple",
+			"buttons": {
+				"1": "0x1",
+				"2": "0x2"
+			}
+		}
+	]
+}

@@ -1,8 +1,8 @@
 using System.Linq;
 using SmartGlass.Connection;
 using SmartGlass.Common;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace SmartGlass.Messaging.Session
 {

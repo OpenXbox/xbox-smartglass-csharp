@@ -9,7 +9,7 @@ using SmartGlass.Messaging;
 using SmartGlass.Messaging.Discovery;
 using SmartGlass.Messaging.Power;
 using Org.BouncyCastle.X509;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace SmartGlass
 {
@@ -24,14 +24,6 @@ namespace SmartGlass
             TimeSpan.FromMilliseconds(250),
             TimeSpan.FromMilliseconds(500)
         };
-
-        public static JsonSerializerSettings GetJsonSerializerSettings()
-        {
-            var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new Json.IPAddressConverter());
-            settings.Formatting = Formatting.Indented;
-            return settings;
-        }
 
         public static Task<IEnumerable<Device>> DiscoverAsync(string liveId = null)
         {
@@ -95,20 +87,20 @@ namespace SmartGlass
             }
         }
 
-        [JsonProperty("address")]
-        public IPAddress Address { get; private set; }
+        [JsonPropertyName("address")]
+        public IPAddress Address { get; set; }
         
-        [JsonProperty("type")]
-        public DeviceType DeviceType { get; private set; }
+        [JsonPropertyName("type")]
+        public DeviceType DeviceType { get; set; }
         
-        [JsonProperty("name")]
-        public string Name { get; private set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
         
-        [JsonProperty("liveid")]
-        public string LiveId { get; private set; }
+        [JsonPropertyName("liveid")]
+        public string LiveId { get; set; }
         
-        [JsonProperty("uuid")]
-        public Guid HardwareId { get; private set; }
+        [JsonPropertyName("uuid")]
+        public Guid HardwareId { get; set; }
         
         [JsonIgnore]
         public DeviceFlags Flags { get; private set; }
@@ -119,6 +111,13 @@ namespace SmartGlass
         [JsonIgnore]
         public DeviceState State { get; private set; }
 
+        public Device()
+        {
+            Flags = DeviceFlags.None;
+            Certificate = null;
+            State = DeviceState.Unavailable;
+        }
+
         /// <summary>
         /// Initialize Device manually
         /// </summary>
@@ -127,18 +126,14 @@ namespace SmartGlass
         /// <param name="name">Friendly name</param>
         /// <param name="liveId">Live ID</param>
         /// <param name="hardwareId">Hardware Id</param>
-        [JsonConstructor]
-        public Device(DeviceType type, IPAddress address, string name, string liveId, Guid hardwareId)
+        //[JsonConstructor]
+        public Device(DeviceType type, IPAddress address, string name, string liveId, Guid hardwareId) : this()
         {
             Address = address;
-            Flags = DeviceFlags.None;
             DeviceType = type;
             Name = name;
             HardwareId = hardwareId;
-            Certificate = null;
             LiveId = liveId;
-
-            State = DeviceState.Unavailable;
         }
 
         /// <summary>

@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 using SmartGlass.Common;
 using SmartGlass.Connection;
+using SmartGlass.Json;
 using SmartGlass.Messaging.Discovery;
 using SmartGlass.Tests.Resources;
 using Xunit;
@@ -13,9 +14,10 @@ namespace SmartGlass.Tests
 {
     public class DeviceTests
     {
-        PresenceResponseMessage _presenceResponse;
-        Device _deviceManual;
-        Device _deviceFromResponse;
+        private readonly PresenceResponseMessage _presenceResponse;
+        private readonly Device _deviceManual;
+        private readonly Device _deviceFromResponse;
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public DeviceTests()
         {
@@ -39,6 +41,9 @@ namespace SmartGlass.Tests
             );
 
             _deviceFromResponse = new Device(_presenceResponse);
+
+            _jsonOptions = new JsonSerializerOptions() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            _jsonOptions.Converters.Add(new IPAddressConverter());
         }
 
         [Fact]
@@ -72,7 +77,7 @@ namespace SmartGlass.Tests
         [Fact]
         public void TestManualJsonSerialization()
         {
-            var json = JsonConvert.SerializeObject(_deviceManual, Device.GetJsonSerializerSettings());
+            var json = JsonSerializer.Serialize(_deviceManual, _jsonOptions);
             
             Assert.Contains("\"address\": \"192.168.1.3\"", json);
             Assert.Contains("\"type\": 1", json);
@@ -84,7 +89,7 @@ namespace SmartGlass.Tests
         [Fact]
         public void TestPresenceResponseJsonSerialization()
         {
-            var json = JsonConvert.SerializeObject(_deviceFromResponse, Device.GetJsonSerializerSettings());
+            var json = JsonSerializer.Serialize(_deviceFromResponse, _jsonOptions);
             
             Assert.Contains("\"address\": \"192.168.1.2\"", json);
             Assert.Contains("\"type\": 1", json);
@@ -97,7 +102,7 @@ namespace SmartGlass.Tests
         public void TestDeserializationSingle()
         {
             var json = ResourcesProvider.GetString("console.json", ResourceType.Json);
-            var dev = JsonConvert.DeserializeObject<Device>(json, Device.GetJsonSerializerSettings());
+            var dev = JsonSerializer.Deserialize<Device>(json, _jsonOptions);
 
             Assert.Equal(dev.Address, _deviceManual.Address);
             Assert.Equal(dev.DeviceType, _deviceManual.DeviceType);
@@ -110,7 +115,7 @@ namespace SmartGlass.Tests
         public void TestDeserializationList()
         {
             var json = ResourcesProvider.GetString("console_list.json", ResourceType.Json);
-            var devs = JsonConvert.DeserializeObject<IEnumerable<Device>>(json, Device.GetJsonSerializerSettings());
+            var devs = JsonSerializer.Deserialize<IEnumerable<Device>>(json, _jsonOptions);
             var dev = devs.First();
 
             Assert.Equal(dev.Address, _deviceManual.Address);
@@ -123,8 +128,8 @@ namespace SmartGlass.Tests
         [Fact]
         public void TestSerializeDeserialize()
         {
-            var serialized = JsonConvert.SerializeObject(_deviceManual, Device.GetJsonSerializerSettings());
-            var deserialized = JsonConvert.DeserializeObject<Device>(serialized, Device.GetJsonSerializerSettings());
+            var serialized = JsonSerializer.Serialize(_deviceManual, _jsonOptions);
+            var deserialized = JsonSerializer.Deserialize<Device>(serialized, _jsonOptions);
         
             Assert.Equal(deserialized.Address, _deviceManual.Address);
             Assert.Equal(deserialized.DeviceType, _deviceManual.DeviceType);

@@ -1,13 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SmartGlass.Messaging.Session.Messages;
 using SmartGlass.Common;
-using SmartGlass.Messaging.Session;
 using SmartGlass.Channels.Broadcast;
 using SmartGlass.Channels.Broadcast.Messages;
-using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using SmartGlass.Json;
 
 namespace SmartGlass.Channels
 {
@@ -76,8 +74,7 @@ namespace SmartGlass.Channels
         internal BroadcastChannel(ChannelMessageTransport transport)
         {
             _baseTransport = transport;
-            _transport = new JsonMessageTransport<BroadcastBaseMessage>(
-                _baseTransport, ChannelJsonSerializerSettings.GetBroadcastSettings());
+            _transport = new JsonMessageTransport<BroadcastBaseMessage>(_baseTransport, ChannelJsonSerializerOptions.GetBroadcastOptions());
             _transport.MessageReceived += OnMessageReceived;
         }
 
@@ -110,12 +107,11 @@ namespace SmartGlass.Channels
             if (e.Message is GamestreamEnabledMessage enabledMessage)
             {
                 _enabledMessage = enabledMessage;
-
             }
 
             logger.LogTrace("Received BroadcastMsg:\r\n{0}\r\n{1}",
                 e.Message.ToString(),
-                JsonConvert.SerializeObject(e.Message, Formatting.Indented));
+                JsonSerializer.Serialize(e.Message, new JsonSerializerOptions() { WriteIndented = true }));
         }
 
         /// <summary>

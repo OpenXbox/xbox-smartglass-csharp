@@ -1,13 +1,10 @@
-﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
+﻿
 namespace SmartGlass.Channels.Broadcast.Messages
 {
     /// <summary>
     /// All broadcast messages derive from this
     /// </summary>
-    class BroadcastBaseMessage
+    public class BroadcastBaseMessage
     {
         /// <summary>
         /// Type of Broadcast message

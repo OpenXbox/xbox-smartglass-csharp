@@ -1,26 +1,22 @@
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Net;
-using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SmartGlass.Json
 {
-    class IPAddressConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(IPAddress));
-        }
+	// Without converter de-/serialization of IPAddress fails.
+	public class IPAddressConverter : JsonConverter<IPAddress>
+	{
+		public override IPAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			return IPAddress.Parse(reader.GetString());
+		}
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+		public override void Write(Utf8JsonWriter writer, IPAddress value, JsonSerializerOptions options)
         {
-            writer.WriteValue(value.ToString());
-        }
+			writer.WriteStringValue(value.ToString());
+		}
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            return IPAddress.Parse((string)reader.Value);
-        }
-    }
+	}
 }

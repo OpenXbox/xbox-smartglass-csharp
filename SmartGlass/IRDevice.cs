@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace SmartGlass {
 	public class IRDevice {
@@ -9,7 +7,8 @@ namespace SmartGlass {
 		public string device_type;
 		public string device_brand;
 		public string device_model;
-		[JsonProperty("buttons")]
-		public Dictionary<string, string> button_to_standard_bind;
+
+		[JsonPropertyName("buttons")]
+		public Dictionary<string, string> button_to_standard_bind { get; set; }
 	}
 }

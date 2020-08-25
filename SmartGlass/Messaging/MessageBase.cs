@@ -1,7 +1,7 @@
 using System;
 using System.Net;
+using System.Text.Json.Serialization;
 using SmartGlass.Common;
-using Newtonsoft.Json;
 
 namespace SmartGlass.Messaging
 {

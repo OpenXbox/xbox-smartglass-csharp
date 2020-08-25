@@ -22,8 +22,7 @@ namespace SmartGlass.Common
             var tcs = new TaskCompletionSource<TEventArgs>();
             var timeoutCancellation = new CancellationTokenSource();
 
-            EventHandler<TEventArgs> handler = null;
-            handler = (s, e) =>
+            void handler(object s, TEventArgs e)
             {
                 if (!filter(e))
                 {
@@ -33,7 +32,7 @@ namespace SmartGlass.Common
                 timeoutCancellation.Cancel();
                 tcs.TrySetResult(e);
                 remove(obj, handler);
-            };
+            }
 
             add(obj, handler);
 
@@ -42,7 +41,7 @@ namespace SmartGlass.Common
                 await Task.Run(async () => await postAddAction());
             }
 
-            Task.Delay(timeout, timeoutCancellation.Token).ContinueWith(t =>
+            _ = Task.Delay(timeout, timeoutCancellation.Token).ContinueWith(t =>
             {
                 if (timeoutCancellation.IsCancellationRequested)
                 {
