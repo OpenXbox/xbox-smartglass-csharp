@@ -1,11 +1,7 @@
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NClap.Metadata;
-using NClap.Repl;
-
-using XboxWebApi;
 using XboxWebApi.Authentication;
 using XboxWebApi.Authentication.Model;
 
@@ -34,12 +30,8 @@ namespace SmartGlass.Cli
 
                 AuthenticationService authService = new AuthenticationService(response);
 
-                authService.Authenticate();
-
-                using (FileStream fs = File.Open(TokenFilePath, FileMode.Create))
-                {
-                    authService.DumpToFile(fs);
-                }
+                await authService.AuthenticateAsync();
+                await authService.DumpToJsonFileAsync(TokenFilePath);
             }
             catch (Exception e)
             {
