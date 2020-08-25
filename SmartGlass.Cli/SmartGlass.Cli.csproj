@@ -7,8 +7,8 @@
     <ProjectReference Include="..\SmartGlass\SmartGlass.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NClap" Version="2.3.6" />
-    <PackageReference Include="Tx.Network" Version="2.1.1" />
-    <PackageReference Include="OpenXbox.XboxWebApi" Version="0.2.4" />
+    <PackageReference Include="NClap" Version="3.0.0" />
+    <PackageReference Include="Tx.Network" Version="3.0.3" />
+    <PackageReference Include="OpenXbox.XboxWebApi" Version="0.3.0" />
   </ItemGroup>
 </Project>

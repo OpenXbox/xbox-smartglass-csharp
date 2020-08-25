@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>OpenXbox.SmartGlass</PackageId>
     <Authors>Joel Day, Team OpenXbox</Authors>
     <Description>Xbox One SmartGlass/Arcadia client library for .NET</Description>
