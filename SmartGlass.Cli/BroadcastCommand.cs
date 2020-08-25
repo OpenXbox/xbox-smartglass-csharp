@@ -30,14 +30,11 @@ namespace SmartGlass.Cli
             {
                 using (FileStream fs = File.Open(TokenFilePath, FileMode.Open))
                 {
-                    AuthService = AuthenticationService.LoadFromFile(fs);
-                    AuthService.Authenticate();
+                    AuthService = await AuthenticationService.LoadFromJsonFileStream(fs);
+                    await AuthService.AuthenticateAsync();
                 }
 
-                using (FileStream fs = File.Open(TokenFilePath, FileMode.Create))
-                {
-                    AuthService.DumpToFile(fs);
-                }
+                await AuthService.DumpToJsonFileAsync(TokenFilePath);
             }
 
             Console.WriteLine($"Connecting to {Hostname}...");
