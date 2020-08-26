@@ -111,6 +111,8 @@ namespace SmartGlass
 
         public ConsoleStatus CurrentConsoleStatus { get; private set; }
 
+        public event EventHandler<EventArgs> ProtocolTimeoutOccured;
+
         public bool connectedAuthenticated;
         /// <summary>
         /// CAUTION: YOU MUST <see langword="await"/> <see cref="_InitTask"/> BEFORE USING THIS OBJECT!
@@ -131,7 +133,7 @@ namespace SmartGlass
                 {
                     ParticipantId = connectResponse.ParticipantId
                 });
-
+            _sessionMessageTransport.ProtocolTimeoutOccured += (_, e) => ProtocolTimeoutOccured?.Invoke(this, e);
             _sessionMessageTransport.MessageReceived += (s, e) =>
             {
                 var consoleStatusMessage = e.Message as ConsoleStatusMessage;
