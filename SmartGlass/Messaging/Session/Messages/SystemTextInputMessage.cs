@@ -33,7 +33,8 @@ namespace SmartGlass.Messaging.Session.Messages
             Flags = reader.ReadUInt16BE();
             TextChunkByteStart = reader.ReadUInt32BE();
             TextChunk = reader.ReadUInt16BEPrefixedString();
-            Delta = reader.ReadUInt16BEPrefixedArray<TextDelta>();
+            if (reader.Length < reader.Position)//field is optional
+                Delta = reader.ReadUInt16BEPrefixedArray<TextDelta>();
         }
 
         public override void Serialize(EndianWriter writer)
@@ -47,7 +48,8 @@ namespace SmartGlass.Messaging.Session.Messages
             writer.WriteBE(Flags);
             writer.WriteBE(TextChunkByteStart);
             writer.WriteUInt16BEPrefixed(TextChunk);
-            // writer.Write(Delta);
+            //if (Delta != null)
+                //writer.WriteUInt32BEPrefixedArray(Delta); //no be?
         }
     }
 }
