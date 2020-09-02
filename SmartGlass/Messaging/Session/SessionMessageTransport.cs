@@ -83,7 +83,14 @@ namespace SmartGlass.Messaging.Session
                 _lastReceived = DateTime.Now;
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    await SendMessageAckAsync(requestAck: true);
+                    try
+                    {
+                        await SendMessageAckAsync(requestAck: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError("Error sending heartbeat", ex);
+                    }
                     await Task.Delay(_heartbeatInterval);
                     if (DateTime.Now - _lastReceived > _heartbeatTimeout)
                     {
@@ -164,16 +171,23 @@ namespace SmartGlass.Messaging.Session
         private Task SendMessageAckAsync(uint[] processed = null, uint[] rejected = null,
                                                                   bool requestAck = false)
         {
+            var msg = $"";
             if (processed != null)
             {
-                logger.LogTrace($"Acking #{String.Join(",", processed)}");
+                msg += $"Acking server msg #{String.Join(",", processed)}";
+            }
+            else 
+            {
+                msg = "Heatbeat Ack request";
             }
 
             var ackMessage = new AckMessage();
             ackMessage.Header.RequestAcknowledge = requestAck;
             ackMessage.LowWatermark = _serverSequenceNumber;
+            msg += $" server seq number: {_serverSequenceNumber}";
             ackMessage.ProcessedList = new HashSet<uint>(processed ?? new uint[0]);
             ackMessage.RejectedList = new HashSet<uint>(rejected ?? new uint[0]);
+            logger.LogTrace(msg);
             return SendAsync(ackMessage);
         }
 
