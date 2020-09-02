@@ -5,13 +5,13 @@ namespace SmartGlass.Messaging.Session.Messages
 {
     internal class TextConfiguration : SessionMessageBase
     {
-        ulong TextSessionId { get; set; }
-        uint TextBufferVersion { get; set; }
-        TextOption TextOptions { get; set; }
-        TextInputScope InputScope { get; set; }
-        uint MaxTextLength { get; set; }
-        string Locale { get; set; }
-        string Prompt { get; set; }
+        public ulong TextSessionId { get; set; }
+        public uint TextBufferVersion { get; set; }
+        public TextOption TextOptions { get; set; }
+        public TextInputScope InputScope { get; set; }
+        public uint MaxTextLength { get; set; }
+        public string Locale { get; set; }
+        public string Prompt { get; set; }
 
         public TextConfiguration()
         {
