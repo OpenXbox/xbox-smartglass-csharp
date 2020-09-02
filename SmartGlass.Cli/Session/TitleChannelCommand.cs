@@ -19,7 +19,7 @@ namespace SmartGlass.Cli.Session
         [PositionalArgument(ArgumentFlags.Required)]
         public uint TitleId { get; set; }
 
-         [NamedArgument(ArgumentFlags.Optional)]
+        [NamedArgument(ArgumentFlags.Optional)]
         public int? Port { get; set; }
 
         private void ReadFromSocket(TcpClient remoteClient, AuxiliaryStreamClient client)
@@ -77,7 +77,7 @@ namespace SmartGlass.Cli.Session
                             }
                         };
 
-                        var listener = new TcpListener(IPAddress.Any, Port ?? client.Port);
+                        var listener = new TcpListener(GlobalConfiguration.BindAddress, Port ?? client.Port);
                         listener.ExclusiveAddressUse = true;
                         listener.Start();
 

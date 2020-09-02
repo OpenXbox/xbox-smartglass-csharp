@@ -52,7 +52,7 @@ namespace SmartGlass.Messaging
 
             if (_addressOrHostname == null)
             {
-                _client.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
+                _client.Client.Bind(new IPEndPoint(GlobalConfiguration.BindAddress, 0));
             }
 
             _client.ConsumeReceived(receiveResult =>

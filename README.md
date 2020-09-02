@@ -116,6 +116,23 @@ await nano.OpenInputChannelAsync(1280, 720);
 /* Run a mainloop, to gather controller input events or similar */
 ```
 
+## Troubleshooting
+
+### The wrong network interface gets choosen for SmartGlass communication
+
+**Solution**: Before doing any network I/O with the library, set the BindAddress
+to the local IP address of the desired interface.
+
+```cs
+using System.Net;
+using SmartGlass;
+
+// Adjust 192.168.0.1 to your actual local IP address
+GlobalConfiguration.BindAddress = IPAddress.Parse("192.168.0.1");
+
+// Do stuff
+```
+
 ---
 
 Project originally developed by [Joel Day](https://github.com/joelday)

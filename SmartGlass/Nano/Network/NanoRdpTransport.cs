@@ -50,8 +50,8 @@ namespace SmartGlass.Nano
             _controlProtoClient = new TcpClient(AddressFamily.InterNetwork);
             _streamingProtoClient = new UdpClient(AddressFamily.InterNetwork);
 
-            _controlProtoClient.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
-            _streamingProtoClient.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
+            _controlProtoClient.Client.Bind(new IPEndPoint(GlobalConfiguration.BindAddress, 0));
+            _streamingProtoClient.Client.Bind(new IPEndPoint(GlobalConfiguration.BindAddress, 0));
 
             _controlProtoClient.Connect(_controlProtoEp);
             _streamingProtoClient.Connect(_streamingProtoEp);
