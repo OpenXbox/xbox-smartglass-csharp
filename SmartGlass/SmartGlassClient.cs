@@ -185,7 +185,7 @@ namespace SmartGlass
                     );
             }
         }
-
+        [Obsolete("Launch Title functionality was removed from the protocol since dashboard ~10.0.11763.4088 / March 2019")]
         public Task LaunchTitleAsync(
             string uri,
             ActiveTitleLocation location = ActiveTitleLocation.Default)
@@ -196,7 +196,7 @@ namespace SmartGlass
                 Location = location
             });
         }
-
+        [Obsolete("Launch Title functionality was removed from the protocol since dashboard ~10.0.11763.4088 / March 2019")]
         public Task LaunchTitleByTitleIdAsync(
             uint titleId,
             ActiveTitleLocation location = ActiveTitleLocation.Default)
