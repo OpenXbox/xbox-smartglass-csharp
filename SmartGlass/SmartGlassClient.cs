@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using SmartGlass.Common;
 using SmartGlass.Messaging;
 using SmartGlass.Messaging.Connection;
 using SmartGlass.Messaging.Session;
@@ -73,14 +72,14 @@ namespace SmartGlass
             using (var transport = new MessageTransport(device.Address.ToString(), cryptoContext))
             {
                 Guid deviceId = Guid.NewGuid();
-                Func<Task> connectFunc = async () =>
+                async Task connectFunc()
                 {
                     foreach (var fragment in ConnectRequestMessage
                         .GenerateConnectRequest(deviceId, cryptoContext, xboxLiveUserHash, xboxLiveAuthorization))
                     {
                         await transport.SendAsync(fragment);
                     }
-                };
+                }
 
                 response = await Common.TaskExtensions.WithRetries(() =>
                     transport.WaitForMessageAsync<ConnectResponseMessage>(
@@ -91,7 +90,7 @@ namespace SmartGlass
             var client =  new SmartGlassClient(
                 device,
                 response,
-                cryptoContext, connectAuthenticated);
+                cryptoContext);
             await client._InitTask;
             return client;
         }
@@ -113,7 +112,6 @@ namespace SmartGlass
 
         public event EventHandler<EventArgs> ProtocolTimeoutOccured;
 
-        public bool connectedAuthenticated;
         /// <summary>
         /// CAUTION: YOU MUST <see langword="await"/> <see cref="_InitTask"/> BEFORE USING THIS OBJECT!
         /// </summary>
@@ -123,9 +121,8 @@ namespace SmartGlass
         private SmartGlassClient(
             Device device,
             ConnectResponseMessage connectResponse,
-            CryptoContext cryptoContext, bool connectedAuthenticated)
+            CryptoContext cryptoContext)
         {
-            this.connectedAuthenticated = connectedAuthenticated;
             _messageTransport = new MessageTransport(device.Address.ToString(), cryptoContext);
             _sessionMessageTransport = new SessionMessageTransport(
                 _messageTransport,
@@ -136,8 +133,7 @@ namespace SmartGlass
             _sessionMessageTransport.ProtocolTimeoutOccured += (_, e) => ProtocolTimeoutOccured?.Invoke(this, e);
             _sessionMessageTransport.MessageReceived += (s, e) =>
             {
-                var consoleStatusMessage = e.Message as ConsoleStatusMessage;
-                if (consoleStatusMessage != null)
+                if (e.Message is ConsoleStatusMessage consoleStatusMessage)
                 {
                     CurrentConsoleStatus = new ConsoleStatus()
                     {
@@ -155,6 +151,7 @@ namespace SmartGlass
         }
         
         private Task _InitTask { get; set; }
+
         private async Task InitializeAsync()
         {
             await _sessionMessageTransport.SendAsync(new LocalJoinMessage());
@@ -166,24 +163,14 @@ namespace SmartGlass
         {
             InputChannel = new InputChannel(
                 await StartChannelAsync(ServiceType.SystemInput));
-            /*
-             *  InputTvRemoteChannel fails when connecting non-authenticated
-             *  (Either a bug or feature from Microsoft!)
-             *  Simply disabling it for now - it serves no use anyways atm
-            InputTvRemoteChannel = new InputTVRemoteChannel(
-                await StartChannelAsync(ServiceType.SystemInputTVRemote));
-            */
             MediaChannel = new MediaChannel(
                 await StartChannelAsync(ServiceType.SystemMedia));
             TextChannel = new TextChannel(
                 await StartChannelAsync(ServiceType.SystemText));
             BroadcastChannel = new BroadcastChannel(
                 await StartChannelAsync(ServiceType.SystemBroadcast));
-            if (this.connectedAuthenticated) {
-                InputTvRemoteChannel = new InputTVRemoteChannel(
-                    await StartChannelAsync(ServiceType.SystemInputTVRemote)
-                    );
-            }
+            InputTvRemoteChannel = new InputTVRemoteChannel(
+                await StartChannelAsync(ServiceType.SystemInputTVRemote));
         }
         [Obsolete("Launch Title functionality was removed from the protocol since dashboard ~10.0.11763.4088 / March 2019")]
         public Task LaunchTitleAsync(
