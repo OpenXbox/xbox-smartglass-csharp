@@ -20,8 +20,29 @@ namespace SmartGlass.Channels
         internal MediaChannel(ChannelMessageTransport transport)
         {
             _transport = transport;
+            _transport.MessageReceived += OnMessageReceived;
         }
 
+        private void OnMessageReceived(object sender, Common.MessageReceivedEventArgs<Messaging.Session.SessionMessageBase> e)
+        {
+            switch (e.Message)
+            {
+                case MediaStateMessage msg_state:
+                    //System.Diagnostics.Debug.WriteLine($"Got a media state message: {Newtonsoft.Json.JsonConvert.SerializeObject(msg_state)}");
+                    CurrentMediaState = msg_state.State;
+                    MediaStateChanged?.Invoke(this, new MediaStateChangedEventArgs(msg_state.State));
+                    break;
+                case MediaControllerRemovedMessage msg_removed:
+                    CurrentMediaState = null;
+                    MediaStateChanged?.Invoke(this, new MediaStateChangedEventArgs(null));
+                    break;
+            }
+
+
+
+        }
+        public event EventHandler<MediaStateChangedEventArgs> MediaStateChanged;
+        public MediaState CurrentMediaState { get; private set; }
         /// <summary>
         /// Sends a media command message.
         /// </summary>

@@ -7,6 +7,11 @@ namespace SmartGlass
 
     public class MediaState
     {
+        public MediaState()
+        {
+            AsOf = DateTime.Now;
+        }
+        public DateTime AsOf { get; internal set; }
         public uint TitleId { get; internal set; }
         public string AumId { get; internal set; }
         public string AssetId { get; internal set; }
