@@ -233,7 +233,10 @@ namespace SmartGlass
                     timedOut ? "Timeout" : "Rejection",
                     serviceType);
 
-                throw new SmartGlassException(errorMsg, response.Result);
+                if (!timedOut)
+                    throw new SmartGlassException(errorMsg, response.Result);
+                else
+                    throw new SmartGlassException(errorMsg);
             }
 
             return new ChannelMessageTransport(response.ChannelId, _sessionMessageTransport);
