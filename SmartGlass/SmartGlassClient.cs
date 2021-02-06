@@ -87,7 +87,7 @@ namespace SmartGlass
                         connectFunc),
                     connectRetries);
             }
-            var client =  new SmartGlassClient(
+            var client = new SmartGlassClient(
                 device,
                 response,
                 cryptoContext);
@@ -110,7 +110,7 @@ namespace SmartGlass
 
         public ConsoleStatus CurrentConsoleStatus { get; private set; }
 
-        public event EventHandler<EventArgs> ProtocolTimeoutOccured;
+        public event EventHandler<EventArgs> OnProtocolTimeout;
 
         /// <summary>
         /// CAUTION: YOU MUST <see langword="await"/> <see cref="_InitTask"/> BEFORE USING THIS OBJECT!
@@ -130,7 +130,7 @@ namespace SmartGlass
                 {
                     ParticipantId = connectResponse.ParticipantId
                 });
-            _sessionMessageTransport.ProtocolTimeoutOccured += (_, e) => ProtocolTimeoutOccured?.Invoke(this, e);
+            _sessionMessageTransport.OnProtocolTimeout += (_, e) => OnProtocolTimeout?.Invoke(this, e);
             _sessionMessageTransport.MessageReceived += (s, e) =>
             {
                 if (e.Message is ConsoleStatusMessage consoleStatusMessage)
@@ -149,7 +149,7 @@ namespace SmartGlass
 
             _InitTask = InitializeAsync();
         }
-        
+
         private Task _InitTask { get; set; }
 
         private async Task InitializeAsync()

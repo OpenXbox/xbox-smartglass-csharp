@@ -3,7 +3,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass
 {
-    public class ConsoleConfiguration : ISerializable
+    public record ConsoleConfiguration : ISerializable
     {
         public uint LiveTVProvider { get; private set; }
         public uint MajorVersion { get; private set; }

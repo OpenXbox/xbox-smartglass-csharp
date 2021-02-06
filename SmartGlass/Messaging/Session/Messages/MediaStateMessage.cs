@@ -7,7 +7,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.MediaState)]
-    internal class MediaStateMessage : SessionMessageBase
+    internal record MediaStateMessage : SessionMessageBase
     {
         public MediaState State { get; set; }
 

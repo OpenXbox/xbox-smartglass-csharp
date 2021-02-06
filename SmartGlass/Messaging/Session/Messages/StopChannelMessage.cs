@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.StopChannel)]
-    internal class StopChannelMessage : SessionMessageBase
+    internal record StopChannelMessage : SessionMessageBase
     {
         public StopChannelMessage()
         {

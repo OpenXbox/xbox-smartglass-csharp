@@ -5,7 +5,7 @@ namespace SmartGlass.Messaging.Session.Messages
 {
     // TODO: Allow client to specify values.
     [SessionMessageType(SessionMessageType.LocalJoin)]
-    internal class LocalJoinMessage : SessionMessageBase
+    internal record LocalJoinMessage : SessionMessageBase
     {
         public DeviceType DeviceType { get; set; } = DeviceType.WindowsStore;
         public ushort NativeWidth { get; set; } = 1280;

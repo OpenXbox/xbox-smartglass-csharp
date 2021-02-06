@@ -3,7 +3,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session.Messages
 {
-    class UnknownMessage : SessionMessageBase
+    internal record UnknownMessage : SessionMessageBase
     {
         public override void Deserialize(EndianReader reader)
         {

@@ -3,7 +3,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session.Messages
 {
-    internal class AuxiliaryStreamEndpoint : ISerializable
+    internal record AuxiliaryStreamEndpoint : ISerializable
     {
         public string Host { get; set; }
         public string Service { get; set; }

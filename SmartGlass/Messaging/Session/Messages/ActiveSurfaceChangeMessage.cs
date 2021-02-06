@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.ActiveSurfaceChange)]
-    internal class ActiveSurfaceChangeMessage : SessionMessageBase
+    internal record ActiveSurfaceChangeMessage : SessionMessageBase
     {
         public ActiveSurfaceType SurfaceType { get; set; }
 

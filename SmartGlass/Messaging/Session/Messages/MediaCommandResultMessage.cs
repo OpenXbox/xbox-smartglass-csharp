@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.MediaCommandResult)]
-    internal class MediaCommandResultMessage : SessionMessageBase
+    internal record MediaCommandResultMessage : SessionMessageBase
     {
         public ulong RequestId { get; set; }
         public uint Result { get; set; }

@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.MediaControllerRemoved)]
-    internal class MediaControllerRemovedMessage : SessionMessageBase
+    internal record MediaControllerRemovedMessage : SessionMessageBase
     {
         public uint TitleId { get; set; }
 

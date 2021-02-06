@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.TitleTextSelection)]
-    internal class TitleTextSelection : SessionMessageBase
+    internal record TitleTextSelection : SessionMessageBase
     {
         public ulong TextSessionId { get; set; }
         public uint TextBufferVersion { get; set; }

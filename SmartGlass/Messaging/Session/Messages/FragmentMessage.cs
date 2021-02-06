@@ -4,7 +4,7 @@ namespace SmartGlass.Messaging.Session.Messages
 {
     // Determined by IsFragment-flag in SessionFragmentMessageHeader
     // Data content depends on SessionMessageType 
-    internal class FragmentMessage : SessionMessageBase
+    internal record FragmentMessage : SessionMessageBase
     {
         public uint SequenceBegin { get; set; }
         public uint SequenceEnd { get; set; }

@@ -44,8 +44,8 @@ namespace SmartGlass.Messaging.Session
         private readonly MessageTransport _transport;
         private readonly uint _participantId;
 
-        private readonly FragmentMessageManager _fragment_manager;
-        private readonly JsonFragmentManager _json_fragment_manager;
+        private readonly FragmentMessageManager _fragmentManager;
+        private readonly JsonFragmentManager _jsonFragmentManager;
 
         private DateTime _lastReceived;
         private uint _sequenceNumber;
@@ -53,7 +53,7 @@ namespace SmartGlass.Messaging.Session
         private uint _serverSequenceNumber;
 
         public event EventHandler<MessageReceivedEventArgs<SessionMessageBase>> MessageReceived;
-        public event EventHandler<EventArgs> ProtocolTimeoutOccured;
+        public event EventHandler<EventArgs> OnProtocolTimeout;
 
         public SessionMessageTransport(
             MessageTransport transport,
@@ -71,8 +71,9 @@ namespace SmartGlass.Messaging.Session
 
             _lastReceived = DateTime.Now;
 
-            _fragment_manager = new FragmentMessageManager();
-            _json_fragment_manager = new JsonFragmentManager();
+            _fragmentManager = new FragmentMessageManager();
+            _jsonFragmentManager = new JsonFragmentManager();
+
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -94,7 +95,7 @@ namespace SmartGlass.Messaging.Session
                     await Task.Delay(_heartbeatInterval);
                     if (DateTime.Now - _lastReceived > _heartbeatTimeout)
                     {
-                        ProtocolTimeoutOccured?.Invoke(this, new EventArgs());
+                        OnProtocolTimeout?.Invoke(this, new EventArgs());
                         break;
                     }
                 }
@@ -106,6 +107,7 @@ namespace SmartGlass.Messaging.Session
             var fragmentMessage = e.Message as SessionFragmentMessage;
             if (fragmentMessage == null)
             {
+                logger.LogWarning($"Ignoring non fragment: {e.Message}");
                 return;
             }
 
@@ -145,18 +147,21 @@ namespace SmartGlass.Messaging.Session
 
             if (fragmentMessage.Header.IsFragment)
             {
-                message = _fragment_manager.AssembleFragment(message, fragmentMessage.Header.SequenceNumber);
+                message = _fragmentManager.AssembleFragment(message, fragmentMessage.Header.SequenceNumber);
                 if (message == null)
                 {
                     Debug.WriteLine($"FragmentMessage {fragmentMessage.Header.SessionMessageType} not ready yet");
                     return;
                 }
             }
-            if (message is JsonMessage jm) {
+            if (message is JsonMessage jm)
+            {
                 var json_fragment = JsonConvert.DeserializeObject<JsonMessageFragment>(jm.Json);
-                if (json_fragment.datagram_id != 0) {
-                    message = _json_fragment_manager.HandleMessage(json_fragment);
-                    if (message == null) {
+                if (json_fragment.datagram_id != 0)
+                {
+                    message = _jsonFragmentManager.HandleMessage(json_fragment);
+                    if (message == null)
+                    {
                         Debug.WriteLine($"JsonFragmentMessage {fragmentMessage.Header.SessionMessageType} not ready yet");
                         return;
                     }
@@ -176,7 +181,7 @@ namespace SmartGlass.Messaging.Session
             {
                 msg += $"Acking server msg #{String.Join(",", processed)}";
             }
-            else 
+            else
             {
                 msg = "Heatbeat Ack request";
             }
@@ -212,6 +217,8 @@ namespace SmartGlass.Messaging.Session
             message.Header.SessionMessageType = fragment.Header.SessionMessageType;
             message.Header.Version = fragment.Header.Version;
 
+            logger.LogTrace($"Received fragment size: {fragment.Fragment.Length}");
+
             message.Deserialize(new EndianReader(fragment.Fragment));
 
             return message;
@@ -233,6 +240,8 @@ namespace SmartGlass.Messaging.Session
             message.Serialize(writer);
             fragment.Fragment = writer.ToBytes();
 
+            logger.LogTrace($"Send fragment size: {fragment.Fragment.Length}");
+
             return _transport.SendAsync(fragment);
         }
 
@@ -250,7 +259,7 @@ namespace SmartGlass.Messaging.Session
                     return Common.TaskExtensions.WithRetries(async () =>
                     {
                         var ackMessage = await WaitForMessageAsync<AckMessage>(
-                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(5),
                             async () => await SendFragmentAsync(message, sequenceNumber),
                             ack => ack.ProcessedList.Contains(sequenceNumber) ||
                                    ack.RejectedList.Contains(sequenceNumber));

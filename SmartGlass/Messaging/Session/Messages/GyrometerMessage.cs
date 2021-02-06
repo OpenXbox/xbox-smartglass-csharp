@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Gyrometer)]
-    internal class GyrometerMessage : SessionMessageBase
+    internal record GyrometerMessage : SessionMessageBase
     {
         public ulong Timestamp { get; set; }
         public float AngularVelocityX { get; set; }

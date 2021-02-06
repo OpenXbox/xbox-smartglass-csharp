@@ -3,7 +3,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session.Messages
 {
-    internal class AuxiliaryStreamConnectionInfo : ISerializable
+    internal record AuxiliaryStreamConnectionInfo : ISerializable
     {
         public byte[] CryptoKey { get; set; }
         public byte[] ServerInitVector { get; set; }

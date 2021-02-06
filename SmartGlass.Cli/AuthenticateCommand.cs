@@ -25,10 +25,10 @@ namespace SmartGlass.Cli
 
             try
             {
-                WindowsLiveResponse response = AuthenticationService
+                var response = AuthenticationService
                     .ParseWindowsLiveResponse(redirectUrl);
 
-                AuthenticationService authService = new AuthenticationService(response);
+                var authService = new AuthenticationService(response);
 
                 await authService.AuthenticateAsync();
                 await authService.DumpToJsonFileAsync(TokenFilePath);

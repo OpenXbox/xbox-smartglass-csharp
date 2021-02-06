@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SmartGlass\SmartGlass.csproj" />
+    <ProjectReference Include="../SmartGlass/SmartGlass.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NClap" Version="3.0.0" />
     <PackageReference Include="Tx.Network" Version="3.0.3" />
-    <PackageReference Include="OpenXbox.XboxWebApi" Version="0.3.0" />
+    <PackageReference Include="OpenXbox.XboxWebApi" Version="0.3.1" />
   </ItemGroup>
 </Project>

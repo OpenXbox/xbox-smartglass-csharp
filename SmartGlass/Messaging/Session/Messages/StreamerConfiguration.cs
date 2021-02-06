@@ -3,7 +3,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session.Messages
 {
-    class StreamerConfiguration : ISerializable
+    record StreamerConfiguration : ISerializable
     {
         public ushort ServerTcpPort { get; set; }
         public ushort ServerUdpPort { get; set; }

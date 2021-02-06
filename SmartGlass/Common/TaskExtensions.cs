@@ -42,6 +42,7 @@ namespace SmartGlass.Common
                 await Task.Run(async () => await postAddAction());
             }
 
+#pragma warning disable CS4014
             Task.Delay(timeout, timeoutCancellation.Token).ContinueWith(t =>
             {
                 if (timeoutCancellation.IsCancellationRequested)

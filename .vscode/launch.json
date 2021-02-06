@@ -1,58 +1,56 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": ".NET Core Launch (connect)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "Build Cli",
-            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp3.1/SmartGlass.Cli.dll",
-            "args": [
-                "connect",
-                "10.0.0.241"
-            ],
-            "cwd": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp3.1/",
-            "console": "integratedTerminal",
-            "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-        {
-            "name": ".NET Core Launch (broadcast)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "Build Cli",
-            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp3.1/SmartGlass.Cli.dll",
-            "args": [
-                "broadcast",
-                "10.0.0.241"
-            ],
-            "cwd": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp3.1/",
-            "console": "integratedTerminal",
-            "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-        {
-            "name": ".NET Core Launch (pcap)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "Build Cli",
-            "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp3.1/SmartGlass.Cli.dll",
-            "args": [
-                "pcap",
-                "${workspaceRoot}/../../Desktop/testpcap.pcap",
-                "144127463621d5e459fec0c86c44f1d6bfd5a01f08f20195de609224386d1d0a419c09170406c58c6093ddbd5d5ba91be30f0eee8222189df52a63412ed0e7f9",
-                "56179"
-            ],
-            "cwd": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/netcoreapp3.1/",
-            "console": "integratedTerminal",
-            "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-        {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (connect)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build Cli",
+      "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/net5.0/SmartGlass.Cli.dll",
+      "args": [
+        "connect",
+        "192.168.1.76",
+        "${workspaceFolder}/../../../.xboxauth"
+      ],
+      "cwd": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/net5.0/",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": ".NET Core Launch (broadcast)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build Cli",
+      "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/net5/SmartGlass.Cli.dll",
+      "args": ["broadcast", "10.0.0.241"],
+      "cwd": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/net5/",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": ".NET Core Launch (pcap)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build Cli",
+      "program": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/net5/SmartGlass.Cli.dll",
+      "args": [
+        "pcap",
+        "${workspaceRoot}/../../Desktop/testpcap.pcap",
+        "144127463621d5e459fec0c86c44f1d6bfd5a01f08f20195de609224386d1d0a419c09170406c58c6093ddbd5d5ba91be30f0eee8222189df52a63412ed0e7f9",
+        "56179"
+      ],
+      "cwd": "${workspaceRoot}/SmartGlass.Cli/bin/Debug/net5/",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}"
+    }
+  ]
 }

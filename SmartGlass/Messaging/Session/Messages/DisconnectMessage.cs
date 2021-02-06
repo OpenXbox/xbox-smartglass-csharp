@@ -3,7 +3,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Disconnect)]
-    internal class DisconnectMessage : SessionMessageBase
+    internal record DisconnectMessage : SessionMessageBase
     {
         public DisconnectReason Reason { get; set; }
         public uint ErrorCode { get; set; }

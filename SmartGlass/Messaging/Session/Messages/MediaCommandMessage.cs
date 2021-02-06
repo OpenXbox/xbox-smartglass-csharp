@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.MediaCommand)]
-    internal class MediaCommandMessage : SessionMessageBase
+    internal record MediaCommandMessage : SessionMessageBase
     {
         private static ulong requestId = 0;
 
@@ -21,9 +21,10 @@ namespace SmartGlass.Messaging.Session.Messages
 
             writer.WriteBE(id);
             writer.WriteBE(State.TitleId);
-            writer.WriteBE((uint) State.Command);
+            writer.WriteBE((uint)State.Command);
 
-            if (State.Command == MediaControlCommands.Seek) {
+            if (State.Command == MediaControlCommands.Seek)
+            {
                 writer.WriteBE(State.SeekPosition);
             }
         }

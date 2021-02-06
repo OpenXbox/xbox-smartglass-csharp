@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.TitleLaunch)]
-    internal class TitleLaunchMessage : SessionMessageBase
+    internal record TitleLaunchMessage : SessionMessageBase
     {
         public TitleLaunchMessage()
         {

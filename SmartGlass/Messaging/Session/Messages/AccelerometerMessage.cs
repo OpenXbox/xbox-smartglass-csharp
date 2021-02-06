@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Accelerometer)]
-    internal class AccelerometerMessage : SessionMessageBase
+    internal record AccelerometerMessage : SessionMessageBase
     {
         public ulong Timestamp { get; set; }
         public float AccelerationX { get; set; }

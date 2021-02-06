@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SmartGlass.Common;
 using SmartGlass.Connection;
 
@@ -11,6 +12,8 @@ namespace SmartGlass.Messaging
 {
     internal class MessageTransport : IDisposable, IMessageTransport<IMessage>
     {
+        private static readonly ILogger logger = Logging.Factory.CreateLogger<MessageTransport>();
+
         private bool _disposed = false;
         private static IPAddress MULTICAST_ADDR = IPAddress.Parse("239.255.255.250");
         private static IMessage CreateFromMessageType(MessageType messageType)
@@ -57,6 +60,7 @@ namespace SmartGlass.Messaging
 
             _client.ConsumeReceived(receiveResult =>
             {
+                logger.LogTrace($"Full receive message size: {receiveResult.Buffer.Length}");
                 var reader = new EndianReader(receiveResult.Buffer);
 
                 var messageType = (MessageType)reader.ReadUInt16BE();
@@ -65,6 +69,7 @@ namespace SmartGlass.Messaging
                 var message = CreateFromMessageType(messageType);
                 if (message == null)
                 {
+                    logger.LogTrace($"Failed to read message of type: {messageType}");
                     // TODO: Tracing for this.
                     return;
                 }
@@ -79,6 +84,8 @@ namespace SmartGlass.Messaging
                 message.ClientReceivedTimestamp = DateTime.Now;
                 message.Deserialize(reader);
 
+                logger.LogTrace($"Adding message of type {message.Header.Type} to receive queue.");
+
                 _receiveQueue.TryAdd(message);
             }, _cancellationTokenSource.Token);
 
@@ -89,7 +96,9 @@ namespace SmartGlass.Messaging
                     try
                     {
                         var message = _receiveQueue.Take(_cancellationTokenSource.Token);
-                        MessageReceived?.Invoke(this, new MessageReceivedEventArgs<IMessage>(message));
+                        logger.LogTrace($"Taking message of type {message.Header.Type} from receive queue.");
+
+                        Task.Run(() => MessageReceived?.Invoke(this, new MessageReceivedEventArgs<IMessage>(message)));
                     }
                     catch (OperationCanceledException)
                     {
@@ -97,7 +106,7 @@ namespace SmartGlass.Messaging
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(
+                        logger.LogError(
                             $"Calling MessageReceived failed! error: {e.Message}");
                     }
                 }
@@ -120,6 +129,8 @@ namespace SmartGlass.Messaging
             var writer = new EndianWriter();
             message.Serialize(writer);
             var serialized = writer.ToBytes();
+
+            logger.LogTrace($"Full send message size: {serialized.Length}");
 
             if (_addressOrHostname == null)
             {

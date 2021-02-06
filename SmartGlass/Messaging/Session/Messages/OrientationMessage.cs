@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Orientation)]
-    internal class OrientationMessage : SessionMessageBase
+    internal record OrientationMessage : SessionMessageBase
     {
         public ulong Timestamp { get; set; }
         public float RotationMatrixValue { get; set; }

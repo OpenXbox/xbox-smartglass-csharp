@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Gamepad)]
-    internal class GamepadMessage : SessionMessageBase
+    internal record GamepadMessage : SessionMessageBase
     {
         public GamepadState State { get; set; }
 

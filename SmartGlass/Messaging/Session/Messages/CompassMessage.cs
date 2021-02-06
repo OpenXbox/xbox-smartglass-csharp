@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Compass)]
-    internal class CompassMessage : SessionMessageBase
+    internal record CompassMessage : SessionMessageBase
     {
         public ulong Timestamp { get; set; }
         public float MagneticNorth { get; set; }
