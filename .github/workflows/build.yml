@@ -23,7 +23,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: SmartGlass.Cli
-        path: SmartGlass.Cli/bin/Release/netcoreapp3.1/publish/
+        path: SmartGlass.Cli/bin/Release/net5.0/publish/
     - name: Create tag and publish to nuget
       id: publish_nuget
       uses: rohith/publish-nuget@v2
