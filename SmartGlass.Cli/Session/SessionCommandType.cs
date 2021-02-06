@@ -15,9 +15,6 @@ namespace SmartGlass.Cli.Session
         [Command(typeof(PressCommand))]
         Press,
 
-        [Command(typeof(LaunchTitleCommand))]
-        LaunchTitle,
-
         [Command(typeof(TitleChannelCommand))]
         TitleChannel,
 
