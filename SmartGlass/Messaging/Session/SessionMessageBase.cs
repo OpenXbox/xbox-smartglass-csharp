@@ -5,7 +5,7 @@ namespace SmartGlass.Messaging.Session
     /// <summary>
     /// Session message base.
     /// </summary>
-    abstract class SessionMessageBase : ISerializable
+    abstract record SessionMessageBase : ISerializable
     {
         public SessionMessageHeader Header { get; set; }
 

@@ -10,7 +10,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: 5.0.102
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -20,11 +20,13 @@ jobs:
     - name: Publish
       run: dotnet publish --configuration Release
     - name: Upload SmartGlass.Cli Artifact
+      if: ${{ success() && github.ref == 'refs/heads/master' && github.event_name == 'push' }}
       uses: actions/upload-artifact@v2
       with:
         name: SmartGlass.Cli
-        path: SmartGlass.Cli/bin/Release/netcoreapp3.1/publish/
+        path: SmartGlass.Cli/bin/Release/net5.0/publish/
     - name: Create tag and publish to nuget
+      if: ${{ success() && github.ref == 'refs/heads/master' && github.event_name == 'push' }}
       id: publish_nuget
       uses: rohith/publish-nuget@v2
       with:

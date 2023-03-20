@@ -5,7 +5,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.StartChannelRequest)]
-    internal class StartChannelRequestMessage : SessionMessageBase
+    internal record StartChannelRequestMessage : SessionMessageBase
     {
         private static readonly Dictionary<ServiceType, byte[]> _serviceUuids =
             new Dictionary<ServiceType, byte[]>()

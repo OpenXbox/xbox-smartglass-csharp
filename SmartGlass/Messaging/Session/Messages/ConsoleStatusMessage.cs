@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.ConsoleStatus)]
-    internal class ConsoleStatusMessage : SessionMessageBase
+    internal record ConsoleStatusMessage : SessionMessageBase
     {
         public ConsoleConfiguration Configuration { get; set; }
         public ActiveTitle[] ActiveTitles { get; set; }

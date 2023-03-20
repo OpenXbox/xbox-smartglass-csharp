@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.SystemTextInput)]
-    internal class SystemTextInputMessage : SessionMessageBase
+    internal record SystemTextInputMessage : SessionMessageBase
     {
         public uint TextSessionId { get; set; }
         public uint BaseVersion { get; set; }

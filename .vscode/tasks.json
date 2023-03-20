@@ -1,14 +1,12 @@
 {
     "version": "2.0.0",
-    "tasks": [{
+    "tasks": [
+        {
             "label": "Build Library",
             "type": "shell",
             "group": "build",
             "command": "dotnet",
-            "args": [
-                "build",
-                "${workspaceRoot}/SmartGlass/SmartGlass.csproj"
-            ],
+            "args": ["build", "${workspaceRoot}/SmartGlass/SmartGlass.csproj"],
             "problemMatcher": "$msCompile"
         },
         {
@@ -16,10 +14,7 @@
             "type": "shell",
             "group": "build",
             "command": "dotnet",
-            "args": [
-                "build",
-                "${workspaceRoot}/SmartGlass.Cli/SmartGlass.Cli.csproj"
-            ],
+            "args": ["build", "${workspaceRoot}/SmartGlass.Cli/SmartGlass.Cli.csproj"],
             "problemMatcher": "$msCompile"
         }
     ]

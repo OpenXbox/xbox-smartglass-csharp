@@ -25,12 +25,8 @@ namespace SmartGlass.Cli
         {
             if (TokenFilePath != null)
             {
-                using (FileStream fs = File.Open(TokenFilePath, FileMode.Open))
-                {
-                    AuthService = await AuthenticationService.LoadFromJsonFileStream(fs);
-                    await AuthService.AuthenticateAsync();
-                }
-
+                AuthService = await AuthenticationService.LoadFromJsonFileAsync(TokenFilePath);
+                await AuthService.AuthenticateAsync();
                 await AuthService.DumpToJsonFileAsync(TokenFilePath);
             }
 

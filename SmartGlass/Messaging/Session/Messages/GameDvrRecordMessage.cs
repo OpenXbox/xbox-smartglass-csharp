@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.GameDvrRecord)]
-    internal class GameDvrRecordMessage : SessionMessageBase
+    internal record GameDvrRecordMessage : SessionMessageBase
     {
         public int StartTimeDelta { get; set; }
         public int EndTimeDelta { get; set; }

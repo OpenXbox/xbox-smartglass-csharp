@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Unsnap)]
-    internal class UnsnapMessage : SessionMessageBase
+    internal record UnsnapMessage : SessionMessageBase
     {
         public byte Unknown { get; set; }
 

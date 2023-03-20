@@ -3,7 +3,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.PowerOff)]
-    internal class PowerOffMessage : SessionMessageBase
+    internal record PowerOffMessage : SessionMessageBase
     {
         public string LiveId { get; set; }
 

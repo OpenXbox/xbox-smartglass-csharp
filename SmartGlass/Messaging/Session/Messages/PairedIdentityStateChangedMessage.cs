@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.PairedIdentityStateChanged)]
-    internal class PairedIdentityStateChangedMessage : SessionMessageBase
+    internal record PairedIdentityStateChangedMessage : SessionMessageBase
     {
         public PairedIdentityState State { get; set; }
 

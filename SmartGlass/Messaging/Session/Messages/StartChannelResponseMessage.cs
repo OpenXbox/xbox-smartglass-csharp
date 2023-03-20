@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.StartChannelResponse)]
-    internal class StartChannelResponseMessage : SessionMessageBase
+    internal record StartChannelResponseMessage : SessionMessageBase
     {
         public uint ChannelRequestId { get; set; }
         public ulong ChannelId { get; set; }

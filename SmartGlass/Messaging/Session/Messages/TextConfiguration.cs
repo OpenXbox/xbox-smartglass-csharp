@@ -3,7 +3,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session.Messages
 {
-    internal class TextConfiguration : SessionMessageBase
+    internal record TextConfiguration : SessionMessageBase
     {
         public ulong TextSessionId { get; set; }
         public uint TextBufferVersion { get; set; }

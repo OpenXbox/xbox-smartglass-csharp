@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Ack)]
-    internal class AckMessage : SessionMessageBase
+    internal record AckMessage : SessionMessageBase
     {
         public uint LowWatermark { get; set; }
         public HashSet<uint> ProcessedList { get; set; }

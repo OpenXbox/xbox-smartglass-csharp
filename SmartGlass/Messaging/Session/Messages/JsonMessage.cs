@@ -3,7 +3,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Json)]
-    internal class JsonMessage : SessionMessageBase
+    internal record JsonMessage : SessionMessageBase
     {
         public JsonMessage()
         {

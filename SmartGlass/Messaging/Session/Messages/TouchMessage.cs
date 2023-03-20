@@ -3,7 +3,7 @@ using SmartGlass.Common;
 
 namespace SmartGlass.Messaging.Session.Messages
 {
-    internal class TouchMessage : SessionMessageBase
+    internal record TouchMessage : SessionMessageBase
     {
         public uint Timestamp { get; set; }
         public TouchPoint[] Touchpoints { get; set; }

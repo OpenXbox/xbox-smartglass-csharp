@@ -4,7 +4,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.Inclinometer)]
-    internal class InclinometerMessage : SessionMessageBase
+    internal record InclinometerMessage : SessionMessageBase
     {
         public ulong Timestamp { get; set; }
         public float Pitch { get; set; }

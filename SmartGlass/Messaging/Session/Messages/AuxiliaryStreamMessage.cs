@@ -3,7 +3,7 @@ using SmartGlass.Common;
 namespace SmartGlass.Messaging.Session.Messages
 {
     [SessionMessageType(SessionMessageType.AuxiliaryStream)]
-    internal class AuxiliaryStreamMessage : SessionMessageBase
+    internal record AuxiliaryStreamMessage : SessionMessageBase
     {
         public AuxiliaryStreamConnectionInfo ConnectionInfo { get; set; }
 
